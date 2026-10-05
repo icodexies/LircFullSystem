@@ -109,7 +109,6 @@ function Reveal({
           transitionTimingFunction: easing,
           transitionDelay: isVisible ? `${delay}ms` : "0ms",
 
-          willChange: "transform, opacity, filter",
         }}
       >
         {children}

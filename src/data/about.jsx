@@ -15,28 +15,28 @@ export const ABOUT = {
 // "center 30%" or "left center". Files in /public are used by URL.
 export const ABOUT_IMAGES = {
   arch: {
-    src: "/Home-Page-IMG/CCC-Building.jpg",
+    src: "/Home-Page-IMG/CCC-Building.webp",
     alt: "The LIRC library building",
     label: "Library building",
     hint: "Square photo, shown in an arch",
     position: "center",
   },
   history: {
-    src: "/Home-Page-IMG/LibraryShelves.jpg",
+    src: "/Home-Page-IMG/LibraryShelves.webp",
     alt: "Students reading in the library",
     label: "Students reading",
     hint: "Landscape, about 6:5",
     position: "center",
   },
   history2: {
-    src: "/Home-Page-IMG/LibraryShelves2.jpg",
+    src: "/Home-Page-IMG/LibraryShelves2.webp",
     alt: "Library staff and students together",
     label: "Staff and students",
     hint: "Almost square, about 13:12",
     position: "center",
   },
   group: {
-    src: "/Home-Page-IMG/LibrarySpace.jpg",
+    src: "/Home-Page-IMG/LibrarySpace.webp",
     alt: "Library staff and students together",
     label: "Staff and students",
     hint: "Almost square, about 13:12",

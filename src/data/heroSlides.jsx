@@ -5,8 +5,8 @@ export const slides = [
     title: "Books & Collections",
     description:
       "Explore thousands of titles across every course and subject. Search the catalog, check availability, and reserve what you need before you even walk in.",
-    background: "/BG-Image/BG1.png",
-    thumbnail: "/Thumbnails/thumbnail1.png",
+    background: "/BG-Image/BG1.webp",
+    thumbnail: "/Thumbnails/thumbnail1.webp",
     cta: "Browse Catalog",
     to: "/catalog",
     secondary: {
@@ -25,8 +25,8 @@ export const slides = [
     title: "Quiet Study Spaces",
     description:
       "Comfortable reading halls and group study areas designed for focus. Find a spot that fits the way you learn, whether solo or with classmates.",
-    background: "/BG-Image/BG2.png",
-    thumbnail: "/Thumbnails/thumbnail2.png",
+    background: "/BG-Image/BG2.webp",
+    thumbnail: "/Thumbnails/thumbnail2.webp",
     cta: "Visit the Library",
     to: "/about",
     secondary: {
@@ -45,8 +45,8 @@ export const slides = [
     title: "Digital Library",
     description:
       "Access e-books, journals, and online databases from anywhere on campus or at home. Your research doesn't stop when the doors close.",
-    background: "/BG-Image/BG3.png",
-    thumbnail: "/Thumbnails/thumbnail3.png",
+    background: "/BG-Image/BG3.webp",
+    thumbnail: "/Thumbnails/thumbnail3.webp",
     cta: "Access E-Books",
     to: "/catalog",
     secondary: {
@@ -65,8 +65,8 @@ export const slides = [
     title: "Theses & Research",
     description:
       "Browse student theses and research outputs from City College of Calamba. A great starting point for your own study and references.",
-    background: "/BG-Image/BG4.png",
-    thumbnail: "/Thumbnails/thumbnail4.png",
+    background: "/BG-Image/BG4.webp",
+    thumbnail: "/Thumbnails/thumbnail4.webp",
     cta: "Explore Research",
     to: "/catalog",
     secondary: {

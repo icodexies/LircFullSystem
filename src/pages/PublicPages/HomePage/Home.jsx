@@ -5,8 +5,6 @@ import About from "./About";
 import LoginModal from "../../../components/modals/loginModal";
 import { useLogin } from "../../../context/loginContext";
 import { useHero } from "../../../hooks/useHero";
-import { supabase } from "../../../supabaseClient";
-import { useEffect } from "react";
 
 const pad = (n) => String(n + 1).padStart(2, "0");
 
@@ -14,6 +12,7 @@ function Home() {
   const { isLoginOpen, closeLogin } = useLogin();
 
   const handleLogin = async ({ email, password }) => {
+    const { supabase } = await import("../../../supabaseClient");
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error; // shown inside the modal
     closeLogin();

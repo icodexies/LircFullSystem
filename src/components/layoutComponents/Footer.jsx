@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import Reveal from "../ui/Reveal";
 
 // 👉 Put your footer image in /public and change this path (or import it from assets)
-const FOOTER_BG = "/Home-Page-IMG/Footer-img.png";
+const FOOTER_BG = "/Home-Page-IMG/Footer-img.webp";
 
 // 👉 Change these to your real contact links
 const FACEBOOK_URL = "https://facebook.com/";
@@ -83,6 +83,8 @@ export default function Footer() {
             <img
               src={FOOTER_BG}
               alt=""
+              loading="lazy"
+              decoding="async"
               className="block h-150 w-full select-none"
               style={{
                 // fades the top edge of the image into the white page
