@@ -1,6 +1,6 @@
 import Reveal from "../../../components/ui/Reveal";
 import { useBookCollection } from "../../../hooks/useBookCollection";
-import { TABS } from "../../../data/bookCollection";
+import { BOOK_TABS } from "../../../data/bookCollection";
 
 const GLASS =
   "h-full rounded-2xl border border-slate-200 bg-slate-50 p-5 shadow-sm sm:p-6";
@@ -17,7 +17,7 @@ const REVEAL_FULL = "h-full [&>div]:h-full";
 function Stars({ rating }) {
   return (
     <div className="flex items-center gap-2">
-      <div className="flex gap-0.5 text-sm" aria-label={`${rating} out of 5`}>
+      <div role="img" className="flex gap-0.5 text-sm" aria-label={`${rating} out of 5`}>
         {[1, 2, 3, 4, 5].map((n) => (
           <span key={n} className={n <= Math.round(rating) ? "text-[#0B1330]" : "text-slate-300"}>
             ★
@@ -33,7 +33,7 @@ function Cover({ book, className = "" }) {
   const base = `aspect-[2/3] rounded-md shadow-lg shadow-slate-900/25 ${className}`;
 
   if (book.cover) {
-    return <img src={book.cover} width="600" height="900" alt={`${book.title} cover`} className={`${base} object-cover`} />;
+    return <img src={book.cover} width="600" height="900" alt={`${book.title} cover`} loading="lazy" decoding="async" className={`${base} object-cover`} />;
   }
 
   return (
@@ -82,13 +82,19 @@ const SLOTS = [
 
 function Carousel({ books, activeIndex, onSelect, onStep }) {
   const n = books.length;
+  if (n === 0) return null;
+
+  // Show each book once if a future collection has fewer than five books.
+  const slots = SLOTS.filter(({ offset }) =>
+    offset >= -Math.floor((n - 1) / 2) && offset <= Math.floor(n / 2)
+  );
 
   return (
     <div className="mx-auto flex w-full max-w-xs items-center justify-center gap-1 sm:max-w-none sm:gap-4">
       <ArrowButton dir="prev" onClick={() => onStep(-1)} />
 
       <div className="flex flex-1 items-center justify-center gap-2 py-3 sm:gap-6 sm:py-6">
-        {SLOTS.map(({ offset, cls }) => {
+        {slots.map(({ offset, cls }) => {
           const book = books[(activeIndex + offset + n) % n];
           const isActive = offset === 0;
 
@@ -198,9 +204,15 @@ function HighlightPanel({ book, tab }) {
             <button
               type="button"
               className="mt-5 w-fit rounded-full bg-[#0B1330] px-5 py-2 text-sm font-semibold text-white transition hover:bg-[#16224d] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0B1330]"
+              disabled
+              aria-describedby={`book-action-${book.id}`}
+              title={isPhysical ? "Reservations are not available yet" : "Online reading is not available yet"}
             >
               {isPhysical ? "Reserve this book" : "Read online"}
             </button>
+            <p id={`book-action-${book.id}`} className="mt-2 text-xs text-slate-500" role="status">
+              {isPhysical ? "Reservations are not available yet." : "Online reading is not available yet."}
+            </p>
           </div>
         </div>
       </Reveal>
@@ -216,7 +228,7 @@ function BookCollection() {
   const c = useBookCollection();
 
   return (
-    <section id="collection" className="relative w-full overflow-hidden bg-white py-20 lg:py-28">
+    <section aria-labelledby="collection-title" className="relative w-full overflow-hidden bg-white py-20 lg:py-28">
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
         {/* Header + tabs */}
         <Reveal
@@ -224,19 +236,18 @@ function BookCollection() {
           className="[&>div]:flex [&>div]:flex-col [&>div]:gap-6 sm:[&>div]:flex-row sm:[&>div]:items-end sm:[&>div]:justify-between"
         >
           <div>
-            <h2 className="font-[Fraunces] text-3xl text-[#0B1330] sm:text-4xl">Book collection</h2>
+            <h2 id="collection-title" className="font-[Fraunces] text-3xl text-[#0B1330] sm:text-4xl">Book collection</h2>
             <p className="mt-2 max-w-md text-sm text-slate-500">
               Browse what the library holds, on the shelf or on your screen.
             </p>
           </div>
 
-          <div role="tablist" aria-label="Collection type" className="inline-flex w-fit rounded-full border border-slate-200 bg-slate-100 p-1">
-            {TABS.map((t) => (
+          <div role="group" aria-label="Collection type" className="inline-flex w-fit rounded-full border border-slate-200 bg-slate-100 p-1">
+            {BOOK_TABS.map((t) => (
               <button
                 key={t.id}
                 type="button"
-                role="tab"
-                aria-selected={c.tab === t.id}
+                aria-pressed={c.tab === t.id}
                 onClick={() => c.changeTab(t.id)}
                 className={`rounded-full px-4 py-1.5 text-sm transition ${
                   c.tab === t.id ? "bg-[#0B1330] font-semibold text-white" : "text-slate-600 hover:text-[#0B1330]"
@@ -267,13 +278,15 @@ function BookCollection() {
               genre={c.genre}
               setGenre={c.setGenre}
               books={c.genreBooks}
-              selectedId={c.selected.id}
+              selectedId={c.selected?.id}
               onSelect={c.select}
             />
           </Reveal>
 
           <Reveal direction="left" distance={48} delay={200} threshold={0.1} className={REVEAL_FULL}>
-            <HighlightPanel book={c.selected} tab={c.tab} />
+            {c.selected ? <HighlightPanel book={c.selected} tab={c.tab} /> : (
+              <p className={GLASS} role="status">No books are available in this collection yet.</p>
+            )}
           </Reveal>
         </div>
       </div>

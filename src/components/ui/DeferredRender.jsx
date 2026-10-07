@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
-export default function DeferredRender({ children, reserveClassName = "", rootMargin = "200px 0px" }) {
-  const [ready, setReady] = useState(false);
+export default function DeferredRender({ children, id, reserveClassName = "", rootMargin = "200px 0px" }) {
+  const [ready, setReady] = useState(() => !("IntersectionObserver" in window));
   const ref = useRef(null);
 
   useEffect(() => {
@@ -22,7 +22,8 @@ export default function DeferredRender({ children, reserveClassName = "", rootMa
   }, [ready, rootMargin]);
 
   return (
-    <div ref={ref}>
+    // Keep anchors available even before their section has loaded.
+    <div ref={ref} id={id}>
       {ready ? children : <div aria-hidden="true" className={reserveClassName} />}
     </div>
   );

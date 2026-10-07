@@ -1,133 +1,116 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AuthContext } from "./authContextStore";
 import { hasStoredAuthSession } from "./authSessionHint";
+import { getSupabase, getUserProfile, login, logout } from "../services/authService";
+
+const emptyProfile = { userId: null, data: null, error: null };
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [role, setRole] = useState(null);
-  const [profile, setProfile] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const clientPromise = useRef(null);
-  const initializeClient = useRef(null);
-  const revision = useRef(0);
-
-  const loadProfile = async (supabase, authUser) => {
-    if (!authUser) return null;
-
-    const { data, error } = await supabase
-      .from("usersData")
-      .select("first_name, surname, library_id, role")
-      .eq("user_id", authUser.id) // usersData.user_id = auth user id
-      .maybeSingle();
-    if (error) throw error;
-    return data ?? null;
-  };
+  const [session, setSession] = useState({ user: null, loading: true, error: null });
+  const [profileState, setProfileState] = useState(emptyProfile);
+  const userId = session.user?.id ?? null;
 
   useEffect(() => {
     let active = true;
     let subscription;
+    let syncTimer;
+    let sessionRequest = 0;
 
-    const sync = async (supabase, session) => {
-      const currentRevision = ++revision.current;
-      const u = session?.user ?? null;
-      let nextProfile = null;
+    const updateSession = (nextSession) => {
+      const user = nextSession?.user ?? null;
+      setSession({ user, loading: false, error: null });
+      if (!user) setProfileState(emptyProfile);
+    };
 
+    const initialize = async () => {
       try {
-        nextProfile = await loadProfile(supabase, u);
-      } catch (error) {
-        console.error("Unable to load the signed-in user's profile.", error);
-      }
-
-      if (!active || currentRevision !== revision.current) return;
-      setUser(u);
-      setProfile(nextProfile);
-      setRole(nextProfile?.role ?? null);
-      setLoading(false);
-    };
-
-    const initialize = () => {
-      if (!clientPromise.current) {
-        clientPromise.current = import("../supabaseClient")
-          .then(async ({ supabase }) => {
-            if (!active) return null;
-
-            const { data } = supabase.auth.onAuthStateChange((_event, session) => {
-              setLoading(true);
-              setTimeout(() => sync(supabase, session), 0);
-            });
-            subscription = data.subscription;
-
+        const supabase = await getSupabase();
+        if (!active) return;
+        // Read this tab's session: another tab may broadcast a session it doesn't share.
+        // Keep the listener synchronous and do Supabase work after it returns.
+        const { data } = supabase.auth.onAuthStateChange(() => {
+          if (!active) return;
+          const request = ++sessionRequest;
+          window.clearTimeout(syncTimer);
+          syncTimer = window.setTimeout(async () => {
+            if (!active) return;
             try {
-              const { data: sessionData, error } = await supabase.auth.getSession();
+              const { data: current, error } = await supabase.auth.getSession();
               if (error) throw error;
-              await sync(supabase, sessionData.session);
+              if (active && request === sessionRequest) updateSession(current.session);
             } catch (error) {
-              console.error("Unable to read the current auth session.", error);
-              await sync(supabase, null);
+              if (active && request === sessionRequest) {
+                setSession({ user: null, loading: false, error: error.message });
+                setProfileState(emptyProfile);
+              }
             }
-
-            return supabase;
-          })
-          .catch((error) => {
-            console.error("Unable to initialize authentication.", error);
-            setLoading(false);
-            return null;
-          });
+          }, 0);
+        });
+        subscription = data.subscription;
+      } catch (error) {
+        if (active) setSession({ user: null, loading: false, error: error.message });
       }
-
-      return clientPromise.current;
     };
-    initializeClient.current = initialize;
 
-    const start = () => void initialize();
+    let cancelStart = () => {};
     if (window.location.pathname === "/" && !hasStoredAuthSession()) {
       if ("requestIdleCallback" in window) {
-        const idleId = window.requestIdleCallback(start, { timeout: 1500 });
-        return () => {
-          active = false;
-          window.cancelIdleCallback(idleId);
-          subscription?.unsubscribe();
-          clientPromise.current = null;
-          initializeClient.current = null;
-        };
+        const id = window.requestIdleCallback(() => void initialize(), { timeout: 1500 });
+        cancelStart = () => window.cancelIdleCallback(id);
+      } else {
+        const id = window.setTimeout(() => void initialize(), 350);
+        cancelStart = () => window.clearTimeout(id);
       }
-
-      const timeoutId = window.setTimeout(start, 350);
-      return () => {
-        active = false;
-        window.clearTimeout(timeoutId);
-        subscription?.unsubscribe();
-        clientPromise.current = null;
-        initializeClient.current = null;
-      };
+    } else {
+      void initialize();
     }
-
-    start();
 
     return () => {
       active = false;
+      cancelStart();
+      window.clearTimeout(syncTimer);
       subscription?.unsubscribe();
-      clientPromise.current = null;
-      initializeClient.current = null;
     };
   }, []);
 
-  const login = async ({ email, password }) => {
-    const supabase = await initializeClient.current?.();
-    if (!supabase) throw new Error("Authentication is unavailable. Please try again.");
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) throw error;
-  };
+  useEffect(() => {
+    if (!userId) return;
+    const controller = new AbortController();
+    let active = true;
 
-  const logout = async () => {
-    const supabase = await initializeClient.current?.();
-    if (!supabase) throw new Error("Authentication is unavailable. Please try again.");
-    return supabase.auth.signOut();
-  };
+    getUserProfile(userId, controller.signal)
+      .then((data) => {
+        if (active) setProfileState({ userId, data, error: null });
+      })
+      .catch((error) => {
+        if (!active) return;
+        console.error("Unable to load the library profile.", error);
+        setProfileState({
+          userId,
+          data: null,
+          error: "We couldn't load your library profile. Please contact the library if this continues.",
+        });
+      });
 
-  return (
-    <AuthContext.Provider value={{ user, role, profile, loading, login, logout }}>
-      {children}
-    </AuthContext.Provider>
-  );
+    return () => {
+      active = false;
+      controller.abort();
+    };
+  }, [userId]);
+
+  // An old user's profile must never appear while the next user's request is pending.
+  const profile = userId && profileState.userId === userId ? profileState.data : null;
+  const loading = session.loading || Boolean(userId && profileState.userId !== userId);
+  const profileError = userId && profileState.userId === userId ? profileState.error : null;
+  const value = useMemo(() => ({
+    user: session.user,
+    profile,
+    role: profile?.role ?? null,
+    loading,
+    error: session.error || profileError,
+    login,
+    logout,
+  }), [session.user, session.error, profile, loading, profileError]);
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

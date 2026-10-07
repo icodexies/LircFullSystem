@@ -9,8 +9,6 @@ const json = (body: unknown, status = 200) =>
     headers: { ...corsHeaders, "Content-Type": "application/json" },
   });
 
-const ALLOWED_DOMAIN = "@ccc.edu.ph";
-
 const norm = (s: unknown) =>
   String(s ?? "").trim().replace(/\s+/g, " ").toLowerCase();
 const normInitial = (s: unknown) =>
@@ -30,27 +28,55 @@ function generatePassword(len = 12) {
 
 const gmailUser = Deno.env.get("GMAIL_USER")?.trim();
 const gmailAppPassword = Deno.env.get("GMAIL_APP_PASSWORD")?.replace(/\s/g, "");
+const supabaseUrl = Deno.env.get("SUPABASE_URL");
+const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+const admin = supabaseUrl && serviceKey
+  ? createClient(supabaseUrl, serviceKey, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  })
+  : null;
 const mailer = gmailUser && gmailAppPassword
   ? nodemailer.createTransport({
     host: "smtp.gmail.com",
     port: 465,
     secure: true,
+    connectionTimeout: 10000,
+    socketTimeout: 15000,
     auth: { user: gmailUser, pass: gmailAppPassword },
   })
   : null;
+
+async function rollBackAccount(authId: string, cardId?: string | number) {
+  if (!admin) return false;
+  if (cardId !== undefined) {
+    const { error } = await admin.from("usersData")
+      .update({ user_id: null })
+      .eq("id", cardId)
+      .eq("user_id", authId);
+    if (error) {
+      console.error("Couldn't unlink the failed registration.", error);
+      return false;
+    }
+  }
+  const { error } = await admin.auth.admin.deleteUser(authId);
+  if (error) console.error("Couldn't remove the failed registration.", error);
+  return !error;
+}
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   if (req.method !== "POST") return json({ error: "Method not allowed." }, 405);
 
-  if (!mailer) {
-    console.error("Registration email is not configured.");
+  if (!mailer || !admin) {
+    console.error("Registration services are not configured.");
     return json({ error: "Registration is temporarily unavailable. Please try again later." }, 503);
   }
 
   let payload: unknown;
   try {
-    payload = await req.json();
+    const text = await req.text();
+    if (text.length > 4096) return json({ error: "Request is too large." }, 413);
+    payload = JSON.parse(text);
   } catch {
     return json({ error: "Invalid request." }, 400);
   }
@@ -59,6 +85,14 @@ Deno.serve(async (req) => {
   }
   const body = payload as Record<string, unknown>;
 
+  const fields = { first_name: 100, surname: 100, middle_initial: 2, library_id: 64, email: 254 };
+  for (const [field, limit] of Object.entries(fields)) {
+    const value = body[field] ?? "";
+    if (typeof value !== "string" || value.length > limit) {
+      return json({ error: "Please check your registration details." }, 400);
+    }
+  }
+
   const first_name = String(body.first_name ?? "").trim();
   const surname = String(body.surname ?? "").trim();
   const middle_initial = String(body.middle_initial ?? "").trim();
@@ -66,18 +100,12 @@ Deno.serve(async (req) => {
   const email = String(body.email ?? "").trim().toLowerCase();
 
   // 1) basic validation
-  if (!first_name || !surname || !library_id || !email) {
+  if (!first_name || !surname || !library_id || !email || !middle_initial) {
     return json({ error: "Please fill in all required fields." }, 400);
   }
-  if (!/^[^\s@]+@ccc\.edu\.ph$/.test(email) || !email.endsWith(ALLOWED_DOMAIN)) {
+  if (!/^[^\s@]+@ccc\.edu\.ph$/.test(email)) {
     return json({ error: "Use your school email ending in @ccc.edu.ph." }, 400);
   }
-
-  const admin = createClient(
-    Deno.env.get("SUPABASE_URL")!,
-    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
-    { auth: { persistSession: false, autoRefreshToken: false } },
-  );
 
   // 2) find the library card
   const { data: row, error: rowErr } = await admin
@@ -88,13 +116,15 @@ Deno.serve(async (req) => {
 
   if (rowErr) {
     console.error(rowErr);
-    return json({ error: "Something went wrong. Please try again." }, 500);
+    return json({ error: "Can't Find the Library Card please visit the Library" }, 500);
   }
 
-  // same message for "no such id" and "name mismatch" so IDs can't be probed
+  // Match the existing library record; the email comes from registration.
+  // One message for all mismatches avoids revealing which details matched.
   const mismatch = {
+    code: "record_mismatch",
     error:
-      "We couldn't match those details to a library card. Check your name and library ID.",
+      "We couldn't match those details to a library card. Check your first name, surname, middle initial, and library ID.",
   };
   if (!row) return json(mismatch, 404);
   if (
@@ -117,7 +147,11 @@ Deno.serve(async (req) => {
     email,
     password,
     email_confirm: true, // they log in with the emailed password right away
-    user_metadata: { library_id, first_name, surname },
+    user_metadata: {
+      library_id: row.library_id,
+      first_name: row.first_name,
+      surname: row.surname,
+    },
   });
 
   if (createErr || !created.user) {
@@ -142,8 +176,10 @@ Deno.serve(async (req) => {
     .select("id");
 
   if (linkErr || !linked?.length) {
-    await admin.auth.admin.deleteUser(authId);
-    return json({ error: "Couldn't finish registration. Please try again." }, 500);
+    const cleanedUp = await rollBackAccount(authId);
+    return json({ error: cleanedUp
+      ? "Couldn't finish registration. Please try again."
+      : "Couldn't finish registration. Please contact the LIRC library office for help." }, 500);
   }
 
   // 5) email the credentials
@@ -176,10 +212,11 @@ Deno.serve(async (req) => {
   } catch (err) {
     console.error("Email failed:", err);
     // roll back so the student can try again
-    await admin.from("usersData").update({ user_id: null }).eq("id", row.id);
-    await admin.auth.admin.deleteUser(authId);
+    const cleanedUp = await rollBackAccount(authId, row.id);
     return json(
-      { error: "We couldn't send the email. Check the address and try again." },
+      { error: cleanedUp
+        ? "We couldn't send the email. Please try again later."
+        : "We couldn't finish registration. Please contact the LIRC library office for help." },
       502,
     );
   }

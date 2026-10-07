@@ -2,31 +2,29 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import Reveal from "../ui/Reveal";
 import BrandMark from "../ui/BrandMark";
+import { useLogin } from "../../context/useLogin";
+import { CONTACT_LINKS } from "../../data/contactLinks";
 
 // 👉 Put the building image in /public/Home-Page-IMG/ and change this path if needed
 const FOOTER_IMG = "/Home-Page-IMG/lirc-building.png";
-
-// 👉 Change these to your real contact links
-const FACEBOOK_URL = "https://facebook.com/";
-const EMAIL = "mailto:lirc@example.com";
 
 const columns = [
   {
     title: "Library",
     links: [
-      ["Home", "/"],
-      ["About Us", "/about"],
-      ["Catalog", "/catalog"],
-      ["Digitals", "/digitals"],
+      { label: "Home", to: "/" },
+      { label: "About Us", to: "/#about" },
+      { label: "Catalog", to: "/#collection" },
+      { label: "Digitals", to: "/#digital-sources" },
     ],
   },
   {
     title: "Account",
     links: [
-      ["Login", "/login"],
-      ["Register", "/register"],
-      ["Create", "/createTask"],
-      ["Contact Us", "/contact"],
+      { label: "Login", action: "login" },
+      { label: "Register", to: "/register" },
+      { label: "Create", to: "/register" },
+      { label: "Contact Us", to: "/#contact" },
     ],
   },
 ];
@@ -79,13 +77,22 @@ function FacebookIcon() {
 }
 
 function SocialBox({ href, label, children }) {
+  const className = "flex h-10 w-10 items-center justify-center border border-white/15 text-slate-300 transition-all duration-300 hover:-translate-y-1 hover:border-sky-400 hover:bg-sky-400 hover:text-[#0B1330] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400";
+
+  if (!href) {
+    return (
+      <button type="button" disabled aria-label={`${label} (not configured yet)`} title={`${label} is not configured yet`} className={className}>
+        {children}
+      </button>
+    );
+  }
   return (
     <a
       href={href}
       aria-label={label}
       target="_blank"
       rel="noreferrer"
-      className="flex h-10 w-10 items-center justify-center border border-white/15 text-slate-300 transition-all duration-300 hover:-translate-y-1 hover:border-sky-400 hover:bg-sky-400 hover:text-[#0B1330] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400"
+      className={className}
     >
       {children}
     </a>
@@ -102,15 +109,15 @@ function ColumnHeading({ children }) {
 }
 
 export default function Footer() {
+  const { openLogin } = useLogin();
   const [email, setEmail] = useState("");
   const [done, setDone] = useState(false);
 
   const onSubmit = (e) => {
     e.preventDefault();
     if (!email.trim()) return;
-    // TODO: send `email` to your Laravel endpoint
+    // No subscription table exists yet. Do not pretend this was saved.
     setDone(true);
-    setEmail("");
   };
 
   // running counter so each element gets the next delay slot
@@ -150,10 +157,10 @@ export default function Footer() {
 
             <div className="mt-6 flex gap-3">
               <R i={next()}>
-                <SocialBox href={EMAIL} label="Email"><GmailIcon /></SocialBox>
+                <SocialBox href={CONTACT_LINKS.email} label="Email"><GmailIcon /></SocialBox>
               </R>
               <R i={next()}>
-                <SocialBox href={FACEBOOK_URL} label="Facebook"><FacebookIcon /></SocialBox>
+                <SocialBox href={CONTACT_LINKS.facebook} label="Facebook"><FacebookIcon /></SocialBox>
               </R>
             </div>
           </div>
@@ -165,16 +172,18 @@ export default function Footer() {
                 <ColumnHeading>{col.title}</ColumnHeading>
               </R>
               <ul className="mt-5 space-y-3">
-                {col.links.map(([label, to]) => (
-                  <li key={to}>
+                {col.links.map(({ label, to, action }) => (
+                  <li key={label}>
                     <R i={next()}>
-                      <Link
-                        to={to}
-                        className="group inline-flex items-center gap-2 text-sm transition-colors duration-300 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400"
-                      >
-                        <Chevron />
-                        {label}
-                      </Link>
+                      {action === "login" ? (
+                        <button type="button" onClick={openLogin} className="group inline-flex items-center gap-2 text-sm transition-colors duration-300 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400">
+                          <Chevron />{label}
+                        </button>
+                      ) : (
+                        <Link to={to} className="group inline-flex items-center gap-2 text-sm transition-colors duration-300 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400">
+                          <Chevron />{label}
+                        </Link>
+                      )}
                     </R>
                   </li>
                 ))}
@@ -216,7 +225,7 @@ export default function Footer() {
                 </button>
               </form>
               <p role="status" className="mt-2 min-h-[1.25rem] text-xs text-sky-300">
-                {done ? "You're subscribed. Thank you!" : ""}
+                {done ? "Subscriptions are not available yet. Your email was not saved." : ""}
               </p>
             </R>
           </div>

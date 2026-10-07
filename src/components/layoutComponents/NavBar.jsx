@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import NavLinks from "../ui/NavLinks";
 import Reveal from "../ui/Reveal";
 import BrandMark from "../ui/BrandMark";
@@ -18,20 +18,22 @@ const NAV_ITEMS = [
 
 
 function scrollToId(id) {
+  const behavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ? "auto"
+    : "smooth";
   if (id === "home") {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({ top: 0, behavior });
     return;
   }
-  document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  document.getElementById(id)?.scrollIntoView({ behavior, block: "start" });
 }
 
 // One link in the middle of the navbar. Active = filled navy pill.
-function NavItem({ href, active, onClick, children }) {
+function NavItem({ to, active, children }) {
   return (
-    <a
-      href={href}
-      onClick={onClick}
-      aria-current={active ? "true" : undefined}
+    <Link
+      to={to}
+      aria-current={active ? "location" : undefined}
       className={`inline-flex items-center rounded-full px-3.5 py-1.5 text-sm font-medium transition-all duration-300 ${
         active
           ? "bg-[#0B1330] text-white shadow-sm"
@@ -39,13 +41,12 @@ function NavItem({ href, active, onClick, children }) {
       }`}
     >
       {children}
-    </a>
+    </Link>
   );
 }
 
 function NavBar() {
   const location = useLocation();
-  const navigate = useNavigate();
   const { pathname } = location;
   const { openLogin } = useLogin();
   // "home" | "collection" | "about" | null (null = on another page, like /login)
@@ -70,7 +71,7 @@ function NavBar() {
         if (!el) continue;
         lastFound = id;
         const r = el.getBoundingClientRect();
-        if (r.top <= probe && r.bottom > probe) current = id;
+        if (r.top <= probe) current = id;
       }
 
       // At the very bottom of the page, keep the last section active
@@ -98,29 +99,28 @@ function NavBar() {
     };
   }, [pathname]);
 
-  /* ---------- Coming from another page: go home, then scroll ---------- */
+  /* ---------- Section links work from this page and from other pages ---------- */
   useEffect(() => {
-    const id = location.state?.scrollTo;
+    const id = location.hash.slice(1) || "home";
     if (pathname !== "/" || !id) return;
 
-    const t = setTimeout(() => {
-      scrollToId(id);
-      navigate(pathname, { replace: true, state: null }); // clear it so a refresh doesn't re-scroll
-    }, 80);
-
-    return () => clearTimeout(t);
-  }, [location, pathname, navigate]);
-
-  /* ---------- Click handler for the 3 page links ---------- */
-  const handleNav = (e, id) => {
-    e.preventDefault();
-
-    if (pathname !== "/") {
-      navigate("/", { state: { scrollTo: id } });
-      return;
+    let frame = requestAnimationFrame(() => scrollToId(id));
+    const target = document.getElementById(id);
+    // Loading a section can change its position. Align again when it is ready.
+    const observer = new MutationObserver(() => {
+      if (!target?.querySelector("section, footer")) return;
+      observer.disconnect();
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => scrollToId(id));
+    });
+    if (target && !target.querySelector("section, footer")) {
+      observer.observe(target, { childList: true, subtree: true });
     }
-    scrollToId(id);
-  };
+    return () => {
+      cancelAnimationFrame(frame);
+      observer.disconnect();
+    };
+  }, [location.key, location.hash, pathname]);
 
   return (
     <header className="pointer-events-none sticky top-0 z-50 flex justify-center px-4 py-5">
@@ -162,9 +162,8 @@ function NavBar() {
             {NAV_ITEMS.map(({ label, id }) => (
               <NavItem
                 key={id}
-                href={id === "home" ? "/" : `/#${id}`}
+                to={id === "home" ? "/" : `/#${id}`}
                 active={active === id}
-                onClick={(e) => handleNav(e, id)}
               >
                 {label}
               </NavItem>

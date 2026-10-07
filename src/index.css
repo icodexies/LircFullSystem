@@ -8,3 +8,16 @@ body {
   min-width: 320px;
   min-height: 100vh;
 }
+
+/* Keep the same design while respecting the device's motion preference. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+    scroll-behavior: auto !important;
+  }
+}

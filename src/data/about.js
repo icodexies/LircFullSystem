@@ -1,3 +1,4 @@
+// Single section settings and named photo slots use objects.
 // TODO: replace this sample copy with the real history of LIRC.
 export const ABOUT = {
   title: "About Us",

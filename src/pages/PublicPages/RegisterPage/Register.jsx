@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useLogin } from "../../../context/useLogin";
-import { supabase } from "../../../supabaseClient";
+import { registerLibraryUser } from "../../../services/authService";
+import { CONTACT_LINKS } from "../../../data/contactLinks";
 import Reveal from "../../../components/ui/Reveal";
 
 const DOMAIN = "@ccc.edu.ph";
@@ -118,7 +119,7 @@ function Register() {
   const [agree, setAgree] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [showHelp, setShowHelp] = useState(false); // NEW: LIRC office note
+  const [showHelp, setShowHelp] = useState(false);
   const [done, setDone] = useState(false);
 
   const set = (key) => (e) =>
@@ -131,38 +132,18 @@ function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (loading) return;
     setError("");
-    setShowHelp(false); // NEW
-
-    const email = form.email.trim().toLowerCase();
-    if (!email.endsWith(DOMAIN)) {
-      // simple input mistake, not a records mismatch, so no office note
-      setError(`Use your school email ending in ${DOMAIN}.`);
-      return;
-    }
+    setShowHelp(false);
 
     setLoading(true);
     try {
-      const { error: fnError } = await supabase.functions.invoke(
-        "register-user",
-        { body: { ...form, email } }
-      );
-
-      if (fnError) {
-        // the function returns { error: "..." } on failure
-        let msg = "Registration failed. Please try again.";
-        try {
-          const data = await fnError.context.json();
-          if (data?.error) msg = data.error;
-        } catch {
-          /* keep default message */
-        }
-        throw new Error(msg);
-      }
+      await registerLibraryUser(form);
       setDone(true);
     } catch (err) {
-      setError(err.message);
-      setShowHelp(true); // NEW: the server rejected the details
+      setError(err?.message || "Registration failed. Please try again.");
+      setShowHelp(err?.code === "record_mismatch");
+      console.log("code:", err?.code, "| message:", err?.message);
     } finally {
       setLoading(false);
     }
@@ -275,6 +256,7 @@ function Register() {
                         type="text"
                         required
                         autoComplete="given-name"
+                        maxLength={100}
                         value={form.first_name}
                         onChange={set("first_name")}
                         placeholder="Juan"
@@ -289,6 +271,7 @@ function Register() {
                         type="text"
                         required
                         autoComplete="family-name"
+                        maxLength={100}
                         value={form.surname}
                         onChange={set("surname")}
                         placeholder="Dela Cruz"
@@ -315,6 +298,7 @@ function Register() {
                       <input
                         type="text"
                         required
+                        maxLength={64}
                         value={form.library_id}
                         onChange={set("library_id")}
                         placeholder="2024-0001"
@@ -329,6 +313,7 @@ function Register() {
                         type="email"
                         required
                         autoComplete="email"
+                        maxLength={254}
                         value={form.email}
                         onChange={set("email")}
                         placeholder={`yourname${DOMAIN}`}
@@ -351,7 +336,7 @@ function Register() {
                   </label>
                 </Reveal>
 
-                {/* error message + NEW: LIRC office note (only after a server error) */}
+                {/* Show the records help only when the function reports a mismatch. */}
                 {error && (
                   <div role="alert" className="mt-2">
                     <p className="text-[11px] font-medium text-red-300">{error}</p>
@@ -421,10 +406,10 @@ function Register() {
               ))}
             </nav>
             <div className="flex items-center gap-3 text-white/90">
-              <a href="#" aria-label="Facebook" className="hover:text-white">
+              <a href={CONTACT_LINKS.facebook || undefined} aria-disabled={!CONTACT_LINKS.facebook} aria-label="Facebook" title={!CONTACT_LINKS.facebook ? "Facebook is not configured yet" : undefined} className="hover:text-white">
                 <Facebook />
               </a>
-              <a href="#" aria-label="Instagram" className="hover:text-white">
+              <a href={CONTACT_LINKS.instagram || undefined} aria-disabled={!CONTACT_LINKS.instagram} aria-label="Instagram" title={!CONTACT_LINKS.instagram ? "Instagram is not configured yet" : undefined} className="hover:text-white">
                 <Instagram />
               </a>
             </div>

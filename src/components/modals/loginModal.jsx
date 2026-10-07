@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Reveal from "../ui/Reveal";
 import { REVEAL_EASINGS } from "../ui/revealEasings";
 
@@ -32,6 +32,8 @@ function LoginModal({
   const [showPw, setShowPw] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const dialogRef = useRef(null);
+  const submitting = useRef(false);
 
   // render = is it in the DOM, shown = backdrop visible, closing = card exit animation
   const [render, setRender] = useState(open);
@@ -44,6 +46,9 @@ function LoginModal({
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setRender(true);
       setClosing(false);
+      setPassword("");
+      setShowPw(false);
+      setError("");
       const raf = requestAnimationFrame(() => setShown(true));
       return () => cancelAnimationFrame(raf);
     }
@@ -58,16 +63,41 @@ function LoginModal({
     }
   }, [open]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Close on Escape + lock body scroll while open
+  // Keep keyboard focus in the dialog and restore the opening button on close.
   useEffect(() => {
     if (!open) return;
-    const onKey = (e) => e.key === "Escape" && onClose?.();
+    const previousFocus = document.activeElement;
+    const focusFrame = requestAnimationFrame(() => {
+      dialogRef.current?.querySelector("input")?.focus();
+    });
+    const onKey = (e) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        onClose?.();
+      }
+      if (e.key !== "Tab") return;
+      const controls = dialogRef.current?.querySelectorAll(
+        'button:not(:disabled), input:not(:disabled), a[href], [tabindex="0"]'
+      );
+      if (!controls?.length) return;
+      const first = controls[0];
+      const last = controls[controls.length - 1];
+      if (e.shiftKey && (document.activeElement === first || !dialogRef.current.contains(document.activeElement))) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && (document.activeElement === last || !dialogRef.current.contains(document.activeElement))) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
     document.addEventListener("keydown", onKey);
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
+      cancelAnimationFrame(focusFrame);
       document.removeEventListener("keydown", onKey);
       document.body.style.overflow = prev;
+      previousFocus?.focus();
     };
   }, [open, onClose]);
 
@@ -75,6 +105,8 @@ function LoginModal({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (submitting.current) return;
+    submitting.current = true;
     setError("");
     setLoading(true);
     try {
@@ -82,6 +114,7 @@ function LoginModal({
     } catch (err) {
       setError(err?.message || "Login failed. Please try again.");
     } finally {
+      submitting.current = false;
       setLoading(false);
     }
   };
@@ -91,7 +124,8 @@ function LoginModal({
 
   return (
     <div
-      className={`fixed inset-0 z-[100] flex items-center justify-center bg-black/70 px-4 pt-14 ${
+      ref={dialogRef}
+      className={`fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto bg-black/70 px-4 pb-4 pt-14 ${
         closing ? "pointer-events-none" : ""
       }`}
       style={{
@@ -104,7 +138,7 @@ function LoginModal({
       aria-labelledby="login-title"
     >
       <div
-        className="w-full max-w-sm"
+        className="my-auto w-full max-w-sm"
         style={{
           opacity: closing ? 0 : 1,
           transform: closing ? "translateY(24px) scale(0.96)" : "none",
@@ -183,6 +217,7 @@ function LoginModal({
               <input
                 type="email"
                 required
+                autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="reader@lirc.edu"
@@ -192,14 +227,17 @@ function LoginModal({
           </label>
 
           {/* Password */}
-          <label className="mt-4 block">
+          <div className="mt-4 block">
             <span className="flex items-center justify-between">
-              <span className="text-[10px] font-bold uppercase tracking-wide text-[#0B1330]">
+              <label htmlFor="login-password" className="text-[10px] font-bold uppercase tracking-wide text-[#0B1330]">
                 Your Password
-              </span>
+              </label>
               <button
                 type="button"
-                onClick={onForgot}
+                onClick={() => {
+                  if (onForgot) onForgot();
+                  else setError("Password recovery is not available yet. Please contact the LIRC library office for help.");
+                }}
                 className="text-[10px] font-semibold text-[#0B1330] underline"
               >
                 Forgot?
@@ -211,8 +249,10 @@ function LoginModal({
                 <path d="M8 11V7a4 4 0 0 1 8 0v4" />
               </svg>
               <input
+                id="login-password"
                 type={showPw ? "text" : "password"}
                 required
+                autoComplete="current-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
@@ -231,7 +271,7 @@ function LoginModal({
                 </svg>
               </button>
             </div>
-          </label>
+          </div>
 
           {/* Remember */}
           <label className="mt-4 flex cursor-pointer items-center gap-2 text-[11px] font-semibold text-[#0B1330]">
@@ -241,7 +281,7 @@ function LoginModal({
               onChange={(e) => setRemember(e.target.checked)}
               className="h-3.5 w-3.5 accent-[#0B1330]"
             />
-            Keep me logged in for month
+            Keep me logged in on this device
           </label>
 
           {error && (

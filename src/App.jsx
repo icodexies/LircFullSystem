@@ -1,5 +1,5 @@
 import { lazy, Suspense } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { LoginProvider } from "./context/loginContext";
 import { AuthProvider } from "./context/AuthContext";
 import { PublicOnlyRoute, PrivateRoute } from "./routes/guards";
@@ -53,6 +53,8 @@ function App() {
                   {/* <Route path="/manage-books" element={<ManageBooks />} /> */}
                 </Route>
               </Route>
+
+              <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </Suspense>
         </BrowserRouter>

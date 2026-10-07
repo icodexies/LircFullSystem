@@ -64,6 +64,19 @@ function NavLinks({
   const getState = (variants[tone] ?? variants.glass)[safeVariant];
   const sizeClass = (sizes[size] ?? sizes.md)[safeVariant];
 
+  // Actions such as opening a dialog are buttons; destinations are links.
+  if (to == null) {
+    return (
+      <button
+        type="button"
+        className={`${base[safeVariant]} ${sizeClass} ${getState({ isActive: false })} ${className}`.trim()}
+        {...rest}
+      >
+        {children}
+      </button>
+    );
+  }
+
   return (
     <NavLink
       to={to}

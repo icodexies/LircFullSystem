@@ -1,22 +1,17 @@
 import { useAuth } from "../../context/useAuth";
+import { useState } from "react";
+import { MEMBER_BOOKS, MEMBER_STATS } from "../../data/memberHome";
 
 // Placeholder design, we'll replace this later.
 const card =
   "rounded-3xl border-2 border-[#0B1330] bg-white p-6 shadow-[6px_6px_0_#0B1330]";
 
-const STATS = [
-  { label: "Books Borrowed", value: 3 },
-  { label: "Due Soon", value: 1 },
-  { label: "Reservations", value: 2 },
-];
-const BOOKS = [
-  "Fundamentals of Nursing",
-  "Philippine History",
-  "Introduction to Algorithms",
-];
-
 export default function MemberHome() {
   const { profile } = useAuth();
+  const [search, setSearch] = useState("");
+  const books = MEMBER_BOOKS.filter((book) =>
+    book.title.toLowerCase().includes(search.trim().toLowerCase())
+  );
 
   return (
     <main className="mx-auto max-w-6xl px-6 py-10">
@@ -28,13 +23,17 @@ export default function MemberHome() {
       </p>
 
       <input
+        type="search"
+        aria-label="Search sample books"
+        value={search}
+        onChange={(event) => setSearch(event.target.value)}
         placeholder="Search books, journals, digital sources..."
         className="mt-6 w-full rounded-xl border border-[#E4DDF5] bg-white px-4 py-3 text-sm focus:border-[#0B1330] focus:outline-none focus:ring-2 focus:ring-[#0B1330]/15"
       />
 
       <section className="mt-8 grid gap-5 sm:grid-cols-3">
-        {STATS.map((s) => (
-          <div key={s.label} className={card}>
+        {MEMBER_STATS.map((s) => (
+          <div key={s.id} className={card}>
             <p className="font-serif text-4xl font-bold">{s.value}</p>
             <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-[#0B1330]/60">
               {s.label}
@@ -46,13 +45,14 @@ export default function MemberHome() {
       <section className="mt-10">
         <h2 className="font-serif text-2xl font-bold">Continue Reading</h2>
         <div className="mt-4 grid gap-5 sm:grid-cols-3">
-          {BOOKS.map((b) => (
-            <div key={b} className={card}>
+          {books.map((book) => (
+            <div key={book.id} className={card}>
               <div className="mb-4 h-32 rounded-xl bg-[#E8EEFF]" />
-              <p className="text-sm font-bold">{b}</p>
+              <p className="text-sm font-bold">{book.title}</p>
             </div>
           ))}
         </div>
+        {books.length === 0 && <p role="status" className="mt-4 text-sm">No sample books match your search.</p>}
       </section>
     </main>
   );

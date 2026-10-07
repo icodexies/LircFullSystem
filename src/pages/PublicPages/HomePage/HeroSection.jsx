@@ -9,33 +9,22 @@ export function HeroBG({ slides = [], active }) {
   return (
     <>
       {slides.map((s, i) => (
-        i === 0 ? (
           <img
             key={s.id}
-            src="/BG-Image/BG1-1200.webp"
-            srcSet="/BG-Image/BG1-480.webp 480w, /BG-Image/BG1-800.webp 800w, /BG-Image/BG1-1200.webp 1200w"
+            src={s.background}
+            srcSet={s.backgroundSrcSet}
             sizes="100vw"
-            width="1200"
-            height="900"
+            width={s.backgroundWidth}
+            height={s.backgroundHeight}
             alt=""
             aria-hidden="true"
-            fetchPriority="high"
-            loading="eager"
+            fetchPriority={i === 0 ? "high" : "auto"}
+            loading={i === 0 ? "eager" : "lazy"}
             decoding="async"
             className={`absolute inset-0 h-full w-full object-cover object-center transition-all duration-1000 ease-out ${
               i === active ? "scale-100 opacity-100" : "scale-110 opacity-0"
             }`}
           />
-        ) : (
-          <div
-            key={s.id}
-            aria-hidden="true"
-            className={`absolute inset-0 bg-cover bg-center transition-all duration-1000 ease-out ${
-              i === active ? "scale-100 opacity-100" : "scale-110 opacity-0"
-            }`}
-            style={{ backgroundImage: `url(${s.background})` }}
-          />
-        )
       ))}
     </>
   );
@@ -105,13 +94,22 @@ export function LeftSide({ slides = [], active, BTN_SLANT }) {
                     <ArrowIcon />
                   </Link>
 
-                  <Link
+                  {s.secondary.to ? <Link
                     to={s.secondary.to}
                     tabIndex={on ? 0 : -1}
                     className="px-3 py-2.5 text-xs font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:text-sky-300 sm:px-4 sm:py-3 sm:text-sm"
                   >
                     {s.secondary.label}
-                  </Link>
+                  </Link> : (
+                    <button
+                      type="button"
+                      disabled
+                      title="Thesis submissions are not available yet"
+                      className="px-3 py-2.5 text-xs font-semibold text-white transition-all duration-300 sm:px-4 sm:py-3 sm:text-sm"
+                    >
+                      {s.secondary.label}
+                    </button>
+                  )}
                 </div>
               </div>
             );

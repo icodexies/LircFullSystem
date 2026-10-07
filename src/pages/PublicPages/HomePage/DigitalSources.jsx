@@ -47,13 +47,16 @@ function InfoPanel({ source }) {
         </ul>
 
         <a
-          href={source.url}
+          href={source.url || undefined}
+          aria-disabled={!source.url}
+          title={!source.url ? "Access link is not available yet" : undefined}
           target="_blank"
           rel="noopener noreferrer"
           className="mt-7 inline-flex w-fit rounded-full bg-white px-5 py-2 text-sm font-semibold text-[#0B1330] transition hover:bg-slate-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
         >
           Visit {source.name}
         </a>
+        {!source.url && <p className="mt-2 text-xs text-white/60" role="status">Access link is not available yet.</p>}
       </Reveal>
     </div>
   );
@@ -74,13 +77,16 @@ function AccessNotice() {
           grant your access before you open any of them.
         </p>
         <a
-          href={ACCESS_FORM_URL}
+          href={ACCESS_FORM_URL || undefined}
+          aria-disabled={!ACCESS_FORM_URL}
+          title={!ACCESS_FORM_URL ? "The access request form is not available yet" : undefined}
           target="_blank"
           rel="noopener noreferrer"
           className="mt-3 inline-flex rounded-full border border-white/40 px-4 py-1.5 text-sm font-semibold text-white transition hover:bg-white hover:text-[#0B1330] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
         >
           Fill up the Google Form
         </a>
+        {!ACCESS_FORM_URL && <p className="mt-2 text-xs text-white/60" role="status">The access request form is not available yet.</p>}
       </div>
     </div>
   );
@@ -102,6 +108,7 @@ function SourceImage({ source, compact = false }) {
         height={source.imageHeight}
         alt={source.name}
         loading="lazy"
+        decoding="async"
         className="absolute inset-0 m-auto max-h-full max-w-full object-contain"
       />
     );
@@ -164,7 +171,7 @@ function SourceStack({ sources, activeIndex, onSelect }) {
     <div role="group" aria-label="Digital sources" className="relative h-[26rem] w-full sm:h-[30rem]">
       {sources.map((source, i) => {
         // -1 = above, 0 = selected, 1 = below
-        const offset = ((i - activeIndex + n + 1) % n) - 1;
+        const offset = n === 1 ? 0 : ((i - activeIndex + n + 1) % n) - 1;
         const isActive = offset === 0;
 
         return (
@@ -319,7 +326,6 @@ function DigitalSources() {
 
   return (
     <section
-      id="digital-sources"
       aria-labelledby="digital-sources-title"
       className="relative w-full overflow-hidden bg-[#0B1330] pb-32 pt-20 lg:py-36"
     >
@@ -342,7 +348,9 @@ function DigitalSources() {
             <SourcePicker sources={d.sources} activeIndex={d.activeIndex} onSelect={d.select} />
 
             <Reveal delay={150} className="mt-6 border-t border-white/10 pt-6 lg:mt-8 lg:pt-8">
-              <InfoPanel source={d.active} />
+              {d.active ? <InfoPanel source={d.active} /> : (
+                <p className="text-sm text-white/75" role="status">No digital sources are available yet.</p>
+              )}
             </Reveal>
 
             <Reveal delay={250} className="mt-8">

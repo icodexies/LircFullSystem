@@ -1,5 +1,7 @@
+// A collection is an array of objects with a stable id.
+// null links clearly mark access that has not been configured yet.
 // TODO: paste your Google Form link here. It is used by the notice on the left side.
-export const ACCESS_FORM_URL = "#";
+export const ACCESS_FORM_URL = null;
 
 // Logos live in /public/Home-Page-IMG, so they are used by URL (no import needed).
 // The cards fit any image size without cropping or stretching.
@@ -13,7 +15,7 @@ export const DIGITAL_SOURCES = [
     description:
       "A digital textbook platform. Read your assigned e-books online or in the Bookshelf app, with tools for highlighting, taking notes and searching inside a title.",
     highlights: ["E-textbooks", "Notes and highlights", "Offline reading"],
-    url: "#",
+    url: null,
     image: "/Home-Page-IMG/VitalSource.png",
     imageWidth: 210,
     imageHeight: 118,
@@ -25,7 +27,7 @@ export const DIGITAL_SOURCES = [
     description:
       "A collection of research journals published by Philippine colleges, universities and academic associations, covering education, business, health, engineering, the humanities and more.",
     highlights: ["Local research", "Journals A to Z", "Many disciplines"],
-    url: "#",
+    url: null,
     image: "/Home-Page-IMG/PEG.png",
     imageWidth: 115,
     imageHeight: 150,
@@ -37,7 +39,7 @@ export const DIGITAL_SOURCES = [
     description:
       "McGraw Hill's online science reference, built on its Encyclopedia of Science & Technology. Look up articles, definitions, news and biographies across all major scientific disciplines.",
     highlights: ["Encyclopedia articles", "Science dictionary", "Scientist biographies"],
-    url: "#",
+    url: null,
     image: "/Home-Page-IMG/AccessScience.png",
     imageWidth: 2401,
     imageHeight: 601,

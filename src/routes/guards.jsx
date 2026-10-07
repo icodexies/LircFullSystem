@@ -1,15 +1,46 @@
-import { Navigate, Outlet } from "react-router-dom";
+import { useState } from "react";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
 import { hasStoredAuthSession } from "../context/authSessionHint";
-import { useLocation } from "react-router-dom";
 
 const Splash = () => (
-  <div className="flex min-h-screen items-center justify-center bg-[#F7F4FF] text-sm font-semibold text-[#0B1330]">
+  <div role="status" className="flex min-h-screen items-center justify-center bg-[#F7F4FF] text-sm font-semibold text-[#0B1330]">
     Loading...
   </div>
 );
 
-/** Logged-out only (landing page, register). Logged-in users are sent to /home. */
+function ProfileUnavailable({ message, logout }) {
+  const [error, setError] = useState("");
+  const [loggingOut, setLoggingOut] = useState(false);
+
+  const handleLogout = async () => {
+    if (loggingOut) return;
+    setLoggingOut(true);
+    try {
+      await logout();
+    } catch {
+      setError("Couldn't log out. Please try again.");
+    } finally {
+      setLoggingOut(false);
+    }
+  };
+
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-[#F7F4FF] px-6 text-[#0B1330]">
+      <div className="max-w-sm text-center">
+        <p role="alert" className="text-sm font-semibold">{error || message}</p>
+        <div className="mt-4 flex justify-center gap-4 text-sm underline">
+          <button type="button" onClick={() => window.location.reload()}>Try again</button>
+          <button type="button" disabled={loggingOut} onClick={handleLogout}>
+            {loggingOut ? "Logging out..." : "Logout"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** Logged-out only. Logged-in users are sent to /home. */
 export function PublicOnlyRoute() {
   const { user, loading } = useAuth();
   const location = useLocation();
@@ -17,14 +48,17 @@ export function PublicOnlyRoute() {
   return user ? <Navigate to="/home" replace /> : <Outlet />;
 }
 
-/**
- * Logged-in only. Pass allowedRoles (e.g. ACCESS.staff) to restrict by role.
- * `replace` overwrites the history entry so the back button can't return to a blocked page.
- */
+/** UI access checks. Database policies must enforce these permissions too. */
 export function PrivateRoute({ allowedRoles = null }) {
-  const { user, role, loading } = useAuth();
+  const { user, profile, role, loading, error, logout } = useAuth();
   if (loading) return <Splash />;
   if (!user) return <Navigate to="/" replace />;
+  if (!profile) {
+    return <ProfileUnavailable
+      message={error || "No library profile is linked to this account. Please contact the LIRC library office."}
+      logout={logout}
+    />;
+  }
   if (allowedRoles && !allowedRoles.includes(role)) {
     return <Navigate to="/unauthorized" replace />;
   }

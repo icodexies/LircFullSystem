@@ -39,6 +39,7 @@ function ImageSlot({ image, ratio = "1 / 1", fit = "cover", zoom = 1, bg = "bg-s
             height={image.height}
             alt={image.alt}
             loading="lazy"
+            decoding="async"
             style={{
               objectPosition: image.position || "center",
               transform: zoom !== 1 ? `scale(${zoom})` : undefined,
@@ -174,10 +175,10 @@ function Skyline() {
 /* -------------------------------------------------------------------------- */
 
 function About() {
-  const { historyTitle, paragraphs, closing } = ABOUT;
+  const { title, historyTitle, paragraphs, closing } = ABOUT;
 
   return (
-    <section id="about" aria-labelledby="about-title" className="relative w-full overflow-hidden bg-white">
+    <section aria-labelledby="about-title" className="relative w-full overflow-hidden bg-white">
       {/* Navy band with the big title */}
       <div
         className="relative bg-[#0B1330] pt-16 text-center sm:pt-20"
@@ -190,7 +191,7 @@ function About() {
             id="about-title"
             className="relative font-[Fraunces] text-[clamp(0.5rem,11vw,8rem)] font-light leading-none tracking-tight text-white"
           >
-            <span className="mr-1 text-[1.2em] font-light italic">A</span>bout Us
+            <span className="mr-1 text-[1.2em] font-light italic">{title[0]}</span>{title.slice(1)}
           </h2>
         </Reveal>
       </div>

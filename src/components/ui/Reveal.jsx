@@ -1,6 +1,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { REVEAL_EASINGS } from "./revealEasings";
+import { useReducedMotion } from "../../hooks/useReducedMotion";
 
 /* -------------------------------------------------------------------------- */
 /*                              Reveal Component                             */
@@ -17,18 +18,16 @@ function Reveal({
   easing = REVEAL_EASINGS.smooth,
   className = "",
 }) {
+  const reducedMotion = useReducedMotion();
   const [isVisible, setIsVisible] = useState(
-    () => window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    () => !("IntersectionObserver" in window)
   );
   const ref = useRef(null);
 
   useEffect(() => {
     const element = ref.current;
 
-    if (!element) return;
-
-    const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
-    if (motionPreference.matches) return;
+    if (!element || reducedMotion || !("IntersectionObserver" in window)) return;
 
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -51,7 +50,9 @@ function Reveal({
     observer.observe(element);
 
     return () => observer.disconnect();
-  }, [threshold, once]);
+  }, [threshold, once, reducedMotion]);
+
+  const visible = isVisible || reducedMotion;
 
   /* ------------------------------------------------------------------------ */
   /*                              Directions                                  */
@@ -79,21 +80,21 @@ function Reveal({
     <div ref={ref} className={className}>
       <div
         style={{
-          transform: isVisible
+          transform: visible
             ? "translate3d(0, 0, 0) scale(1)"
             : transforms[direction] || transforms.up,
 
-          opacity: isVisible ? 1 : 0,
+          opacity: visible ? 1 : 0,
 
           filter:
-            direction === "blur" && !isVisible
-              ? "blur(8px)"
-              : "blur(0)",
+            direction === "blur"
+              ? visible ? "blur(0)" : "blur(8px)"
+              : undefined,
 
           transitionProperty: "transform, opacity, filter",
-          transitionDuration: `${duration}ms`,
-          transitionTimingFunction: easing,
-          transitionDelay: isVisible ? `${delay}ms` : "0ms",
+          transitionDuration: reducedMotion ? "0ms" : `${duration}ms`,
+          transitionTimingFunction: REVEAL_EASINGS[easing] ?? easing,
+          transitionDelay: visible && !reducedMotion ? `${delay}ms` : "0ms",
 
         }}
       >
