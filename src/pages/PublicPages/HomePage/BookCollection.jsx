@@ -33,7 +33,7 @@ function Cover({ book, className = "" }) {
   const base = `aspect-[2/3] rounded-md shadow-lg shadow-slate-900/25 ${className}`;
 
   if (book.cover) {
-    return <img src={book.cover} alt={`${book.title} cover`} className={`${base} object-cover`} />;
+    return <img src={book.cover} width="600" height="900" alt={`${book.title} cover`} className={`${base} object-cover`} />;
   }
 
   return (

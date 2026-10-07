@@ -1,6 +1,5 @@
-import { createContext, useCallback, useContext, useMemo, useState } from "react";
-
-const LoginContext = createContext(null);
+import { useCallback, useMemo, useState } from "react";
+import { LoginContext } from "./loginContextStore";
 
 export function LoginProvider({ children }) {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
@@ -13,13 +12,9 @@ export function LoginProvider({ children }) {
     [isLoginOpen, openLogin, closeLogin]
   );
 
-  return <LoginContext.Provider 
-            value={value}>{children}
-         </LoginContext.Provider>;
-}
-
-export function useLogin() {
-  const ctx = useContext(LoginContext);
-  if (!ctx) throw new Error("useLogin must be used inside <LoginProvider>");
-  return ctx;
+  return (
+    <LoginContext.Provider value={value}>
+      {children}
+    </LoginContext.Provider>
+  );
 }

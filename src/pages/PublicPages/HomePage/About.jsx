@@ -33,6 +33,10 @@ function ImageSlot({ image, ratio = "1 / 1", fit = "cover", zoom = 1, bg = "bg-s
         <>
           <img
             src={image.src}
+            srcSet={image.srcSet}
+            sizes={image.sizes}
+            width={image.width}
+            height={image.height}
             alt={image.alt}
             loading="lazy"
             style={{
@@ -58,18 +62,6 @@ function ImageSlot({ image, ratio = "1 / 1", fit = "cover", zoom = 1, bg = "bg-s
         </div>
       )}
     </div>
-  );
-}
-
-// Faint line drawing of an open book, in the spot where the reference has a statue.
-function BookArt() {
-  return (
-    <svg viewBox="0 0 160 120" className="h-auto w-full max-w-[9rem]" fill="none" stroke="#0B1330" strokeOpacity="0.4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M80 30C60 18 30 16 10 24V98C30 90 60 92 80 104Z" />
-      <path d="M80 30C100 18 130 16 150 24V98C130 90 100 92 80 104Z" />
-      <path d="M24 42C40 38 56 40 68 46M24 56C40 52 56 54 68 60M24 70C40 66 56 68 68 74" />
-      <path d="M92 46C104 40 120 38 136 42M92 60C104 54 120 52 136 56M92 74C104 68 120 66 136 70" />
-    </svg>
   );
 }
 
@@ -182,7 +174,7 @@ function Skyline() {
 /* -------------------------------------------------------------------------- */
 
 function About() {
-  const { title, historyTitle, paragraphs, closing } = ABOUT;
+  const { historyTitle, paragraphs, closing } = ABOUT;
 
   return (
     <section id="about" aria-labelledby="about-title" className="relative w-full overflow-hidden bg-white">

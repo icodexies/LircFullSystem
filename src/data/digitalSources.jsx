@@ -15,6 +15,8 @@ export const DIGITAL_SOURCES = [
     highlights: ["E-textbooks", "Notes and highlights", "Offline reading"],
     url: "#",
     image: "/Home-Page-IMG/VitalSource.png",
+    imageWidth: 210,
+    imageHeight: 118,
   },
   {
     id: "philippine-e-journals",
@@ -25,6 +27,8 @@ export const DIGITAL_SOURCES = [
     highlights: ["Local research", "Journals A to Z", "Many disciplines"],
     url: "#",
     image: "/Home-Page-IMG/PEG.png",
+    imageWidth: 115,
+    imageHeight: 150,
   },
   {
     id: "accessscience",
@@ -35,5 +39,7 @@ export const DIGITAL_SOURCES = [
     highlights: ["Encyclopedia articles", "Science dictionary", "Scientist biographies"],
     url: "#",
     image: "/Home-Page-IMG/AccessScience.png",
+    imageWidth: 2401,
+    imageHeight: 601,
   },
 ];

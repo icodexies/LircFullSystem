@@ -1,20 +1,25 @@
+import { lazy, Suspense } from "react";
 import { HeroBG, LeftSide, RightSide } from "./HeroSection";
-import BookCollection from "./BookCollection";
-import DigitalSources from "./DigitalSources";
-import About from "./About";
-import LoginModal from "../../../components/modals/loginModal";
-import { useLogin } from "../../../context/loginContext";
+import DeferredRender from "../../../components/ui/DeferredRender";
+import { useLogin } from "../../../context/useLogin";
+import { useAuth } from "../../../context/useAuth";
 import { useHero } from "../../../hooks/useHero";
+import { useNavigate } from "react-router-dom";
+
+const BookCollection = lazy(() => import("./BookCollection"));
+const DigitalSources = lazy(() => import("./DigitalSources"));
+const About = lazy(() => import("./About"));
+const LoginModal = lazy(() => import("../../../components/modals/loginModal"));
 
 const pad = (n) => String(n + 1).padStart(2, "0");
 
 function Home() {
   const { isLoginOpen, closeLogin } = useLogin();
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
   const handleLogin = async ({ email, password }) => {
-    const { supabase } = await import("../../../supabaseClient");
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) throw error; // shown inside the modal
+    await login({ email, password });
     closeLogin();
   };
 
@@ -65,27 +70,39 @@ function Home() {
         </div>
       </section>
 
-      {/* Book Collection Section */}
-      <BookCollection />
+      <DeferredRender reserveClassName="min-h-[48rem] bg-white lg:min-h-[54rem]">
+        <Suspense fallback={<div aria-hidden="true" className="min-h-[48rem] bg-white lg:min-h-[54rem]" />}>
+          <BookCollection />
+        </Suspense>
+      </DeferredRender>
 
-      {/* Digital Sources Section */}
-      <DigitalSources />
+      <DeferredRender reserveClassName="min-h-[54rem] bg-[#0B1330] lg:min-h-[36rem]">
+        <Suspense fallback={<div aria-hidden="true" className="min-h-[54rem] bg-[#0B1330] lg:min-h-[36rem]" />}>
+          <DigitalSources />
+        </Suspense>
+      </DeferredRender>
 
-      {/* About Section */}
-      <About />
+      <DeferredRender reserveClassName="min-h-[120rem] bg-white lg:min-h-[110rem]" rootMargin="900px 0px">
+        <Suspense fallback={<div aria-hidden="true" className="min-h-[120rem] bg-white lg:min-h-[110rem]" />}>
+          <About />
+        </Suspense>
+      </DeferredRender>
 
-      {/* Login Modal */}
-      <LoginModal
-        open={isLoginOpen}
-        onClose={closeLogin}
-        onSubmit={handleLogin}
-        onRegister={() => {}}
-        onForgot={() => {}}
-        brand="LIRC"
-        avatarSrc="/Login/Mascot.png"
-        logoLeftSrc="/Login/LIRC_Logo.png"
-        logoRightSrc="/Login/CCC_Logo.png"
-      />
+      {isLoginOpen && (
+        <Suspense fallback={null}>
+          <LoginModal
+            open={isLoginOpen}
+            onClose={closeLogin}
+            onSubmit={handleLogin}
+            onRegister={() => { closeLogin(); navigate("/register"); }}
+            onForgot={() => {}}
+            brand="LIRC"
+            avatarSrc="/Login/Mascot.png"
+            logoLeftSrc="/Login/LIRC_Logo.webp"
+            logoRightSrc="/Login/CCC_Logo.png"
+          />
+        </Suspense>
+      )}
     </>
   );
 }

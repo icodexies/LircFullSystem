@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import Reveal, {REVEAL_EASINGS} from "../ui/Reveal";
+import Reveal from "../ui/Reveal";
+import { REVEAL_EASINGS } from "../ui/revealEasings";
 
 const EXIT_MS = 350; // keep in sync with the exit transitions below
 
@@ -39,6 +40,8 @@ function LoginModal({
 
   useEffect(() => {
     if (open) {
+      // Keep the modal mounted through its exit animation before allowing re-entry.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setRender(true);
       setClosing(false);
       const raf = requestAnimationFrame(() => setShown(true));
@@ -123,6 +126,8 @@ function LoginModal({
           {avatarSrc && (
             <img
               src={avatarSrc}
+              width="120"
+              height="90"
               alt=""
               className="h-full w-full object-cover object-top"
             />
@@ -146,10 +151,10 @@ function LoginModal({
           {/* Logos */}
           <div className="mb-5 flex items-center justify-center gap-4">
             {logoLeftSrc && (
-              <img src={logoLeftSrc} alt="" className="h-14 w-14 object-contain" />
+              <img src={logoLeftSrc} width="256" height="256" alt="" className="h-14 w-14 object-contain" />
             )}
             {logoRightSrc && (
-              <img src={logoRightSrc} alt="" className="h-14 w-14 object-contain" />
+              <img src={logoRightSrc} width="105" height="100" alt="" className="h-14 w-14 object-contain" />
             )}
           </div>
 

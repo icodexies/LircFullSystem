@@ -6,7 +6,11 @@ export const slides = [
     description:
       "Explore thousands of titles across every course and subject. Search the catalog, check availability, and reserve what you need before you even walk in.",
     background: "/BG-Image/BG1.webp",
-    thumbnail: "/Thumbnails/thumbnail1.webp",
+    thumbnail: "/Thumbnails/thumbnail1-480.webp",
+    thumbnailSrcSet: "/Thumbnails/thumbnail1-320.webp 320w, /Thumbnails/thumbnail1-480.webp 480w",
+    thumbnailSizes: "(max-width: 639px) 112px, 240px",
+    thumbnailWidth: 480,
+    thumbnailHeight: 586,
     cta: "Browse Catalog",
     to: "/catalog",
     secondary: {
@@ -26,7 +30,11 @@ export const slides = [
     description:
       "Comfortable reading halls and group study areas designed for focus. Find a spot that fits the way you learn, whether solo or with classmates.",
     background: "/BG-Image/BG2.webp",
-    thumbnail: "/Thumbnails/thumbnail2.webp",
+    thumbnail: "/Thumbnails/thumbnail2-480.webp",
+    thumbnailSrcSet: "/Thumbnails/thumbnail2-320.webp 320w, /Thumbnails/thumbnail2-480.webp 480w",
+    thumbnailSizes: "(max-width: 639px) 112px, 240px",
+    thumbnailWidth: 480,
+    thumbnailHeight: 640,
     cta: "Visit the Library",
     to: "/about",
     secondary: {
@@ -46,7 +54,11 @@ export const slides = [
     description:
       "Access e-books, journals, and online databases from anywhere on campus or at home. Your research doesn't stop when the doors close.",
     background: "/BG-Image/BG3.webp",
-    thumbnail: "/Thumbnails/thumbnail3.webp",
+    thumbnail: "/Thumbnails/thumbnail3-480.webp",
+    thumbnailSrcSet: "/Thumbnails/thumbnail3-320.webp 320w, /Thumbnails/thumbnail3-480.webp 480w",
+    thumbnailSizes: "(max-width: 639px) 112px, 240px",
+    thumbnailWidth: 480,
+    thumbnailHeight: 312,
     cta: "Access E-Books",
     to: "/catalog",
     secondary: {
@@ -66,7 +78,11 @@ export const slides = [
     description:
       "Browse student theses and research outputs from City College of Calamba. A great starting point for your own study and references.",
     background: "/BG-Image/BG4.webp",
-    thumbnail: "/Thumbnails/thumbnail4.webp",
+    thumbnail: "/Thumbnails/thumbnail4-480.webp",
+    thumbnailSrcSet: "/Thumbnails/thumbnail4-320.webp 320w, /Thumbnails/thumbnail4-480.webp 480w",
+    thumbnailSizes: "(max-width: 639px) 112px, 240px",
+    thumbnailWidth: 480,
+    thumbnailHeight: 720,
     cta: "Explore Research",
     to: "/catalog",
     secondary: {

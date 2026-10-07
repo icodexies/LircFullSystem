@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import NavLinks from "../ui/NavLinks";
 import Reveal from "../ui/Reveal";
-import { useLogin } from "../../context/loginContext";
+import BrandMark from "../ui/BrandMark";
+import { useLogin } from "../../context/useLogin";
 
 
 // The ids of the sections on your home page, in the order they appear.
@@ -46,14 +47,13 @@ function NavBar() {
   const location = useLocation();
   const navigate = useNavigate();
   const { pathname } = location;
-const { openLogin } = useLogin();
+  const { openLogin } = useLogin();
   // "home" | "collection" | "about" | null (null = on another page, like /login)
   const [active, setActive] = useState("home");
 
   /* ---------- Highlight the link of the section you're looking at ---------- */
   useEffect(() => {
     if (pathname !== "/") {
-      setActive(null);
       return;
     }
 
@@ -137,13 +137,7 @@ const { openLogin } = useLogin();
             }}
             className="group flex items-center gap-2.5 pl-0.5 pr-2"
           >
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white ring-2 ring-[#0B1330]/15 transition-all duration-300 group-hover:scale-105 group-hover:ring-sky-400">
-              <img
-                src="/LIRC_LOGO.svg"
-                alt="LIRC Logo"
-                className="h-full w-full p-0.5 transition-transform duration-300 group-hover:rotate-6"
-              />
-            </div>
+            <BrandMark className="h-8 w-8 bg-white ring-2 ring-[#0B1330]/15 transition-all duration-300 group-hover:scale-105 group-hover:ring-sky-400" imageClassName="transition-transform duration-300 group-hover:rotate-6" />
 
             {/* Very small screens: short name */}
             <span className="font-['Fraunces',serif] text-base font-bold tracking-tight text-[#0B1330] sm:hidden">

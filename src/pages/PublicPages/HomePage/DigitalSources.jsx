@@ -21,9 +21,6 @@ const PATHS = {
   up: "M6 15l6-6l6 6",
   down: "M6 9l6 6l6-6",
   info: "M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0 M12 9h.01 M11 12h1v4h1",
-  book: "M3 19a9 9 0 0 1 9 0a9 9 0 0 1 9 0 M3 6a9 9 0 0 1 9 0a9 9 0 0 1 9 0 M3 6l0 13 M12 6l0 13 M21 6l0 13",
-  atom: "M12 12v.01 M19.071 4.929c-1.562 -1.562 -6 .337 -9.9 4.243c-3.905 3.905 -5.804 8.337 -4.242 9.9c1.562 1.561 6 -.338 9.9 -4.244c3.905 -3.905 5.804 -8.337 4.242 -9.9 M4.929 4.929c-1.562 1.562 .337 6 4.243 9.9c3.905 3.905 8.337 5.804 9.9 4.242c1.561 -1.562 -.338 -6 -4.244 -9.9c-3.905 -3.905 -8.337 -5.804 -9.9 -4.242",
-  journal: "M14 3v4a1 1 0 0 0 1 1h4 M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z M9 9l1 0 M9 13l6 0 M9 17l6 0",
 };
 
 /* -------------------------------------------------------------------------- */
@@ -101,6 +98,8 @@ function SourceImage({ source, compact = false }) {
     return (
       <img
         src={source.image}
+        width={source.imageWidth}
+        height={source.imageHeight}
         alt={source.name}
         loading="lazy"
         className="absolute inset-0 m-auto max-h-full max-w-full object-contain"
@@ -278,36 +277,6 @@ function Rings() {
       ))}
     </svg>
   );
-}
-
-function Dots() {
-  return (
-    <svg viewBox="0 0 108 72" className="absolute right-6 top-8 hidden h-16 w-24 sm:block lg:right-10 lg:h-20 lg:w-28">
-      {Array.from({ length: 24 }, (_, k) => (
-        <circle key={k} cx={6 + (k % 6) * 19} cy={6 + Math.floor(k / 6) * 20} r="2.5" fill="#fff" fillOpacity="0.18" />
-      ))}
-    </svg>
-  );
-}
-
-// Small outline icons for the three kinds of sources (book, journal, science),
-// floating slowly in the empty space at the top of the section.
-function FloatingIcons() {
-  const items = [
-    { d: PATHS.book, pos: "left-[26%] top-10", delay: "0s", dur: "9s" },
-    { d: PATHS.atom, pos: "left-[58%] top-14", delay: "-3s", dur: "11s" },
-    { d: PATHS.journal, pos: "right-[22%] top-8", delay: "-6s", dur: "10s" },
-  ];
-
-  return items.map((it) => (
-    <span
-      key={it.d}
-      className={`absolute hidden text-white/25 md:block ${it.pos} animate-[ds-float_var(--dur)_ease-in-out_infinite] motion-reduce:animate-none`}
-      style={{ "--dur": it.dur, animationDelay: it.delay }}
-    >
-      <Icon d={it.d} className="h-12 w-12" strokeWidth={1.25} />
-    </span>
-  ));
 }
 
 function BackgroundArt() {

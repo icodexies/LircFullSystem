@@ -1,16 +1,6 @@
 
 import { useEffect, useRef, useState } from "react";
-
-/* -------------------------------------------------------------------------- */
-/*                                Easing presets                              */
-/* -------------------------------------------------------------------------- */
-
-export const REVEAL_EASINGS = {
-  smooth: "cubic-bezier(0.22, 1, 0.36, 1)",
-  soft: "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
-  bounce: "cubic-bezier(0.34, 1.56, 0.64, 1)",
-  linear: "linear",
-};
+import { REVEAL_EASINGS } from "./revealEasings";
 
 /* -------------------------------------------------------------------------- */
 /*                              Reveal Component                             */
@@ -27,7 +17,9 @@ function Reveal({
   easing = REVEAL_EASINGS.smooth,
   className = "",
 }) {
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(
+    () => window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  );
   const ref = useRef(null);
 
   useEffect(() => {
@@ -35,14 +27,8 @@ function Reveal({
 
     if (!element) return;
 
-    const prefersReducedMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    ).matches;
-
-    if (prefersReducedMotion) {
-      setIsVisible(true);
-      return;
-    }
+    const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
+    if (motionPreference.matches) return;
 
     const observer = new IntersectionObserver(
       ([entry]) => {

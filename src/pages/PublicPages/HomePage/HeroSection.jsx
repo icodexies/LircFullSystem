@@ -9,16 +9,33 @@ export function HeroBG({ slides = [], active }) {
   return (
     <>
       {slides.map((s, i) => (
-        <div
-          key={s.id}
-          aria-hidden="true"
-          className={`absolute inset-0 bg-cover bg-center transition-all duration-1000 ease-out ${
-            i === active ? "scale-100 opacity-100" : "scale-110 opacity-0"
-          }`}
-          style={{
-            backgroundImage: `url(${s.background})`,
-          }}
-        />
+        i === 0 ? (
+          <img
+            key={s.id}
+            src="/BG-Image/BG1-1200.webp"
+            srcSet="/BG-Image/BG1-480.webp 480w, /BG-Image/BG1-800.webp 800w, /BG-Image/BG1-1200.webp 1200w"
+            sizes="100vw"
+            width="1200"
+            height="900"
+            alt=""
+            aria-hidden="true"
+            fetchPriority="high"
+            loading="eager"
+            decoding="async"
+            className={`absolute inset-0 h-full w-full object-cover object-center transition-all duration-1000 ease-out ${
+              i === active ? "scale-100 opacity-100" : "scale-110 opacity-0"
+            }`}
+          />
+        ) : (
+          <div
+            key={s.id}
+            aria-hidden="true"
+            className={`absolute inset-0 bg-cover bg-center transition-all duration-1000 ease-out ${
+              i === active ? "scale-100 opacity-100" : "scale-110 opacity-0"
+            }`}
+            style={{ backgroundImage: `url(${s.background})` }}
+          />
+        )
       ))}
     </>
   );
@@ -169,7 +186,13 @@ export function RightSide({ slides = [], active, next, prev, setActive, pad }) {
               >
                 <img
                   src={s.thumbnail}
+                  srcSet={s.thumbnailSrcSet}
+                  sizes={s.thumbnailSizes}
+                  width={s.thumbnailWidth}
+                  height={s.thumbnailHeight}
                   alt=""
+                  loading="lazy"
+                  decoding="async"
                   className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />
 
