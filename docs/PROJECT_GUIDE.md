@@ -1,6 +1,6 @@
 # How this project fits together
 
-The project uses React and Vite for the interface and Supabase for authentication and server-side registration. The public library collections and member dashboard are sample data. No library tables or production capacity have been verified yet.
+The project uses React and Vite for the interface and Supabase for authentication and server-side registration. The public library collections are sample data; signed-in pages contain only their titles. No library tables or production capacity have been verified yet. See [the member layout guide](MEMBER_LAYOUT.md) for its page folders and role permissions.
 
 ## A simple responsibility for each folder
 
@@ -18,7 +18,7 @@ Contexts and hooks run in the visitor's browser; they are not the backend. A rou
 
 ## One rule for data
 
-Use an **array of objects for a collection**. Give each object a stable `id`, and use the same fields for every item of the same kind. Books use one `BOOKS` array and a `format` field (`physical` or `ebook`), instead of separate nested lists. Digital sources, hero slides, and member sample books follow the same collection pattern.
+Use an **array of objects for a collection**. Give each object a stable `id`, and use the same fields for every item of the same kind. Books use one `BOOKS` array and a `format` field (`physical` or `ebook`), instead of separate nested lists. Digital sources, hero slides, and member page definitions follow the same collection pattern.
 
 ```js
 const books = [
@@ -61,11 +61,11 @@ Twenty thousand registered users is different from twenty thousand people making
 7. Use an email service suited to the school's volume. The current Gmail SMTP workflow is a prototype; configure delivery/retry handling and test failure recovery before production. Do not load-test real users or send bulk test mail.
 8. Replace the generated-password email workflow with a reviewed account invitation/password-setup flow before production. Confirm allowed redirect URLs and recovery behavior, then test with dedicated staging accounts.
 
-The frontend denies member access if a profile is missing or cannot be loaded and offers retry/logout controls. A linked profile can enter the member area; staff/admin screens additionally require their configured role. Roles come from the profile, rather than a browser-supplied fallback.
+The frontend denies member access if a profile is missing or cannot be loaded and offers retry/logout controls. A linked profile also needs one of the five supported roles to enter the member area. Each page checks its allowed roles, using the same definitions as the sidebar. Roles come from the profile, rather than a browser-supplied fallback.
 
 ## Features still waiting for real data
 
-Borrowing, reservations, online book files, thesis submission, password recovery and newsletter subscriptions are unfinished. Their controls must not claim that a request was saved. Configure digital-resource links and the access-request form in `src/data/digitalSources.js`, and real contact links in `src/data/contactLinks.js`. Member statistics and reading suggestions remain samples; the search filters only those sample titles.
+Borrowing, reservations, online book files, thesis submission, password recovery and newsletter subscriptions are unfinished. Their controls must not claim that a request was saved. Configure digital-resource links and the access-request form in `src/data/digitalSources.js`, and real contact links in `src/data/contactLinks.js`. Signed-in pages are title-only placeholders; page interactions and their backend permissions will be added later.
 
 ## Deployment and verification
 

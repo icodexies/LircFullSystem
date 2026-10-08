@@ -4,14 +4,25 @@ import { LoginProvider } from "./context/loginContext";
 import { AuthProvider } from "./context/AuthContext";
 import { PublicOnlyRoute, PrivateRoute } from "./routes/guards";
 import { ACCESS } from "./routes/roles";
-
+import { MEMBER_PAGES } from "./routes/memberPages";
 import PublicLayout from "./layouts/PublicLayout";
-import MemberLayout from "./layouts/MemberLayout";
 import Home from "./pages/PublicPages/HomePage/Home";
 
 const Register = lazy(() => import("./pages/PublicPages/RegisterPage/Register"));
-const MemberHome = lazy(() => import("./pages/PrivatePages/MemberHome"));
+const MemberLayout = lazy(() => import("./layouts/MemberLayout"));
 const Unauthorized = lazy(() => import("./pages/Unauthorized"));
+
+const memberScreens = {
+  dashboard: lazy(() => import("./pages/PrivatePages/Dashboard/Dashboard")),
+  opac: lazy(() => import("./pages/PrivatePages/OPAC/OPAC")),
+  "path-finder": lazy(() => import("./pages/PrivatePages/PathFinder/PathFinder")),
+  statistics: lazy(() => import("./pages/PrivatePages/Statistics/Statistics")),
+  attendance: lazy(() => import("./pages/PrivatePages/Attendance/Attendance")),
+  "barcode-generator": lazy(() => import("./pages/PrivatePages/BarcodeGenerator/BarcodeGenerator")),
+  "book-borrow": lazy(() => import("./pages/PrivatePages/BookBorrow/BookBorrow")),
+  inventory: lazy(() => import("./pages/PrivatePages/Inventory/Inventory")),
+  "adding-books": lazy(() => import("./pages/PrivatePages/AddingBooks/AddingBooks")),
+};
 
 function PageLoading() {
   return (
@@ -21,14 +32,13 @@ function PageLoading() {
   );
 }
 
-function App() {
+export default function App() {
   return (
     <LoginProvider>
       <AuthProvider>
         <BrowserRouter>
           <Suspense fallback={<PageLoading />}>
             <Routes>
-              {/* Logged-out only: logged-in users are redirected to /home */}
               <Route element={<PublicOnlyRoute />}>
                 <Route element={<PublicLayout />}>
                   <Route path="/" element={<Home />} />
@@ -36,21 +46,20 @@ function App() {
                 <Route path="/register" element={<Register />} />
               </Route>
 
-              {/* Open to everyone */}
               <Route path="/unauthorized" element={<Unauthorized />} />
 
-              {/* Any logged-in user */}
               <Route element={<PrivateRoute allowedRoles={ACCESS.member} />}>
                 <Route element={<MemberLayout />}>
-                  <Route path="/home" element={<MemberHome />} />
-                  {/* <Route path="/profile" element={<Profile />} /> */}
-                </Route>
-              </Route>
-
-              {/* Role-restricted: add pages here later */}
-              <Route element={<PrivateRoute allowedRoles={ACCESS.staff} />}>
-                <Route element={<MemberLayout />}>
-                  {/* <Route path="/manage-books" element={<ManageBooks />} /> */}
+                  {/* Preserve the existing post-login URL. */}
+                  <Route path="/home" element={<Navigate to="/dashboard" replace />} />
+                  {MEMBER_PAGES.map((page) => {
+                    const Screen = memberScreens[page.id];
+                    return (
+                      <Route key={page.id} element={<PrivateRoute allowedRoles={page.allowedRoles} />}>
+                        <Route path={page.path} element={<Screen />} />
+                      </Route>
+                    );
+                  })}
                 </Route>
               </Route>
 
@@ -62,5 +71,3 @@ function App() {
     </LoginProvider>
   );
 }
-
-export default App;

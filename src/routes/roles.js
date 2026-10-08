@@ -5,13 +5,22 @@
 export const ROLES = {
   STUDENT: "student",
   FACULTY: "faculty",
+  STAFF: "staff",
   LIBRARIAN: "librarian",
   ADMIN: "admin",
 };
 
-// null = any logged-in user
 export const ACCESS = {
-  member: null,
-  staff: [ROLES.LIBRARIAN, ROLES.ADMIN],
+  member: [ROLES.STUDENT, ROLES.FACULTY, ROLES.STAFF, ROLES.LIBRARIAN, ROLES.ADMIN],
+  staff: [ROLES.STAFF, ROLES.LIBRARIAN, ROLES.ADMIN],
+  books: [ROLES.LIBRARIAN, ROLES.ADMIN],
   admin: [ROLES.ADMIN],
+};
+
+export const ROLE_LABELS = {
+  [ROLES.STUDENT]: "Student",
+  [ROLES.FACULTY]: "Faculty",
+  [ROLES.STAFF]: "Staff",
+  [ROLES.LIBRARIAN]: "Librarian",
+  [ROLES.ADMIN]: "Admin",
 };

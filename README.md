@@ -22,6 +22,7 @@ The registration function also needs `GMAIL_USER`, `GMAIL_APP_PASSWORD`, and `SI
 
 - `npm run dev` starts the development server.
 - `npm run lint` checks the source files.
+- `npm test` checks the role-based page permissions.
 - `npm run build` creates the production build in `dist/`.
 - `npm run preview` serves the production build locally.
 
@@ -39,6 +40,6 @@ The registration function also needs `GMAIL_USER`, `GMAIL_APP_PASSWORD`, and `SI
 
 Keep secrets in environment configuration, keep page-specific UI near its page, and promote UI to `src/components/` when it is shared across screens.
 
-The collections and member statistics are sample data. Registration and profile access require the `usersData` schema described in the guide. A passing build does not verify a live database or capacity for 20,000 users.
+The public collections are sample data. Signed-in pages currently contain only their H1 title. See [member layout and page permissions](docs/MEMBER_LAYOUT.md) for the role rules and page folders. Registration and profile access require the `usersData` schema described in the guide. A passing build does not verify a live database or capacity for 20,000 users.
 
 Production hosting must serve `dist/` and fall back to `index.html` for app routes. The local preview command is not a production server.

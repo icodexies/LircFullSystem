@@ -9,6 +9,11 @@ body {
   min-height: 100vh;
 }
 
+/* Keep the page still while the mobile navigation drawer is open. */
+body:has(#member-navigation[open]) {
+  overflow: hidden;
+}
+
 /* Keep the same design while respecting the device's motion preference. */
 @media (prefers-reduced-motion: reduce) {
   *,
