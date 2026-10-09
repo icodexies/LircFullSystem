@@ -12,7 +12,7 @@ export default function MemberHeader({ pageTitle, name, role, onOpenMenu, onLogo
             <SidebarIcon name="menu" />
           </button>
           <div className="min-w-0">
-            <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-slate-500">Library workspace</p>
+            <p className="truncate text-[10px] font-medium uppercase tracking-[0.18em] text-slate-500">Library workspace</p>
             <p className="mt-1 truncate text-sm font-semibold text-[#0B1330]">{pageTitle}</p>
           </div>
         </div>

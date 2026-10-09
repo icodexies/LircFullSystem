@@ -9,8 +9,14 @@ body {
   min-height: 100vh;
 }
 
+/* A long member page may have a scrollbar even at a 320px viewport. */
+body:has(#member-content) {
+  min-width: 0;
+}
+
 /* Keep the page still while the mobile navigation drawer is open. */
-body:has(#member-navigation[open]) {
+body:has(#member-navigation[open]),
+body:has(#opac-dialog[open]) {
   overflow: hidden;
 }
 

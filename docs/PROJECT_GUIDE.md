@@ -1,6 +1,6 @@
 # How this project fits together
 
-The project uses React and Vite for the interface and Supabase for authentication and server-side registration. The public library collections are sample data; signed-in pages contain only their titles. No library tables or production capacity have been verified yet. See [the member layout guide](MEMBER_LAYOUT.md) for its page folders and role permissions.
+The project uses React and Vite for the interface and Supabase for authentication and server-side registration. The public library collections are sample data. The OPAC reads your catalog with server-side pagination and restricted editing. See [the OPAC guide](OPAC.md) for its database migration, and [the member layout guide](MEMBER_LAYOUT.md) for page folders and role permissions. Bounded catalog reads were verified against the configured Supabase project; hosted write policies and production capacity were not verified.
 
 ## A simple responsibility for each folder
 
@@ -35,7 +35,7 @@ Pure data, services and hooks use `.js`; files that render JSX use `.jsx`. Colle
 
 ## When to add a service
 
-The authentication service already makes real backend calls, so it belongs in `src/services/authService.js`. Do not add empty services for static collections. When a books table exists, add a small `bookService.js` with focused functions such as `getBooks({ page, search, format })`. A hook can call that service, hold loading/error state, and supply results to the page. Keep Supabase calls out of card components.
+Authentication calls live in `src/services/authService.js`, and real catalog calls live in `src/services/bookService.js`. Do not add empty services for static collections. A hook calls a service, holds loading/error state, and supplies results to the page. Keep Supabase calls out of card components.
 
 Do not download an entire future catalog and filter it in the browser. Ask Supabase for one page, select the needed fields, and filter on the server. Add indexes for the searches and filters you actually use. Only add a request-cache library if multiple real screens need to share or refresh the same fetched data.
 
@@ -65,7 +65,7 @@ The frontend denies member access if a profile is missing or cannot be loaded an
 
 ## Features still waiting for real data
 
-Borrowing, reservations, online book files, thesis submission, password recovery and newsletter subscriptions are unfinished. Their controls must not claim that a request was saved. Configure digital-resource links and the access-request form in `src/data/digitalSources.js`, and real contact links in `src/data/contactLinks.js`. Signed-in pages are title-only placeholders; page interactions and their backend permissions will be added later.
+Borrowing, reservations, online book files, thesis submission, password recovery and newsletter subscriptions are unfinished. Their controls must not claim that a request was saved. Configure digital-resource links and the access-request form in `src/data/digitalSources.js`, and real contact links in `src/data/contactLinks.js`. OPAC catalog reads and book editing are implemented; additional page operations need their own backend permissions when added.
 
 ## Deployment and verification
 

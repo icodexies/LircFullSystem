@@ -40,6 +40,6 @@ The registration function also needs `GMAIL_USER`, `GMAIL_APP_PASSWORD`, and `SI
 
 Keep secrets in environment configuration, keep page-specific UI near its page, and promote UI to `src/components/` when it is shared across screens.
 
-The public collections are sample data. Signed-in pages currently contain only their H1 title. See [member layout and page permissions](docs/MEMBER_LAYOUT.md) for the role rules and page folders. Registration and profile access require the `usersData` schema described in the guide. A passing build does not verify a live database or capacity for 20,000 users.
+The public collections are sample data. The OPAC reads your Supabase catalog with server-side pagination, search and filters; its details window provides librarian/admin editing. See [the OPAC guide](docs/OPAC.md) for its required database migration and verification. See [member layout and page permissions](docs/MEMBER_LAYOUT.md) for the role rules and page folders. Registration and profile access require the `usersData` schema described in the guide. A passing build does not verify a live database or capacity for 20,000 users.
 
 Production hosting must serve `dist/` and fall back to `index.html` for app routes. The local preview command is not a production server.

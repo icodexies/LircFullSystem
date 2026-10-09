@@ -331,20 +331,19 @@ function AreaChart({ labels, data, unit }) {
 
 function Donut({ segments, centerValue, centerLabel }) {
   const total = segments.reduce((s, seg) => s + seg.value, 0);
-  let acc = 0;
+  const arcs = segments.reduce((rows, segment) => {
+    const percent = total > 0 ? (segment.value / total) * 100 : 0;
+    const previous = rows.at(-1);
+    return [...rows, { ...segment, percent, offset: previous ? previous.offset + previous.percent : 0 }];
+  }, []);
   return (
     <div className="flex flex-col items-center gap-6 sm:flex-row xl:flex-col">
       <div className="relative h-44 w-44 shrink-0">
         <svg viewBox="0 0 42 42" className="h-full w-full -rotate-90" role="img" aria-label={centerLabel}>
           <circle cx="21" cy="21" r="15.9155" fill="none" stroke="#F1F5F9" strokeWidth="5" />
-          {segments.map((seg) => {
-            const pct = (seg.value / total) * 100;
-            const el = (
-              <circle key={seg.label} cx="21" cy="21" r="15.9155" fill="none" stroke={seg.color} strokeWidth="5" strokeDasharray={`${Math.max(pct - 0.8, 0)} ${100 - pct + 0.8}`} strokeDashoffset={-acc} />
-            );
-            acc += pct;
-            return el;
-          })}
+          {arcs.map((arc) => (
+            <circle key={arc.label} cx="21" cy="21" r="15.9155" fill="none" stroke={arc.color} strokeWidth="5" strokeDasharray={`${Math.max(arc.percent - 0.8, 0)} ${100 - arc.percent + 0.8}`} strokeDashoffset={-arc.offset} />
+          ))}
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           <span className="font-serif text-3xl font-bold text-[#0B1330]">{centerValue}</span>

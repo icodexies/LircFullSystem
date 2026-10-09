@@ -1,6 +1,6 @@
 # Signed-in layout and page access
 
-The signed-in area uses a shared sidebar, header and footer. Its pages each render only an H1 title. The old sample dashboard and its unused sample data were replaced by the Dashboard page.
+The signed-in area uses a shared sidebar, header and footer. OPAC now provides the paginated catalog and restricted editing described in [its guide](OPAC.md). Each page's content is developed independently of this shared layout.
 
 ## Role rules
 
