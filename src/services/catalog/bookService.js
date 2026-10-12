@@ -1,5 +1,5 @@
 import { getSupabase } from "../auth/authService.js";
-import { applyCatalogFilters, getPageRange } from "./catalogQuery.js";
+import { applyCatalogFilters, getPageRange, containsText } from "./catalogQuery.js";
 import { buildBookUpdate } from "./bookValidation.js";
 import { ACCESS } from "../../routes/roles.js";
 
@@ -80,6 +80,96 @@ export async function getBook(id, signal) {
     .single()
     .abortSignal(signal);
   if (error) throw catalogReadError(error);
+  return data;
+}
+
+// Possible existing records for the Add Book form: same ISBN, or a similar
+// title. Read-only helper; failures simply return nothing.
+export async function findPossibleBooks({ title, isbn }, signal) {
+  const found = new Map();
+  try {
+    const supabase = await getSupabase();
+    const cleanIsbn = String(isbn ?? "").trim();
+    const cleanTitle = String(title ?? "").trim();
+    if (cleanIsbn) {
+      const { data } = await supabase
+        .from("books")
+        .select("id,book_name,author,isbn,publisher,edition,publish_year,call_number")
+        .eq("isbn", cleanIsbn)
+        .limit(5)
+        .abortSignal(signal);
+      (data ?? []).forEach((row) => found.set(row.id, row));
+    }
+    if (cleanTitle.length >= 3) {
+      const { data } = await supabase
+        .from("books")
+        .select("id,book_name,author,isbn,publisher,edition,publish_year,call_number")
+        .ilike("book_name", containsText(cleanTitle))
+        .limit(5)
+        .abortSignal(signal);
+      (data ?? []).forEach((row) => found.set(row.id, row));
+    }
+  } catch {
+    // Duplicate checking is a helper; the database checks again on save.
+  }
+  return [...found.values()].slice(0, 5);
+}
+
+function addBookError(error) {
+  if (error?.code === "23505")
+    return new Error(
+      "One of the accession numbers was just used for another copy. Refresh and try again.",
+    );
+  if (error?.code === "23503")
+    return new Error(
+      "A copy that has loan records cannot be removed. Its borrowing history must stay.",
+    );
+  if (["42883", "PGRST202", "42703", "42P01"].includes(error?.code))
+    return new Error(
+      "Adding books needs its database setup first. Apply the add-book migration.",
+    );
+  return new Error(
+    error?.message || "Couldn't save the book. Check your connection and try again.",
+  );
+}
+
+// Create a book and its first copies in one transaction.
+export async function addBookWithCopies(book, accessions) {
+  const supabase = await getSupabase();
+  const { data, error } = await supabase.rpc("lirc_add_book", {
+    p_book: book,
+    p_accessions: accessions,
+  });
+  if (error) throw addBookError(error);
+  return data;
+}
+
+// All copies of a book, for editing in the Add Book window.
+export async function getAccessionRowsForEdit(bookId, signal) {
+  const supabase = await getSupabase();
+  const { data, error } = await supabase
+    .from("book_accession_numbers")
+    .select("id,accession_number,shelf_id")
+    .eq("book_id", bookId)
+    .order("accession_number")
+    .order("id")
+    .limit(500)
+    .abortSignal(signal);
+  if (error) throw catalogReadError(error);
+  return data ?? [];
+}
+
+// Apply copy changes to one book: edited saved copies, removals and new
+// copies, all in one transaction.
+export async function saveBookCopies(bookId, { updates, newRows, deleteIds }) {
+  const supabase = await getSupabase();
+  const { data, error } = await supabase.rpc("lirc_save_book_copies", {
+    p_book_id: bookId,
+    p_updates: updates,
+    p_new: newRows,
+    p_delete_ids: deleteIds,
+  });
+  if (error) throw addBookError(error);
   return data;
 }
 
