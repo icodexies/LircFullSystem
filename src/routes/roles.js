@@ -6,14 +6,23 @@ export const ROLES = {
   STUDENT: "student",
   FACULTY: "faculty",
   STAFF: "staff",
+  NON_TEACHING_PERSONNEL: "non_teaching_personnel",
   LIBRARIAN: "librarian",
   ADMIN: "admin",
 };
 
 export const ACCESS = {
-  member: [ROLES.STUDENT, ROLES.FACULTY, ROLES.STAFF, ROLES.LIBRARIAN, ROLES.ADMIN],
+  member: [
+    ROLES.STUDENT,
+    ROLES.FACULTY,
+    ROLES.NON_TEACHING_PERSONNEL,
+    ROLES.STAFF,
+    ROLES.LIBRARIAN,
+    ROLES.ADMIN,
+  ],
   staff: [ROLES.STAFF, ROLES.LIBRARIAN, ROLES.ADMIN],
   books: [ROLES.LIBRARIAN, ROLES.ADMIN],
+  attendance: [ROLES.LIBRARIAN, ROLES.ADMIN],
   admin: [ROLES.ADMIN],
 };
 
@@ -21,6 +30,7 @@ export const ROLE_LABELS = {
   [ROLES.STUDENT]: "Student",
   [ROLES.FACULTY]: "Faculty",
   [ROLES.STAFF]: "Staff",
+  [ROLES.NON_TEACHING_PERSONNEL]: "Non-teaching personnel",
   [ROLES.LIBRARIAN]: "Librarian",
   [ROLES.ADMIN]: "Admin",
 };

@@ -1,6 +1,6 @@
 import { useId, useState } from "react";
-import { useAuth } from "../../../context/useAuth";
-import { ACCESS } from "../../../routes/roles";
+import { useAuth } from "../../../hooks/auth/useAuth.js";
+import { ACCESS } from "../../../routes/roles.js";
 
 /* ------------------------------------------------------------------ */
 /*  Design tokens (LIRC): navy #0B1330, sky-400 #38BDF8, slate surfaces */
@@ -225,9 +225,9 @@ function Card({ title, subtitle, action, children, className = "" }) {
 
 function DeltaChip({ stat, featured }) {
   const tone = featured
-    ? "bg-white/10 text-sky-200"
+    ? "bg-white/10 text-slate-200"
     : stat.good
-      ? "bg-emerald-50 text-emerald-700"
+      ? "bg-[#F0EDFA] text-[#3B4A86]"
       : "bg-rose-50 text-rose-700";
   return (
     <span className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[11px] font-medium ${tone}`}>
@@ -237,36 +237,18 @@ function DeltaChip({ stat, featured }) {
   );
 }
 
-function Sparkline({ data, stroke }) {
-  const w = 84;
-  const h = 28;
-  const max = Math.max(...data);
-  const min = Math.min(...data);
-  const pts = data.map((v, i) => [(i / (data.length - 1)) * w, h - 2 - ((v - min) / (max - min || 1)) * (h - 4)]);
-  return (
-    <svg viewBox={`0 0 ${w} ${h}`} className="h-7 w-[84px] shrink-0" aria-hidden="true">
-      <path d={smoothPath(pts)} fill="none" stroke={stroke} strokeWidth="2" strokeLinecap="round" />
-    </svg>
-  );
-}
-
 function StatCard({ stat, featured = false }) {
   return (
-    <div className={`flex min-w-0 flex-1 basis-[230px] flex-col justify-between rounded-2xl border p-5 ${featured ? "border-[#0B1330] bg-[#0B1330] text-white" : "border-slate-200 bg-white text-[#0B1330]"}`}>
+    <div className={`flex min-w-0 flex-col rounded-2xl border p-5 ${featured ? "border-[#0B1330] bg-[#0B1330] text-white" : "border-slate-200 bg-white text-[#0B1330]"}`}>
       <div className="flex items-start justify-between gap-3">
-        <span className={`flex h-10 w-10 items-center justify-center rounded-xl ${featured ? "bg-white/10 text-sky-300" : "bg-sky-50 text-sky-600"}`}>
-          <Icon name={stat.icon} />
+        <span className={`flex h-9 w-9 items-center justify-center rounded-lg ${featured ? "bg-white/10 text-sky-300" : "bg-[#F0EDFA] text-[#3B4A86]"}`}>
+          <Icon name={stat.icon} className="h-[18px] w-[18px]" />
         </span>
         <DeltaChip stat={stat} featured={featured} />
       </div>
-      <div className="mt-6">
-        <p className={`text-[13px] ${featured ? "text-slate-300" : "text-slate-500"}`}>{stat.label}</p>
-        <p className="mt-1 font-serif text-4xl font-bold tracking-tight">{stat.value}</p>
-      </div>
-      <div className="mt-3 flex items-end justify-between gap-3">
-        <p className={`text-xs ${featured ? "text-slate-400" : "text-slate-500"}`}>{stat.hint}</p>
-        <Sparkline data={stat.spark} stroke={featured ? SKY : "#0284C7"} />
-      </div>
+      <p className={`mt-5 text-[13px] ${featured ? "text-slate-300" : "text-slate-500"}`}>{stat.label}</p>
+      <p className="mt-1 font-serif text-3xl font-bold tracking-tight">{stat.value}</p>
+      <p className={`mt-2 text-xs ${featured ? "text-slate-400" : "text-slate-500"}`}>{stat.hint}</p>
     </div>
   );
 }
@@ -457,7 +439,7 @@ function StaffDashboard() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap gap-4">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {stats.map((stat, i) => (
           <StatCard key={stat.id} stat={stat} featured={i === 0} />
         ))}
@@ -549,18 +531,16 @@ function MemberDashboard({ role }) {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap gap-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {data.stats.map((s, i) => {
           const featured = i === 0;
           return (
-            <div key={s.id} className={`flex min-w-0 flex-1 basis-[200px] flex-col justify-between rounded-2xl border p-5 ${featured ? "border-[#0B1330] bg-[#0B1330] text-white" : "border-slate-200 bg-white text-[#0B1330]"}`}>
-              <span className={`flex h-10 w-10 items-center justify-center rounded-xl ${featured ? "bg-white/10 text-sky-300" : s.warn ? "bg-rose-50 text-rose-600" : "bg-sky-50 text-sky-600"}`}>
-                <Icon name={s.icon} />
+            <div key={s.id} className={`flex min-w-0 flex-col rounded-2xl border p-5 ${featured ? "border-[#0B1330] bg-[#0B1330] text-white" : "border-slate-200 bg-white text-[#0B1330]"}`}>
+              <span className={`flex h-9 w-9 items-center justify-center rounded-lg ${featured ? "bg-white/10 text-sky-300" : s.warn ? "bg-rose-50 text-rose-600" : "bg-[#F0EDFA] text-[#3B4A86]"}`}>
+                <Icon name={s.icon} className="h-[18px] w-[18px]" />
               </span>
-              <div className="mt-6">
-                <p className={`text-[13px] ${featured ? "text-slate-300" : "text-slate-500"}`}>{s.label}</p>
-                <p className="mt-1 font-serif text-4xl font-bold tracking-tight">{s.value}</p>
-              </div>
+              <p className={`mt-5 text-[13px] ${featured ? "text-slate-300" : "text-slate-500"}`}>{s.label}</p>
+              <p className="mt-1 font-serif text-3xl font-bold tracking-tight">{s.value}</p>
               {s.of ? (
                 <div className="mt-3">
                   <div className="mb-2 h-2 w-full overflow-hidden rounded-full bg-white/15">
@@ -569,7 +549,7 @@ function MemberDashboard({ role }) {
                   <p className="text-xs text-slate-400">{s.hint}</p>
                 </div>
               ) : (
-                <p className={`mt-3 text-xs ${s.warn ? "text-rose-600" : "text-slate-500"}`}>{s.hint}</p>
+                <p className={`mt-2 text-xs ${s.warn ? "text-rose-600" : "text-slate-500"}`}>{s.hint}</p>
               )}
             </div>
           );

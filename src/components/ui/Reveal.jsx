@@ -1,7 +1,7 @@
 
 import { useEffect, useRef, useState } from "react";
-import { REVEAL_EASINGS } from "./revealEasings";
-import { useReducedMotion } from "../../hooks/useReducedMotion";
+import { REVEAL_EASINGS } from "./revealEasings.js";
+import { useReducedMotion } from "../../hooks/shared/useReducedMotion.js";
 
 /* -------------------------------------------------------------------------- */
 /*                              Reveal Component                             */

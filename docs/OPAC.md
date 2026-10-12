@@ -13,14 +13,14 @@ The OPAC reads the four catalog tables from the SQL in the supplied conversation
 
 ## Simple code responsibilities
 
-| File/folder                                                                            | Job                                                               |
-| -------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
-| `src/pages/PrivatePages/OPAC/OPAC.jsx`                                                 | Page controls and book cards.                                     |
-| `BookDetails.jsx`, `EditBook.jsx`, `CatalogDialog.jsx`, `BookCover.jsx` in that folder | Details, the edit form, native modal behavior and image fallback. |
-| `src/hooks/useCatalog.js`                                                              | Request state, search delay, pagination and cancellation.         |
-| `src/services/bookService.js`                                                          | Supabase queries and updates.                                     |
-| `src/services/catalogQuery.js`                                                         | Allowed query fields, filters and bounded page ranges.            |
-| `src/services/bookValidation.js`                                                       | Allowed edit fields and input checks.                             |
+| File/folder                                                                                          | Job                                                               |
+| ---------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| `src/pages/PrivatePages/OPAC/OPAC.jsx`                                                               | Page controls and book cards.                                     |
+| `BookDetails.jsx`, `EditBook.jsx`, `CatalogDialog.jsx`, `BookCover.jsx` in `src/components/catalog/` | Details, the edit form, native modal behavior and image fallback. |
+| `src/hooks/catalog/useCatalog.js`                                                                    | Request state, search delay, pagination and cancellation.         |
+| `src/services/catalog/bookService.js`                                                                | Supabase queries and updates.                                     |
+| `src/services/catalog/catalogQuery.js`                                                               | Allowed query fields, filters and bounded page ranges.            |
+| `src/services/catalog/bookValidation.js`                                                             | Allowed edit fields and input checks.                             |
 
 The hook aborts requests when a query changes or the page is removed. An old response is ignored even if it arrives after cancellation. Old query results are hidden while the new request loads. Changing filters, sorting or page size returns to page one. Identical filters do not create another request. If a previously populated later page becomes empty, it returns to the first page.
 
@@ -52,7 +52,7 @@ Department has been removed from the query, filters, details, edit fields, valid
 
 Editors can select **Upload a book cover** in the edit form, preview it, then save changes. Supported input is JPG, PNG or WebP up to 10 MB and 32 megapixels. The browser prepares one static WebP at no more than 1200 pixels on its longest side and 512 KB. Unsupported, corrupt or oversized images show an error. Preview object URLs and decoded image memory are released after use.
 
-Saved cover URL → Open Library ISBN image → your `public/book_cover.png` default → icon fallback. Cards request medium API covers; details request large covers. Images are lazy loaded and decoded asynchronously. A selected upload takes priority over the URL field when saving.
+Saved cover URL → Open Library ISBN image → your `public/images/catalog/book_cover.png` default → icon fallback. Cards request medium API covers; details request large covers. Images are lazy loaded and decoded asynchronously. A selected upload takes priority over the URL field when saving.
 
 Run `supabase/migrations/20261008000200_opac_covers_and_accession.sql` **after the previous security migration**. It adds an accession trigram index and creates the public `book-covers` bucket. Public here means visitors can view catalog covers; only the trusted librarian/admin roles can upload. The bucket allows WebP files no larger than 512 KB. Restrictive storage policies also block older broad policies from allowing uploads by other roles, overwrites or deletion in this bucket. Existing other buckets are unaffected.
 

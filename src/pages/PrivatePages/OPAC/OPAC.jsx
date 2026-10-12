@@ -1,22 +1,17 @@
 import { useState } from "react";
-import { useAuth } from "../../../context/useAuth";
-import { useCatalog } from "../../../hooks/useCatalog";
+import { useAuth } from "../../../hooks/auth/useAuth.js";
+import { useCatalog } from "../../../hooks/catalog/useCatalog.js";
 import { ACCESS } from "../../../routes/roles.js";
-import { SEARCH_FIELDS, PAGE_SIZES } from "../../../services/catalogQuery.js";
-import BookCover from "./BookCover";
-import BookDetails from "./BookDetails";
-import EditBook from "./EditBook";
+import { SEARCH_FIELDS, PAGE_SIZES } from "../../../services/catalog/catalogQuery.js";
+import BookCover from "../../../components/catalog/BookCover.jsx";
+import BookDetails from "../../../components/catalog/BookDetails.jsx";
+import EditBook from "../../../components/catalog/EditBook.jsx";
+import { LoadingBlock } from "../../../components/ui/Loading.jsx";
 
 const INITIAL_FILTERS = { formatId: "", shelfId: "", year: "" };
 const control =
   "w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs text-[#0B1330] focus:border-[#3B4A86] focus:outline-none focus:ring-2 focus:ring-[#3B4A86]/15 disabled:opacity-50";
 const labelText = "mb-1.5 block text-[11px] font-semibold text-slate-600";
-const dots = {
-  backgroundImage: "radial-gradient(#fff 1px, transparent 1px)",
-  backgroundSize: "18px 18px",
-  maskImage: "linear-gradient(to left, #000, transparent 65%)",
-  WebkitMaskImage: "linear-gradient(to left, #000, transparent 65%)",
-};
 
 export default function OPAC() {
   const catalog = useCatalog();
@@ -24,7 +19,6 @@ export default function OPAC() {
   const canEdit = ACCESS.books.includes(role);
   const [filters, setFilters] = useState(INITIAL_FILTERS);
   const [selection, setSelection] = useState(null);
-  const [notice, setNotice] = useState("");
   const busy = catalog.loading || catalog.searching;
   const start = (catalog.query.page - 1) * catalog.query.pageSize + 1;
 
@@ -34,41 +28,35 @@ export default function OPAC() {
   function reset() {
     setFilters(INITIAL_FILTERS);
     catalog.clearFilters();
-    setNotice("");
   }
 
   return (
     <>
-      {/* Header + search: the one navy block on the page */}
-      <section className="relative overflow-hidden rounded-2xl bg-[#0B1330] px-5 py-6 sm:px-8 sm:py-8">
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 opacity-[0.16]"
-          style={dots}
-        />
-        <div className="relative flex flex-wrap items-start justify-between gap-4">
-          <div>
-            <p className="text-xs font-medium text-white/60">
+      {/* Header + search */}
+      <section>
+        <div className="flex flex-wrap items-start justify-between gap-x-6 gap-y-4">
+          <div className="min-w-0 max-w-xl">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">
               Online public access catalog
             </p>
-            <h1 className="mt-1 font-serif text-3xl font-bold text-white sm:text-4xl">
+            <h1 className="mt-1.5 font-serif text-2xl font-bold tracking-tight text-[#0B1330] sm:text-3xl">
               OPAC
             </h1>
-            <p className="mt-2 max-w-xl text-sm leading-relaxed text-white/70">
+            <p className="mt-1.5 text-sm leading-relaxed text-slate-500">
               Find books, check their library sections, and explore individual
               copies.
             </p>
           </div>
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[11px] font-semibold text-white">
+          <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-[#F7F6FB] px-3 py-1.5 text-[11px] font-semibold text-slate-600">
             <span
-              className="h-1.5 w-1.5 rounded-full bg-white"
+              className={`h-1.5 w-1.5 rounded-full ${canEdit ? "bg-[#0B1330]" : "bg-slate-400"}`}
               aria-hidden="true"
             />
             {canEdit ? "Catalog editor" : "Browse access"}
           </span>
         </div>
 
-        <div className="relative mt-6 flex flex-col gap-2 sm:flex-row">
+        <div className="mt-5 flex flex-col gap-2 sm:flex-row">
           <label className="sm:w-40">
             <span className="sr-only">Search by</span>
             <select
@@ -77,7 +65,7 @@ export default function OPAC() {
               onChange={(event) =>
                 catalog.changeFilter("searchBy", event.target.value)
               }
-              className={`${control} border-transparent py-3`}
+              className={`${control} py-3`}
             >
               {Object.entries(SEARCH_FIELDS).map(([field, label]) => (
                 <option key={field} value={field}>
@@ -105,7 +93,7 @@ export default function OPAC() {
               value={catalog.searchInput}
               onChange={(event) => catalog.setSearchInput(event.target.value)}
               placeholder={`Search by ${SEARCH_FIELDS[catalog.query.searchBy].toLowerCase()}...`}
-              className={`${control} border-transparent py-3 pl-10`}
+              className={`${control} py-3 pl-10`}
             />
           </label>
         </div>
@@ -113,11 +101,10 @@ export default function OPAC() {
 
       {/* Filters */}
       <form
-        className="mt-4 rounded-2xl border border-slate-200 bg-white p-4 sm:p-5"
+        className="mt-6 rounded-2xl border border-slate-200 bg-white p-4 sm:p-5"
         onSubmit={(event) => {
           event.preventDefault();
           catalog.applyFilters(filters);
-          setNotice("");
         }}
       >
         <div className="mb-4 flex items-center gap-2">
@@ -255,10 +242,7 @@ export default function OPAC() {
           </label>
           <button
             type="button"
-            onClick={() => {
-              catalog.refresh();
-              setNotice("");
-            }}
+            onClick={() => catalog.refresh()}
             disabled={busy}
             className="rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs font-semibold text-slate-600 hover:border-[#3B4A86]/40 hover:text-[#0B1330] disabled:opacity-40"
           >
@@ -266,42 +250,9 @@ export default function OPAC() {
           </button>
         </div>
       </div>
-      {notice && (
-        <p
-          role="status"
-          className="mb-4 rounded-xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-xs text-emerald-800"
-        >
-          {notice}
-        </p>
-      )}
-
       <div aria-busy={busy}>
         {catalog.loading ? (
-          <ul
-            className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3"
-            role="status"
-            aria-label="Loading books"
-          >
-            {Array.from({ length: 6 }, (_, i) => (
-              <li
-                key={i}
-                className="animate-pulse rounded-2xl border border-slate-200 bg-white p-4 motion-reduce:animate-none"
-              >
-                <div className="flex gap-4">
-                  <div className="h-28 w-20 rounded-xl bg-[#F0EDFA]" />
-                  <div className="flex-1 space-y-3 pt-1">
-                    <div className="h-4 w-16 rounded-full bg-[#F0EDFA]" />
-                    <div className="h-4 w-full rounded bg-slate-100" />
-                    <div className="h-4 w-2/3 rounded bg-slate-100" />
-                  </div>
-                </div>
-                <div className="mt-5 space-y-2 border-t border-slate-100 pt-4">
-                  <div className="h-3 w-1/2 rounded bg-slate-100" />
-                  <div className="h-3 w-1/3 rounded bg-slate-100" />
-                </div>
-              </li>
-            ))}
-          </ul>
+          <LoadingBlock label="Loading the catalog…" className="min-h-[24rem]" />
         ) : catalog.error ? (
           <div
             className="rounded-2xl border border-red-100 bg-red-50 p-6"
@@ -490,7 +441,6 @@ export default function OPAC() {
             onSaved={() => {
               setSelection(null);
               catalog.refresh();
-              setNotice("Book record updated successfully.");
             }}
           />
         ) : (

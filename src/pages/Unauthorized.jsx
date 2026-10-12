@@ -1,21 +1,21 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import { useAuth } from "../context/useAuth";
-import { ACCESS } from "../routes/roles";
+import { useAuth } from "../hooks/auth/useAuth.js";
+import { useToast } from "../hooks/shared/useToast.js";
+import { ACCESS } from "../routes/roles.js";
 
 export default function Unauthorized() {
   const { user, role, logout } = useAuth();
-  const [error, setError] = useState("");
+  const toast = useToast();
   const [loggingOut, setLoggingOut] = useState(false);
   const canReturn = ACCESS.member.includes(role);
 
   const handleLogout = async () => {
     setLoggingOut(true);
-    setError("");
     try {
       await logout();
     } catch {
-      setError("Couldn't sign out. Please try again.");
+      toast.error("Couldn't sign out. Please try again.");
     } finally {
       setLoggingOut(false);
     }
@@ -40,7 +40,6 @@ export default function Unauthorized() {
           {user ? "Back to dashboard" : "Back to home"}
         </Link>
         )}
-        {error && <p role="alert" className="mt-3 text-xs text-red-600">{error}</p>}
       </div>
     </main>
   );

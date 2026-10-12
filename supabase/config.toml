@@ -416,6 +416,7 @@ enabled = true
 
 [functions.register-user]
 enabled = true
+# Public endpoint: students register before they have an account.
 verify_jwt = false
 import_map = "./functions/register-user/deno.json"
 # Uncomment to specify a custom file path to the entrypoint.
@@ -424,3 +425,12 @@ entrypoint = "./functions/register-user/index.ts"
 # Specifies static files to be bundled with the function. Supports glob patterns.
 # For example, if you want to serve static HTML pages in your function:
 # static_files = [ "./functions/register-user/*.html" ]
+
+[functions.request-password-reset]
+enabled = true
+# Public endpoint: signed-out visitors request reset emails. It always
+# replies with the same generic message and never reveals whether an
+# email has an account.
+verify_jwt = false
+import_map = "./functions/request-password-reset/deno.json"
+entrypoint = "./functions/request-password-reset/index.ts"

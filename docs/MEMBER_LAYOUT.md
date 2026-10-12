@@ -4,19 +4,27 @@ The signed-in area uses a shared sidebar, header and footer. OPAC now provides t
 
 ## Role rules
 
-The `role` column in `usersData` must use one of these exact values: `student`, `faculty`, `staff`, `librarian`, `admin`. Missing or unknown roles cannot enter the signed-in area.
+The `role` column in `usersData` must use one of these exact values: `student`, `faculty`, `non_teaching_personnel`, `staff`, `librarian`, `admin`. Missing or unknown roles cannot enter the signed-in area.
 
 | Page | Student | Faculty | Staff | Librarian | Admin |
 | --- | --- | --- | --- | --- | --- |
+| **Overview** | | | | | |
 | Dashboard | Yes | Yes | Yes | Yes | Yes |
+| Statistics | Yes | Yes | Yes | Yes | Yes |
+| **Catalog** | | | | | |
 | OPAC | Yes | Yes | Yes | Yes | Yes |
 | Path Finder | Yes | Yes | Yes | Yes | Yes |
-| Statistics | Yes | Yes | Yes | Yes | Yes |
-| Attendance | No | No | Yes | Yes | Yes |
-| Barcode Generator | No | No | Yes | Yes | Yes |
-| Book Borrow | No | No | Yes | Yes | Yes |
-| Inventory | No | No | Yes | Yes | Yes |
+| **Members** | | | | | |
+| Users | No | No | Yes | Yes | Yes |
+| **Attendance & enrollment** | | | | | |
+| Attendance | No | No | No | Yes | Yes |
+| Annual enrollment | No | No | No | Yes | Yes |
+| Academic periods | No | No | No | Yes | Yes |
+| **Books & borrowing** | | | | | |
 | Adding Books | No | No | No | Yes | Yes |
+| Inventory | No | No | No | Yes | Yes |
+| Book Borrow | No | No | No | Yes | Yes |
+| Barcode Generator | No | No | No | Yes | Yes |
 
 `src/routes/roles.js` defines role groups. `src/routes/memberPages.js` defines page labels, paths, icons, groups and allowed roles. Both the sidebar and route guards read that page list, so hiding a link and restricting its URL follow the same rule. The existing `/home` post-login URL redirects to `/dashboard`.
 
@@ -26,13 +34,14 @@ These checks control page access in React. When real page actions are added, the
 
 ```text
 src/
-  components/member/
+  components/layout/member/
     MemberSidebar.jsx
     MemberHeader.jsx
     MemberFooter.jsx
     SidebarIcon.jsx
+  components/ui/
     PageHeading.jsx
-  layouts/
+  layouts/member/
     MemberLayout.jsx
   routes/
     roles.js
@@ -43,6 +52,7 @@ src/
     OPAC/OPAC.jsx
     PathFinder/PathFinder.jsx
     Statistics/Statistics.jsx
+    Users/Users.jsx
     Attendance/Attendance.jsx
     BarcodeGenerator/BarcodeGenerator.jsx
     BookBorrow/BookBorrow.jsx
@@ -50,7 +60,7 @@ src/
     AddingBooks/AddingBooks.jsx
 ```
 
-Place each page's future components next to its page file. Keep shared navigation and layout parts in `components/member`. `PageHeading` provides a consistent H1 appearance.
+Place each page's future UI pieces in its feature folder under `src/components/`, as OPAC does in `src/components/catalog/`. Keep shared navigation and layout parts in `src/components/layout/member/`. `src/components/ui/PageHeading.jsx` provides a consistent H1 appearance. See [the folder guide](FOLDER_STRUCTURE.md) for the full structure.
 
 ## Changing a page later
 
@@ -66,4 +76,6 @@ Edit its page file to add content. Change its `allowedRoles` in `memberPages.js`
 
 ## Checking permissions
 
-Run `npm test` after changing role rules. The built-in Node tests check all five roles against all nine pages, deny missing/unknown roles, and check that page paths and IDs are unique. `npm run lint` and `npm run build` check the code and production bundle. No extra testing package is required.
+Run `npm test` after changing role rules. The built-in Node tests check all six roles against all eleven pages, deny missing/unknown roles, and check that page paths and IDs are unique. `npm run lint` and `npm run build` check the code and production bundle. No extra testing package is required.
+
+Non-teaching personnel have the same Overview and Catalog pages as faculty. The legacy `staff` app role is not an attendance operator under the supplied annual schema; only librarian/admin operate attendance, validation and periods. See [the attendance guide](ATTENDANCE.md).

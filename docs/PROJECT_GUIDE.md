@@ -2,17 +2,19 @@
 
 The project uses React and Vite for the interface and Supabase for authentication and server-side registration. The public library collections are sample data. The OPAC reads your catalog with server-side pagination and restricted editing. See [the OPAC guide](OPAC.md) for its database migration, and [the member layout guide](MEMBER_LAYOUT.md) for page folders and role permissions. Bounded catalog reads were verified against the configured Supabase project; hosted write policies and production capacity were not verified.
 
+See [the folder guide](FOLDER_STRUCTURE.md) for the full feature structure and examples of where to edit.
+
 ## A simple responsibility for each folder
 
-| Folder | Responsibility |
-| --- | --- |
-| `src/data` | Sample content and settings, without React or network calls. |
-| `src/services` | Calls to Supabase and browser session storage. |
-| `src/hooks` | Reusable behavior such as choosing a carousel item. |
-| `src/context` | State needed across screens: the logged-in user and login dialog. |
-| `src/components` | Shared interface pieces. |
-| `src/pages` | Screens and sections that combine those pieces. |
-| `supabase/functions` | Trusted backend code that can use server secrets. |
+| Folder               | Responsibility                                                    |
+| -------------------- | ----------------------------------------------------------------- |
+| `src/data`           | Sample content and settings, without React or network calls.      |
+| `src/services`       | Calls to Supabase and browser session storage.                    |
+| `src/hooks`          | Reusable behavior such as choosing a carousel item.               |
+| `src/context`        | State needed across screens: the logged-in user and login dialog. |
+| `src/components`     | Interface pieces grouped by feature, plus shared UI.              |
+| `src/pages`          | Route screens that combine those pieces.                          |
+| `supabase/functions` | Trusted backend code that can use server secrets.                 |
 
 Contexts and hooks run in the visitor's browser; they are not the backend. A route guard controls which screen React shows. Supabase permissions must separately control which data a user can read or change.
 
@@ -35,7 +37,7 @@ Pure data, services and hooks use `.js`; files that render JSX use `.jsx`. Colle
 
 ## When to add a service
 
-Authentication calls live in `src/services/authService.js`, and real catalog calls live in `src/services/bookService.js`. Do not add empty services for static collections. A hook calls a service, holds loading/error state, and supplies results to the page. Keep Supabase calls out of card components.
+Authentication calls live in `src/services/auth/authService.js`, and real catalog calls live in `src/services/catalog/bookService.js`. Do not add empty services for static collections. A hook calls a service, holds loading/error state, and supplies results to the page. Keep Supabase calls out of card components.
 
 Do not download an entire future catalog and filter it in the browser. Ask Supabase for one page, select the needed fields, and filter on the server. Add indexes for the searches and filters you actually use. Only add a request-cache library if multiple real screens need to share or refresh the same fetched data.
 
@@ -61,11 +63,11 @@ Twenty thousand registered users is different from twenty thousand people making
 7. Use an email service suited to the school's volume. The current Gmail SMTP workflow is a prototype; configure delivery/retry handling and test failure recovery before production. Do not load-test real users or send bulk test mail.
 8. Replace the generated-password email workflow with a reviewed account invitation/password-setup flow before production. Confirm allowed redirect URLs and recovery behavior, then test with dedicated staging accounts.
 
-The frontend denies member access if a profile is missing or cannot be loaded and offers retry/logout controls. A linked profile also needs one of the five supported roles to enter the member area. Each page checks its allowed roles, using the same definitions as the sidebar. Roles come from the profile, rather than a browser-supplied fallback.
+The frontend denies member access if a profile is missing or cannot be loaded and offers retry/logout controls. A linked profile also needs one of the supported roles to enter the member area. Each page checks its allowed roles, using the same definitions as the sidebar. Roles come from the profile, rather than a browser-supplied fallback.
 
 ## Features still waiting for real data
 
-Borrowing, reservations, online book files, thesis submission, password recovery and newsletter subscriptions are unfinished. Their controls must not claim that a request was saved. Configure digital-resource links and the access-request form in `src/data/digitalSources.js`, and real contact links in `src/data/contactLinks.js`. OPAC catalog reads and book editing are implemented; additional page operations need their own backend permissions when added.
+Borrowing, reservations, online book files, thesis submission, password recovery and newsletter subscriptions are unfinished. Their controls must not claim that a request was saved. Configure digital-resource links and the access-request form in `src/data/home/digitalSources.js`, and real contact links in `src/data/shared/contactLinks.js`. OPAC catalog reads and book editing are implemented; additional page operations need their own backend permissions when added.
 
 ## Deployment and verification
 
@@ -86,3 +88,5 @@ Test homepage section links from a fresh load, carousel arrows/tabs, mobile layo
 - [Supabase performance](https://supabase.com/docs/guides/platform/performance)
 - [React Router SPA hosting](https://reactrouter.com/how-to/spa)
 - [Vite production builds](https://vite.dev/guide/build)
+
+The shared academic-period selection now filters attendance by semester and annual student enrollment by the selected semester’s academic year. Catalog and inventory queries remain unscoped. See [attendance and annual validation](ATTENDANCE.md) for workflow and database requirements.

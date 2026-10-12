@@ -1,17 +1,110 @@
 import { ACCESS } from "./roles.js";
 
-// Sidebar links and route guards read the same permissions.
+// Sidebar groups and route guards read the same permissions.
+// The array order here is the order inside each sidebar group.
 // Change allowedRoles here when a page's access rules change.
 export const MEMBER_PAGES = [
-  { id: "dashboard", label: "Dashboard", path: "/dashboard", icon: "dashboard", group: "Explore", allowedRoles: ACCESS.member },
-  { id: "opac", label: "OPAC", path: "/opac", icon: "catalog", group: "Explore", allowedRoles: ACCESS.member },
-  { id: "path-finder", label: "Path Finder", path: "/path-finder", icon: "map", group: "Explore", allowedRoles: ACCESS.member },
-  { id: "statistics", label: "Statistics", path: "/statistics", icon: "statistics", group: "Explore", allowedRoles: ACCESS.member },
-  { id: "attendance", label: "Attendance", path: "/attendance", icon: "attendance", group: "Library tools", allowedRoles: ACCESS.staff },
-  { id: "barcode-generator", label: "Barcode Generator", path: "/barcode-generator", icon: "barcode", group: "Library tools", allowedRoles: ACCESS.staff },
-  { id: "book-borrow", label: "Book Borrow", path: "/book-borrow", icon: "borrow", group: "Library tools", allowedRoles: ACCESS.staff },
-  { id: "inventory", label: "Inventory", path: "/inventory", icon: "inventory", group: "Library tools", allowedRoles: ACCESS.staff },
-  { id: "adding-books", label: "Adding Books", path: "/adding-books", icon: "add-book", group: "Library tools", allowedRoles: ACCESS.books },
+  // --- Overview -----------------------------------------------------------
+  {
+    id: "dashboard",
+    label: "Dashboard",
+    path: "/dashboard",
+    icon: "dashboard",
+    group: "Overview",
+    allowedRoles: ACCESS.member,
+  },
+  {
+    id: "statistics",
+    label: "Statistics",
+    path: "/statistics",
+    icon: "statistics",
+    group: "Overview",
+    allowedRoles: ACCESS.member,
+  },
+  // --- Catalog ------------------------------------------------------------
+  {
+    id: "opac",
+    label: "OPAC",
+    path: "/opac",
+    icon: "catalog",
+    group: "Catalog",
+    allowedRoles: ACCESS.member,
+  },
+  {
+    id: "path-finder",
+    label: "Path Finder",
+    path: "/path-finder",
+    icon: "map",
+    group: "Catalog",
+    allowedRoles: ACCESS.member,
+  },
+  // --- Members (operators only) --------------------------------------------
+  {
+    id: "users",
+    label: "Users",
+    path: "/users",
+    icon: "users",
+    group: "Members",
+    allowedRoles: ACCESS.staff,
+  },
+  // --- Attendance & enrollment (operators only) ---------------------------
+  {
+    id: "attendance",
+    label: "Attendance",
+    path: "/attendance",
+    icon: "attendance",
+    group: "Attendance & enrollment",
+    allowedRoles: ACCESS.attendance,
+  },
+  {
+    id: "enrollments",
+    label: "Annual enrollment",
+    path: "/enrollments",
+    icon: "school",
+    group: "Attendance & enrollment",
+    allowedRoles: ACCESS.attendance,
+  },
+  {
+    id: "academic-periods",
+    label: "Academic periods",
+    path: "/academic-periods",
+    icon: "calendar",
+    group: "Attendance & enrollment",
+    allowedRoles: ACCESS.attendance,
+  },
+  // --- Books & borrowing ---------------------------------------------------
+  {
+    id: "adding-books",
+    label: "Adding Books",
+    path: "/adding-books",
+    icon: "add-book",
+    group: "Books & borrowing",
+    allowedRoles: ACCESS.books,
+  },
+  {
+    id: "inventory",
+    label: "Inventory",
+    path: "/inventory",
+    icon: "inventory",
+    group: "Books & borrowing",
+    allowedRoles: ACCESS.staff,
+  },
+  {
+    id: "book-borrow",
+    label: "Book Borrow",
+    path: "/book-borrow",
+    icon: "borrow",
+    group: "Books & borrowing",
+    allowedRoles: ACCESS.staff,
+  },
+  {
+    id: "barcode-generator",
+    label: "Barcode Generator",
+    path: "/barcode-generator",
+    icon: "barcode",
+    group: "Books & borrowing",
+    allowedRoles: ACCESS.staff,
+  },
 ];
 
 export function canAccessPage(page, role) {

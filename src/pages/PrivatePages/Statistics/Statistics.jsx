@@ -1,4 +1,4 @@
-import PageHeading from "../../../components/member/PageHeading";
+import PageHeading from "../../../components/ui/PageHeading.jsx";
 
 export default function Statistics() {
   return <PageHeading>Statistics</PageHeading>;

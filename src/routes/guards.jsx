@@ -1,16 +1,14 @@
 import { useState } from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
-import { useAuth } from "../context/useAuth";
-import { hasStoredAuthSession } from "../context/authSessionHint";
+import { useAuth } from "../hooks/auth/useAuth.js";
+import { hasStoredAuthSession } from "../context/auth/authSessionHint.js";
+import { LoadingScreen } from "../components/ui/Loading.jsx";
+import { useToast } from "../hooks/shared/useToast.js";
 
-const Splash = () => (
-  <div role="status" className="flex min-h-screen items-center justify-center bg-[#F7F4FF] text-sm font-semibold text-[#0B1330]">
-    Loading...
-  </div>
-);
+const Splash = () => <LoadingScreen label="Loading…" />;
 
 function ProfileUnavailable({ message, logout }) {
-  const [error, setError] = useState("");
+  const toast = useToast();
   const [loggingOut, setLoggingOut] = useState(false);
 
   const handleLogout = async () => {
@@ -19,7 +17,7 @@ function ProfileUnavailable({ message, logout }) {
     try {
       await logout();
     } catch {
-      setError("Couldn't log out. Please try again.");
+      toast.error("Couldn't log out. Please try again.");
     } finally {
       setLoggingOut(false);
     }
@@ -28,7 +26,7 @@ function ProfileUnavailable({ message, logout }) {
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#F7F4FF] px-6 text-[#0B1330]">
       <div className="max-w-sm text-center">
-        <p role="alert" className="text-sm font-semibold">{error || message}</p>
+        <p role="alert" className="text-sm font-semibold">{message}</p>
         <div className="mt-4 flex justify-center gap-4 text-sm underline">
           <button type="button" onClick={() => window.location.reload()}>Try again</button>
           <button type="button" disabled={loggingOut} onClick={handleLogout}>
