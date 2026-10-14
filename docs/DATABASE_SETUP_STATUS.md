@@ -89,6 +89,7 @@ transaction; migration history synced):
 | `20261018140000_activity_log_search` | User logs: person search (word-order-free + close spellings) and Manila-time date/time range filters |
 | `20261018150000_library_validation_terms` | Terminology: the annual enrollment process reads as "Library validation" in the feed and User logs |
 | `20261018160000_validation_status_labels` | Status words everywhere: `enrolled` reads as "Validated" (borrow checks and validation-change notifications included) |
+| `20261018170000_personnel_performance` | Admin User performance page: people list (librarian/staff/admin) and one person's summarized statistics from a shared aggregation helper |
 
 The goal system is **removed** (14 October 2026). The personnel dashboard and
 the admin **User logs** page read the activity log directly.

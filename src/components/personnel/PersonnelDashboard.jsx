@@ -11,6 +11,7 @@ import {
 import { useActivitySummary } from "../../hooks/personnel/useActivitySummary.js";
 import { shortDay } from "../../services/personnel/personnelRules.js";
 import { sectionHeadingClass, headingBarClass } from "./panel.js";
+import { StatCard, SkeletonCard } from "./StatCard.jsx";
 import ActivityFeed from "./ActivityFeed.jsx";
 import SignInActivity from "./SignInActivity.jsx";
 import EmptyState from "./EmptyState.jsx";
@@ -29,40 +30,6 @@ function DashboardHero({ role }) {
       </span>
       <span>{manilaLongDate()}</span>
     </WorkspaceHeader>
-  );
-}
-
-function StatCard({ label, value, hint, featured = false }) {
-  return (
-    <div
-      className={`flex min-w-0 flex-col rounded-2xl border p-5 shadow-[0_1px_2px_rgba(11,19,48,0.05)] ${
-        featured
-          ? "border-[#0B1330] bg-[#0B1330] text-white"
-          : "border-slate-200 bg-white text-[#0B1330]"
-      }`}
-    >
-      <p
-        className={`text-[13px] ${featured ? "text-slate-300" : "text-slate-500"}`}
-      >
-        {label}
-      </p>
-      <p className="mt-1 font-serif text-3xl font-bold tracking-tight tabular-nums">
-        {value}
-      </p>
-      <p
-        className={`mt-2 text-xs leading-relaxed ${featured ? "text-slate-400" : "text-slate-500"}`}
-      >
-        {hint}
-      </p>
-    </div>
-  );
-}
-
-function SkeletonCard({ className = "" }) {
-  return (
-    <div
-      className={`animate-pulse rounded-2xl border border-slate-200 bg-[#F0EDFA] motion-reduce:animate-none ${className}`}
-    />
   );
 }
 

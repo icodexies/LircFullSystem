@@ -1,6 +1,7 @@
 const paths = {
   dashboard: "M3 3h7v7H3z M14 3h7v7h-7z M3 14h7v7H3z M14 14h7v7h-7z",
   activity: "M3 12h4l3 8 4-16 3 8h4",
+  performance: "M3 17 9 11l4 4 8-8 M16 7h5v5",
   catalog: "M12 5c-3-2-6-2-9-1v15c3-1 6-1 9 1 3-2 6-2 9-1V4c-3-1-6-1-9 1Z M12 5v15",
   map: "m9 3-6 3v15l6-3 6 3 6-3V3l-6 3-6-3Z M9 3v15 M15 6v15",
   statistics: "M4 20V10h4v10 M10 20V4h4v16 M16 20v-7h4v7 M2 20h20",

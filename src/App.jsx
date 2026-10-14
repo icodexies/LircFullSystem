@@ -28,6 +28,9 @@ const memberScreens = {
   "user-logs": lazy(
     () => import("./pages/PrivatePages/UserLogs/UserLogs.jsx"),
   ),
+  "user-performance": lazy(
+    () => import("./pages/PrivatePages/UserPerformance/UserPerformance.jsx"),
+  ),
   opac: lazy(() => import("./pages/PrivatePages/OPAC/OPAC.jsx")),
   "path-finder": lazy(
     () => import("./pages/PrivatePages/PathFinder/PathFinder.jsx"),

@@ -62,6 +62,25 @@ shows the time, who (with role), the concrete sentence, the source and an
 Every number and sentence comes from the database; nothing is computed or
 invented in the browser.
 
+## User performance page (admin only)
+
+`/user-performance` (sidebar: Members group) summarizes **one library person
+at a time** for evaluation — librarians, staff and admins, the roles that work
+in the library system. A dropdown lists every such person; the selected one
+shows:
+
+- The same four stat cards as the personal dashboard: Actions recorded (30
+  days), Active days, Current streak and Busiest day.
+- **Actions per day** — their 30-day bar chart (Philippine-time days, hover
+  for exact counts).
+- **Where the work goes** — their actions by kind with counts and shares.
+- Their role, library ID and **last recorded action** date.
+
+This is deliberately a summary, not a full audit — the User logs page has the
+every-action view with person search. All numbers come from the same
+server-side aggregation the personal dashboard uses
+(`lirc_private.activity_summary_for`).
+
 ## What records what
 
 - **`activity_events`** (append-only, server-attributed): every write to the 12
@@ -83,8 +102,9 @@ invented in the browser.
 
 `lirc_activity_feed` (own / all for admins), `lirc_activity_log_page`
 (admin, numbered pages), `lirc_activity_my_summary` (dashboard cards),
-`lirc_sign_in_activity`, plus `lirc_activity_trace` / `lirc_activity_for_entity`
-for record-level investigations.
+`lirc_personnel_performance_people` / `lirc_personnel_performance` (admin
+User performance page), `lirc_sign_in_activity`, plus `lirc_activity_trace` /
+`lirc_activity_for_entity` for record-level investigations.
 
 ## Next (optional)
 

@@ -55,6 +55,14 @@ export const MEMBER_PAGES = [
     group: "Members",
     allowedRoles: ACCESS.admin,
   },
+  {
+    id: "user-performance",
+    label: "User performance",
+    path: "/user-performance",
+    icon: "performance",
+    group: "Members",
+    allowedRoles: ACCESS.admin,
+  },
   // --- Attendance and validation (operators only) -------------------------
   {
     id: "attendance",
