@@ -2,7 +2,8 @@
 
 The **Book Borrow** page (staff / librarian / admin) records loans of exact
 physical copies, tracks returns, and answers "who borrowed this book?".
-A member's own borrow and attendance history lives on the
+Its tabs also list every **borrowed / overdue / returned** record with search
+and filters. A member's own borrow and attendance history lives on the
 [Users page](MEMBERS.md).
 
 ## The flow
@@ -13,7 +14,8 @@ A member's own borrow and attendance history lives on the
 2. **Open "Copies & loans"** — the window lists every copy by **accession
    number**: available copies, and on-loan copies with who has them and the
    due date (overdue marked). Below it sits the **borrowing history** — every
-   person who borrowed the book, current and returned.
+   person who borrowed the book, current and returned, newest first, six per
+   page.
 3. **Borrow a copy** — press *Borrow this copy*, scan the member's card, and
    review: name, card, active/overdue loans, and (for students) whether their
    library validation is in order. Staff set the **start and due date+time**
@@ -23,6 +25,25 @@ A member's own borrow and attendance history lives on the
    **borrower's own card**, set the return date+time, and record. The
    database checks the card against the loan record and rejects anyone who
    is not the borrower.
+
+## The records tabs
+
+The page's other tabs read `lirc_loan_records` — one page at a time with
+server-side totals:
+
+- **Borrowed** — every copy that is out right now, newest first; overdue
+  ones are marked. **Overdue** — past due, most overdue first. **Returned**
+  — completed loans, most recently returned first.
+- **Filters** — *Person* (name with word-order-free close-spelling match, or
+  a library card), *Role*, *Book* (title or accession number), and a date
+  range that follows the list (borrowed dates for borrowed/overdue, returned
+  dates for returned). The range starts empty so open loans never hide; the
+  *This semester* button fills it from the header semester.
+- **Tab badges** — the Borrowed and Overdue tabs show how many records match
+  the current filters (with no filters: the whole library — "238 out,
+  51 overdue"). The counts ignore the date range so open loans stay visible.
+- **Copies & loans** on a row opens the book's window, so a return can happen
+  straight from a record.
 
 ## The rules (all enforced in the database)
 
@@ -58,9 +79,12 @@ additive.
 | File | Job |
 | --- | --- |
 | Migration `20261012170000_book_loans.sql` | `book_loans` table + all RPCs |
-| `src/services/borrow/loanRules.js` | Manila date helpers + shared date validation (mirrored by the DB) |
-| `src/services/borrow/borrowService.js` | RPC calls for preview, borrow, return, book/member lists, member search |
-| `src/pages/PrivatePages/BookBorrow/BookBorrow.jsx` | The page (catalog search + copies window) |
+| Migration `20261018340000_loan_records.sql` | `lirc_loan_records` (borrowed/overdue/returned lists, filters, counts) + tab-sort indexes |
+| `src/services/borrow/loanRules.js` | Manila date helpers + shared date validation (mirrored by the DB) + day-count wording |
+| `src/services/borrow/borrowService.js` | RPC calls for preview, borrow, return, book/member lists, member search, records |
+| `src/pages/PrivatePages/BookBorrow/BookBorrow.jsx` | The page (tabs + catalog search + copies window) |
+| `src/components/borrow/LoanRecordsPanel.jsx` | The borrowed / overdue / returned lists (filters, pages, badges) |
+| `src/hooks/borrow/useLoanRecords.js` | Numbered-page loading for the records lists |
 | `src/components/borrow/BookLoanDialog.jsx` | Copies + history window |
 | `src/components/borrow/BorrowAction.jsx` | The borrow flow (card, validation, dates, confirm) |
 | `src/components/borrow/ReturnAction.jsx` | The return flow (borrower's card + return date, checked against the record) |
@@ -75,6 +99,7 @@ additive.
 | `lirc_book_loans(book_id)` | Everyone who borrowed one book |
 | `lirc_member_loans(profile_id)` | Every book one member borrowed |
 | `lirc_member_lookup(search)` | Find members by name or card |
+| `lirc_loan_records(scope, filters, page, page_size)` | One page of borrowed/overdue/returned records + totals + tab counts |
 
 ## Testing it
 
@@ -99,3 +124,8 @@ count first).
    historical record is accepted.
 5. Optional: with a member holding an overdue book, borrowing shows the
    confirm/cancel overdue warning first.
+6. **Records tabs** — open *Borrowed* to see every copy that is out, switch
+   to *Overdue* for the most overdue first, and *Returned* for the newest
+   returns. Type a name in *Person* to follow one member across all three
+   tabs (the badges become their counts), or scan a card. Press *Copies &
+   loans* on a row to return the copy.

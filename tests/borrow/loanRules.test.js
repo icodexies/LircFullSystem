@@ -6,6 +6,7 @@ import {
   addDaysInput,
   loanDateError,
   returnDateError,
+  daysLabel,
 } from "../../src/services/borrow/loanRules.js";
 
 test("Manila datetime inputs convert to the correct UTC moment", () => {
@@ -73,4 +74,13 @@ test("loan date rules mirror the database checks", () => {
     /invalid/,
   );
   assert.match(loanDateError({ start: "", due: nextWeek }), /Provide/);
+});
+
+test("day counts read naturally and never go negative", () => {
+  assert.equal(daysLabel(1), "1 day");
+  assert.equal(daysLabel(0), "0 days");
+  assert.equal(daysLabel(6), "6 days");
+  assert.equal(daysLabel(-4), "0 days");
+  assert.equal(daysLabel("3"), "3 days");
+  assert.equal(daysLabel(null), "0 days");
 });

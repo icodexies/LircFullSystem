@@ -77,3 +77,9 @@ export function loanDateError({ start, due, returned = "" }) {
   }
   return "";
 }
+
+// "1 day" / "5 days" — for the overdue and late wording in the records list.
+export function daysLabel(days) {
+  const value = Math.max(0, Math.floor(Number(days) || 0));
+  return value === 1 ? "1 day" : `${value} days`;
+}

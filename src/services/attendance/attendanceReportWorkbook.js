@@ -1,8 +1,11 @@
 // Builds the attendance Excel report. Kept separate from the download so the
-// layout can be tested. Two sheets:
+// layout can be tested. Three sheets:
 //   Report — title block, the applied filters, and the summary sections:
 //            visitor type, purpose, department → program, students by year
 //            level (department → year · program), faculty/staff by position
+//   Unique visitors — one line per person with their entry count, organized
+//            students by department → program, faculty and non-teaching
+//            personnel by position, library personnel by role, guests by card
 //   Visits — the filtered rows in a clean table
 import { ROLE_LABELS } from "../../routes/roles.js";
 import { displayTime } from "./attendanceRules.js";
@@ -18,6 +21,17 @@ export const VISIT_COLUMNS = [
   "Time out",
 ];
 export const VISIT_WIDTHS = [30, 14, 14, 12, 26, 24, 24];
+
+export const VISITOR_COLUMNS = [
+  "Name / group",
+  "Card",
+  "Visitor type",
+  "Year level",
+  "Department",
+  "Position",
+  "Visits",
+];
+export const VISITOR_WIDTHS = [32, 14, 15, 12, 16, 24, 8];
 
 const NAVY = "FF0B1330";
 const JADE = "FF0F8A6B";
@@ -199,6 +213,109 @@ export async function buildAttendanceReportWorkbook({ rows, summary, context }) 
       summary.byPosition,
     );
   }
+
+  /* -------------------------- Unique visitors sheet ----------------------- */
+  const visitors = workbook.addWorksheet("Unique visitors", {
+    pageSetup: {
+      paperSize: A4_PAPER_SIZE,
+      orientation: "landscape",
+      fitToPage: true,
+      fitToWidth: 1,
+      fitToHeight: 0,
+      margins: MARGINS,
+    },
+  });
+  VISITOR_WIDTHS.forEach((width, index) => {
+    visitors.getColumn(index + 1).width = width;
+  });
+
+  visitors.mergeCells(1, 1, 1, VISITOR_COLUMNS.length);
+  cell = visitors.getCell(1, 1);
+  cell.value = `Unique visitors — ${context.semesterName ?? "Attendance"}`;
+  cell.font = { bold: true, size: 14, color: { argb: "FFFFFFFF" } };
+  cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: NAVY } };
+  cell.alignment = { vertical: "middle" };
+  visitors.getRow(1).height = 24;
+
+  visitors.mergeCells(2, 1, 2, VISITOR_COLUMNS.length);
+  cell = visitors.getCell(2, 1);
+  cell.value =
+    context.filters && context.filters.length > 0
+      ? `Filters — ${context.filters.join(" · ")}`
+      : "Filters — none (every visit in this semester)";
+  cell.font = { size: 9, color: { argb: MUTED } };
+
+  visitors.mergeCells(3, 1, 3, VISITOR_COLUMNS.length);
+  cell = visitors.getCell(3, 1);
+  cell.value = `${summary.visitors.total.toLocaleString()} unique visitors · ${summary.total.toLocaleString()} visits — each person once, with how many times they came`;
+  cell.font = { size: 9, color: { argb: MUTED } };
+
+  let v = 5;
+  const visitorHeader = () => tableHeader(visitors, v++, VISITOR_COLUMNS);
+
+  band(visitors, v++, "Students — by department and program", VISITOR_COLUMNS.length);
+  visitorHeader();
+  summary.visitors.students.forEach((dept) => {
+    dataRow(visitors, v, [dept.department, "", "", "", "", "", dept.visits], {
+      bold: true,
+    });
+    v++;
+    dept.programs.forEach((program) => {
+      dataRow(visitors, v, [program.program, "", "", "", "", "", program.visits], {
+        indent: 1,
+      });
+      v++;
+      program.persons.forEach((person) => {
+        dataRow(
+          visitors,
+          v,
+          [
+            person.name,
+            person.library_id,
+            ROLE_LABELS[person.role] ?? person.role,
+            yearLabel(person.year_level),
+            "",
+            "",
+            person.visits,
+          ],
+          { indent: 2 },
+        );
+        v++;
+      });
+    });
+  });
+  v++;
+
+  summary.visitors.sections.forEach((group) => {
+    band(visitors, v++, group.title, VISITOR_COLUMNS.length);
+    visitorHeader();
+    group.groups.forEach((entry) => {
+      if (entry.label) {
+        dataRow(visitors, v, [entry.label, "", "", "", "", "", entry.visits], {
+          bold: true,
+        });
+        v++;
+      }
+      entry.persons.forEach((person) => {
+        dataRow(
+          visitors,
+          v,
+          [
+            person.name,
+            person.library_id,
+            ROLE_LABELS[person.role] ?? person.role,
+            "",
+            person.department,
+            person.position,
+            person.visits,
+          ],
+          { indent: entry.label ? 1 : 0 },
+        );
+        v++;
+      });
+    });
+    v++;
+  });
 
   /* ------------------------------ Visits sheet ---------------------------- */
   const visits = workbook.addWorksheet("Visits", {

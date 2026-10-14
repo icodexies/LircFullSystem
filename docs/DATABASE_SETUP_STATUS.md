@@ -106,6 +106,7 @@ transaction; migration history synced):
 | `20261018310000_performance_ai_burst_signal` | AI dossier gains the busiest five-minute window (`max_actions_in_5_min`); the rating weighs same-action bursts heavily (days worked are context only) |
 | `20261018320000_performance_ai_history` | AI dossier gains the person's previous monthly ratings; the stored `trend` (First month / Improved / Steady / Declined) follows on the report list |
 | `20261018330000_guest_visitors` | Guest visitors: the `guest` visitor type, `attendance.guest_name`/`guest_detail` (saved per visit), ten reusable GUEST-01…GUEST-10 profiles, and purpose data on the library's own list (Study, Research, Borrow Books, Return Books, LOA, EXIT CLEARANCE, INTERVIEW, THESIS, OJT, Others) |
+| `20261018340000_loan_records` | Book Borrow record tabs: `lirc_loan_records` (borrowed / overdue / returned lists with person/role/book/date filters, server-side totals and tab counts) + two tab-sort indexes on `book_loans` |
 
 Attendance now holds the **real records imported from the previous system**
 (4,498 visits, March–October 2026; the demo/seed rows and their log lines were

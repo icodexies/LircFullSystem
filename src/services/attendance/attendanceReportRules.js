@@ -116,7 +116,156 @@ export function summarizeAttendance(rows = []) {
       rows.filter((row) => row.role !== "student" && row.position),
       (row) => row.position,
     ),
+    visitors: visitorSections(rows),
   };
+}
+
+// ---------------------------------------------------------------------------
+// Unique visitors: one line per person with how many times they visited,
+// organized the way the library reads its records:
+//   * students — department → program (year level from their latest visit)
+//   * faculty and non-teaching personnel — by position
+//   * library personnel (staff / librarian / admin) — by role
+//   * guests — one line per guest card + typed name
+// Every person carries the info columns the sheet shows (card, type, year
+// level, department, position) plus their entry count.
+// ---------------------------------------------------------------------------
+const NO_POSITION = "(No position)";
+const LIBRARY_ROLES = ["staff", "librarian", "admin"];
+
+function personSort(a, b) {
+  return (
+    b.visits - a.visits ||
+    String(a.name ?? "").localeCompare(String(b.name ?? ""))
+  );
+}
+
+function groupBy(persons, labelOf) {
+  const groups = new Map();
+  for (const person of persons) {
+    const label = labelOf(person);
+    const list = groups.get(label) ?? [];
+    list.push(person);
+    groups.set(label, list);
+  }
+  return [...groups.entries()]
+    .map(([label, list]) => ({
+      label,
+      visits: list.reduce((sum, person) => sum + person.visits, 0),
+      persons: list.sort(personSort),
+    }))
+    .sort((a, b) => b.visits - a.visits || a.label.localeCompare(b.label));
+}
+
+export function visitorSections(rows = []) {
+  const people = new Map();
+  for (const row of rows) {
+    const guest = Boolean(row.guest_name);
+    const key = guest
+      ? `guest:${row.user_profile_id ?? row.library_id ?? ""}:${String(row.guest_name).trim().toLowerCase()}`
+      : `user:${row.user_profile_id ?? row.library_id ?? row.full_name ?? ""}`;
+    const person = people.get(key) ?? {
+      name: guest ? String(row.guest_name).trim() : row.full_name,
+      library_id: row.library_id,
+      role: row.role,
+      guest,
+      year_level: null,
+      department: row.department || "",
+      program: row.program || "",
+      position: row.position || "",
+      visits: 0,
+      latest: "",
+    };
+    person.visits += 1;
+    const moment = String(row.time_in ?? "");
+    if (moment > person.latest) {
+      person.latest = moment;
+      if (!guest && row.role === "student")
+        person.year_level = row.year_level ?? null;
+    }
+    people.set(key, person);
+  }
+  const list = [...people.values()];
+
+  const studentDepartments = new Map();
+  for (const person of list.filter((p) => p.role === "student" && !p.guest)) {
+    const department = person.department || NO_DEPARTMENT;
+    const program = person.program || NO_PROGRAM;
+    if (!studentDepartments.has(department))
+      studentDepartments.set(department, new Map());
+    const programs = studentDepartments.get(department);
+    const persons = programs.get(program) ?? [];
+    persons.push(person);
+    programs.set(program, persons);
+  }
+  const students = [...studentDepartments.entries()]
+    .map(([department, programs]) => {
+      const programList = [...programs.entries()]
+        .map(([program, persons]) => ({
+          program,
+          visits: persons.reduce((sum, person) => sum + person.visits, 0),
+          persons: persons.sort(personSort),
+        }))
+        .sort(
+          (a, b) =>
+            b.visits - a.visits || a.program.localeCompare(b.program),
+        );
+      return {
+        department,
+        students: programList.reduce(
+          (sum, program) => sum + program.persons.length,
+          0,
+        ),
+        visits: programList.reduce((sum, program) => sum + program.visits, 0),
+        programs: programList,
+      };
+    })
+    .sort((a, b) => b.visits - a.visits || a.department.localeCompare(b.department));
+
+  const without = (role) => list.filter((p) => !p.guest && p.role === role);
+  const sections = [
+    {
+      key: "faculty",
+      title: "Faculty — by position",
+      groups: groupBy(without("faculty"), (p) => p.position || NO_POSITION),
+    },
+    {
+      key: "non_teaching",
+      title: "Non-teaching personnel — by position",
+      groups: groupBy(
+        without("non_teaching_personnel"),
+        (p) => p.position || NO_POSITION,
+      ),
+    },
+    {
+      key: "library",
+      title: "Library personnel",
+      groups: groupBy(
+        list.filter((p) => !p.guest && LIBRARY_ROLES.includes(p.role)),
+        (p) => ROLE_LABELS[p.role] ?? p.role,
+      ),
+    },
+    {
+      key: "guests",
+      title: "Guests — one line per guest card and typed name",
+      groups: groupBy(list.filter((p) => p.guest), () => ""),
+    },
+    {
+      key: "other",
+      title: "Other visitors",
+      groups: groupBy(
+        list.filter(
+          (p) =>
+            !p.guest &&
+            !["student", "faculty", "non_teaching_personnel"].includes(p.role) &&
+            !LIBRARY_ROLES.includes(p.role),
+        ),
+        (p) => ROLE_LABELS[p.role] ?? p.role,
+      ),
+    },
+  ].filter((section) => section.groups.length > 0);
+
+  return { total: list.length, students, sections };
 }
 
 // "Visitor type: Student", "Visit date from: Oct 14, 2026" … in the order of

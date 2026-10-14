@@ -87,3 +87,25 @@ export async function findMembers(search, signal) {
   if (error) throw borrowError(error);
   return data?.members ?? [];
 }
+
+// Borrow records for the Book Borrow tabs: one page of loans (borrowed,
+// overdue or returned) with server-side totals, pages and tab counts.
+export async function getLoanRecords({
+  scope,
+  filters = {},
+  page = 1,
+  pageSize = 20,
+  signal,
+} = {}) {
+  const client = await getSupabase();
+  const { data, error } = await client
+    .rpc("lirc_loan_records", {
+      p_scope: scope,
+      p_filters: filters,
+      p_page: page,
+      p_page_size: pageSize,
+    })
+    .abortSignal(signal);
+  if (error) throw borrowError(error);
+  return data;
+}

@@ -14,11 +14,15 @@ import { StatusBadge, secondaryButton } from "../attendance/WorkspaceUi.jsx";
 import { tableButton } from "../attendance/StaffUi.jsx";
 import { SkeletonRows } from "../ui/Skeleton.jsx";
 
+// The borrowing history lists this many rows per page.
+const HISTORY_PAGE_SIZE = 6;
+
 export default function BookLoanDialog({ book, onClose }) {
   const toast = useToast();
   const [page, setPage] = useState(1);
   const [copies, setCopies] = useState(null);
   const [loans, setLoans] = useState(null);
+  const [historyPage, setHistoryPage] = useState(1);
   const [revision, setRevision] = useState(0);
   const [borrowCopy, setBorrowCopy] = useState(null);
   const [returnTarget, setReturnTarget] = useState(null);
@@ -40,9 +44,19 @@ export default function BookLoanDialog({ book, onClose }) {
     };
   }, [book.id, page, revision, toast]);
 
-  const refresh = () => setRevision((value) => value + 1);
+  const refresh = () => {
+    setHistoryPage(1);
+    setRevision((value) => value + 1);
+  };
   const openByAccession = new Map(
     (loans ?? []).filter((loan) => loan.is_open).map((loan) => [loan.accession_id, loan]),
+  );
+  // The borrowing history pages six rows at a time, newest first.
+  const historyPages = Math.max(1, Math.ceil((loans?.length ?? 0) / HISTORY_PAGE_SIZE));
+  const safeHistoryPage = Math.min(historyPage, historyPages);
+  const historyRows = (loans ?? []).slice(
+    (safeHistoryPage - 1) * HISTORY_PAGE_SIZE,
+    safeHistoryPage * HISTORY_PAGE_SIZE,
   );
 
   return (
@@ -233,7 +247,7 @@ export default function BookLoanDialog({ book, onClose }) {
                 </p>
               ) : (
                 <ul className="mt-3 divide-y divide-slate-100">
-                  {loans.map((loan) => (
+                  {historyRows.map((loan) => (
                     <li
                       key={loan.id}
                       className="flex flex-wrap items-center justify-between gap-2 py-2.5 text-xs"
@@ -265,6 +279,29 @@ export default function BookLoanDialog({ book, onClose }) {
                     </li>
                   ))}
                 </ul>
+              )}
+              {(safeHistoryPage > 1 || safeHistoryPage < historyPages) && (
+                <div className="mt-3 flex items-center justify-end gap-3 text-[11px] text-slate-500">
+                  <button
+                    type="button"
+                    className={tableButton}
+                    disabled={safeHistoryPage === 1}
+                    onClick={() => setHistoryPage(safeHistoryPage - 1)}
+                  >
+                    Previous
+                  </button>
+                  <span>
+                    Page {safeHistoryPage} of {historyPages}
+                  </span>
+                  <button
+                    type="button"
+                    className={tableButton}
+                    disabled={safeHistoryPage >= historyPages}
+                    onClick={() => setHistoryPage(safeHistoryPage + 1)}
+                  >
+                    Next
+                  </button>
+                </div>
               )}
             </section>
           </>

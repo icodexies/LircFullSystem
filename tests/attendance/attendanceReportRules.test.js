@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {
   describeAttendanceFilters,
   summarizeAttendance,
+  visitorSections,
   yearLabel,
 } from "../../src/services/attendance/attendanceReportRules.js";
 
@@ -147,4 +148,66 @@ test("applied filters are described in words", () => {
   assert.equal(lines.length, 2);
   assert.match(lines[0], /^Visit date from: Oct 1, 2026/);
   assert.equal(lines[1], "Search: dela cruz");
+});
+
+test("unique visitors carry their entry count, organized for the report", () => {
+  const rows = [
+    { user_profile_id: 1, role: "student", department: "DCI", program: "IT", year_level: 2, full_name: "Mark Ian Dagos", library_id: "23-001", time_in: "2026-10-01T02:00:00Z" },
+    { user_profile_id: 1, role: "student", department: "DCI", program: "IT", year_level: 3, full_name: "Mark Ian Dagos", library_id: "23-001", time_in: "2026-10-05T02:00:00Z" },
+    { user_profile_id: 2, role: "student", department: "DCI", program: "CS", year_level: 4, full_name: "Ana Cruz", library_id: "23-002", time_in: "2026-10-02T02:00:00Z" },
+    { user_profile_id: 3, role: "student", department: null, program: null, year_level: 1, full_name: "No Dept", library_id: "23-003", time_in: "2026-10-02T03:00:00Z" },
+    { user_profile_id: 4, role: "faculty", department: "DCI", position: "Instructor", full_name: "Ben Reyes", library_id: "F-001", time_in: "2026-10-03T02:00:00Z" },
+    { user_profile_id: 5, role: "non_teaching_personnel", position: "Library Aide", full_name: "Cara Lim", library_id: "N-001", time_in: "2026-10-03T02:00:00Z" },
+    { user_profile_id: 6, role: "librarian", position: "Librarian", full_name: "Dina Santos", library_id: "LIB-0001", time_in: "2026-10-03T02:00:00Z" },
+    { user_profile_id: 7, role: "guest", guest_name: "Juan Visitor", library_id: "GUEST-01", time_in: "2026-10-04T02:00:00Z" },
+    { user_profile_id: 7, role: "guest", guest_name: "Juan Visitor", library_id: "GUEST-01", time_in: "2026-10-06T02:00:00Z" },
+    { user_profile_id: 7, role: "guest", guest_name: "Another Guest", library_id: "GUEST-01", time_in: "2026-10-06T03:00:00Z" },
+  ];
+  const visitors = visitorSections(rows);
+  assert.equal(visitors.total, 8);
+
+  // Students: department -> program, each person with their entry count.
+  assert.deepEqual(
+    visitors.students.map((dept) => [dept.department, dept.students, dept.visits]),
+    [
+      ["DCI", 2, 3],
+      ["(No department)", 1, 1],
+    ],
+  );
+  assert.deepEqual(
+    visitors.students[0].programs.map((p) => [p.program, p.visits, p.persons.length]),
+    [
+      ["IT", 2, 1],
+      ["CS", 1, 1],
+    ],
+  );
+  const mark = visitors.students[0].programs[0].persons[0];
+  assert.equal(mark.name, "Mark Ian Dagos");
+  assert.equal(mark.visits, 2);
+  assert.equal(mark.year_level, 3); // the year level from the latest visit
+  assert.equal(visitors.students[1].programs[0].program, "(No program)");
+
+  // The non-student sections in order, grouped as the library reads them.
+  assert.deepEqual(
+    visitors.sections.map((section) => section.title),
+    [
+      "Faculty — by position",
+      "Non-teaching personnel — by position",
+      "Library personnel",
+      "Guests — one line per guest card and typed name",
+    ],
+  );
+  assert.equal(visitors.sections[0].groups[0].label, "Instructor");
+  assert.equal(visitors.sections[0].groups[0].persons[0].visits, 1);
+  assert.equal(visitors.sections[1].groups[0].label, "Library Aide");
+  assert.equal(visitors.sections[2].groups[0].label, "Librarian");
+
+  // Guests: the same card + typed name is one person; a new name is its own.
+  assert.deepEqual(
+    visitors.sections[3].groups[0].persons.map((p) => [p.name, p.visits]),
+    [
+      ["Juan Visitor", 2],
+      ["Another Guest", 1],
+    ],
+  );
 });
