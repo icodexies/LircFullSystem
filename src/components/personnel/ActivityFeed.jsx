@@ -25,7 +25,7 @@ const SOURCE_TONES = {
   system: "bg-slate-100 text-slate-600",
 };
 
-export default function ActivityFeed({ pageSize = 20 }) {
+export default function ActivityFeed({ pageSize = 10 }) {
   const [filter, setFilter] = useState("");
   const feed = useActivityFeed({
     scope: "own",
@@ -120,17 +120,25 @@ export default function ActivityFeed({ pageSize = 20 }) {
               );
             })}
           </ul>
-          {feed.hasMore && (
-            <div className="mt-4 flex justify-center">
-              <button
-                type="button"
-                className={secondaryButton}
-                onClick={feed.loadMore}
-              >
-                Load more
-              </button>
-            </div>
-          )}
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+            <button
+              type="button"
+              className={secondaryButton}
+              disabled={feed.loading || !feed.hasPrev}
+              onClick={feed.previousPage}
+            >
+              Previous
+            </button>
+            <p className="text-[11px] text-slate-500">Page {feed.page}</p>
+            <button
+              type="button"
+              className={secondaryButton}
+              disabled={feed.loading || !feed.hasNext}
+              onClick={feed.nextPage}
+            >
+              Next
+            </button>
+          </div>
         </>
       )}
     </section>

@@ -4,6 +4,7 @@
 import { displayTime } from "../../services/attendance/attendanceRules.js";
 import { signInSourceNote } from "../../services/personnel/personnelRules.js";
 import { useSignInActivity } from "../../hooks/personnel/useSignInActivity.js";
+import { secondaryButton } from "../attendance/WorkspaceUi.jsx";
 import { chipClass, sectionHeadingClass, headingBarClass } from "./panel.js";
 import EmptyState from "./EmptyState.jsx";
 import { Spinner } from "../ui/Loading.jsx";
@@ -59,6 +60,25 @@ export default function SignInActivity() {
               </li>
             ))}
           </ul>
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+            <button
+              type="button"
+              className={secondaryButton}
+              disabled={signIn.loading || !signIn.hasPrev}
+              onClick={signIn.previousPage}
+            >
+              Previous
+            </button>
+            <p className="text-[11px] text-slate-500">Page {signIn.page}</p>
+            <button
+              type="button"
+              className={secondaryButton}
+              disabled={signIn.loading || !signIn.hasNext}
+              onClick={signIn.nextPage}
+            >
+              Next
+            </button>
+          </div>
           <p className="mt-4 rounded-xl bg-[#F7F6FB] px-3.5 py-2.5 text-[11px] leading-relaxed text-slate-600">
             {signInSourceNote(signIn.data.source)}
             {signIn.data.coverage_first && signIn.data.coverage_last

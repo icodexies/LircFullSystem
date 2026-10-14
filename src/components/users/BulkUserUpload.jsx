@@ -26,18 +26,14 @@ import {
   secondaryButton,
   StatusBadge,
 } from "../attendance/WorkspaceUi.jsx";
+import { downloadBlob } from "../../services/shared/fileDownload.js";
 
 function downloadCsv(fileName, text) {
   // The BOM keeps Excel happy with UTF-8 text.
-  const blob = new Blob(["\uFEFF" + text], { type: "text/csv;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = fileName;
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  URL.revokeObjectURL(url);
+  downloadBlob(
+    new Blob(["\uFEFF" + text], { type: "text/csv;charset=utf-8" }),
+    fileName,
+  );
 }
 
 function ReferenceList({ title, rows }) {

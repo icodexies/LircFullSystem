@@ -10,6 +10,7 @@ import { displayTime } from "../../services/attendance/attendanceRules.js";
 import { StatusBadge } from "../attendance/WorkspaceUi.jsx";
 import { tableButton } from "../attendance/StaffUi.jsx";
 import { LoadingBlock } from "../ui/Loading.jsx";
+import Avatar from "../ui/Avatar.jsx";
 
 function Fact({ label, value }) {
   return (
@@ -74,14 +75,17 @@ export default function MemberDetails({ member, onBack, onEdit }) {
         <LoadingBlock label="Loading member…" className="min-h-[12rem]" />
       ) : (
         <>
-          <div>
-            <p className="font-serif text-xl font-bold text-[#0B1330]">
-              {profile.full_name}
-            </p>
-            <p className="mt-0.5 text-xs text-slate-500">
-              {profile.library_id} · {String(profile.role).replaceAll("_", " ")} ·{" "}
-              {profile.user_linked ? "Login account linked" : "No login account"}
-            </p>
+          <div className="flex items-center gap-4">
+            <Avatar src={profile.avatar_url} className="h-14 w-14" />
+            <div>
+              <p className="font-serif text-xl font-bold text-[#0B1330]">
+                {profile.full_name}
+              </p>
+              <p className="mt-0.5 text-xs text-slate-500">
+                {profile.library_id} · {String(profile.role).replaceAll("_", " ")} ·{" "}
+                {profile.user_linked ? "Login account linked" : "No login account"}
+              </p>
+            </div>
           </div>
           <dl className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <Fact label="Department" value={profile.department ?? "Unassigned"} />

@@ -1,6 +1,7 @@
 # Adding users
 
-The **Users** page has an **Add User** button (top right of the navy banner).
+The **Users** page has an **Add User** button (top right of the navy banner;
+**admin only** — staff and librarians see the page without it).
 It opens a window with two tabs — **Individual** and **Bulk CSV Upload** —
 that follow the same rules. The database checks everything again on save, so
 the two methods can never drift apart.

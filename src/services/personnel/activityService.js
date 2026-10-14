@@ -28,16 +28,6 @@ export async function activityFeed({
   return data;
 }
 
-export async function activityTrace(operationId, { signal } = {}) {
-  if (!operationId) throw new Error("An operation id is required.");
-  const client = await getSupabase();
-  const { data, error } = await client
-    .rpc("lirc_activity_trace", { p_operation_id: operationId })
-    .abortSignal(signal);
-  if (error) throw activityError(error);
-  return data;
-}
-
 // Admin-only full log with numbered pages.
 export async function activityLogPage({
   filters = {},

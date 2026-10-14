@@ -90,6 +90,17 @@ transaction; migration history synced):
 | `20261018150000_library_validation_terms` | Terminology: the annual enrollment process reads as "Library validation" in the feed and User logs |
 | `20261018160000_validation_status_labels` | Status words everywhere: `enrolled` reads as "Validated" (borrow checks and validation-change notifications included) |
 | `20261018170000_personnel_performance` | Admin User performance page: people list (librarian/staff/admin) and one person's summarized statistics from a shared aggregation helper |
+| `20261018180000_enrollment_request_links` | Validation change requests: notifications deep-link to the exact request (`/enrollments?request=<id>`), plus `lirc_enrollment_requests` (tabs) and `lirc_enrollment_request_detail` |
+| `20261018190000_inventory_start_admin` | Starting an inventory session is admin-only (`lirc_inventory_start`); counting, pausing, resuming and finishing stay open to staff and librarians |
+| `20261018200000_roles_and_paging` | Staff can work the Attendance desk (`attendance_staff_id` widened; validation family moved to `validation_staff_id`); adding members is admin-only; sign-in history gains `p_offset` + `has_more` |
+| `20261018210000_policy_function_grants` | Hotfix: restore EXECUTE on `attendance_staff_id` / `validation_staff_id` — RLS policies run as the querying role, so revoked helpers broke the profile read (403) and the enrollment policies |
+| `20261018220000_profile_and_notification_pages` | Notifications page support (`lirc_notification_feed` gains `p_limit`/`p_offset`, `total`, `has_more`) and the profile page (`lirc_my_profile` — own basic info with department/program/position names + email) |
+| `20261018230000_profile_avatars` | Profile photos: `usersData.avatar_url`, a public `avatars` storage bucket (own-folder policy), `lirc_set_my_avatar` (validated), preset images + the fallback |
+| `20261018240000_avatars_in_reports` | Photos flow into staff screens: visit rows, member lookup, member record and the performance profile carry `avatar_url` |
+| `20261018250000_program_departments` | Programs belong to departments (`programs.department_id`): DBA — BSA/BSAIS; DTE — BEED/BECED/BSED/BSE-*; DCI — BSCS/BSIT; DAS — BSPSY. 7,371 members classified in `usersData.department_id` (BSP and BS-F left for the registrar) |
+| `20261018260000_bsf_department` | Registrar follow-up: BS-F → DTE (its member classified); BSP stays unassigned until classified |
+| `20261018270000_attendance_export_rpc` | One-call attendance export (`lirc_attendance_export`) — the Excel report reads every filtered visit in one request instead of ~100 pages |
+| `20261018280000_library_id_lower_index` | Cleanup: functional index on `lower(library_id)` for case-insensitive card lookups and duplicate checks |
 
 The goal system is **removed** (14 October 2026). The personnel dashboard and
 the admin **User logs** page read the activity log directly.

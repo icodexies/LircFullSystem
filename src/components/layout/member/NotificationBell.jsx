@@ -120,6 +120,18 @@ export default function NotificationBell() {
               </li>
             ))}
           </ul>
+          <div className="border-t border-slate-100 p-2">
+            <button
+              type="button"
+              onClick={() => {
+                setOpen(false);
+                navigate("/notifications");
+              }}
+              className="w-full rounded-xl px-3 py-2.5 text-center text-[11px] font-semibold text-[#3B4A86] transition-colors hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3B4A86]"
+            >
+              View all notifications
+            </button>
+          </div>
         </div>
       )}
     </div>

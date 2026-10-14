@@ -69,6 +69,7 @@ function MemberWorkspace() {
           pageTitle={currentPage?.label ?? "Dashboard"}
           name={name}
           role={role}
+          avatarUrl={profile?.avatar_url}
           onOpenMenu={() => dialogRef.current?.showModal()}
           onLogout={handleLogout}
           loggingOut={loggingOut}

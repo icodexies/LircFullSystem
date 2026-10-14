@@ -8,6 +8,7 @@ const emptyProfile = { userId: null, data: null, error: null };
 export function AuthProvider({ children }) {
   const [session, setSession] = useState({ user: null, loading: true, error: null });
   const [profileState, setProfileState] = useState(emptyProfile);
+  const [profileRevision, setProfileRevision] = useState(0);
   const userId = session.user?.id ?? null;
 
   useEffect(() => {
@@ -96,7 +97,7 @@ export function AuthProvider({ children }) {
       active = false;
       controller.abort();
     };
-  }, [userId]);
+  }, [userId, profileRevision]);
 
   // An old user's profile must never appear while the next user's request is pending.
   const profile = userId && profileState.userId === userId ? profileState.data : null;
@@ -110,6 +111,8 @@ export function AuthProvider({ children }) {
     error: session.error || profileError,
     login,
     logout,
+    // Re-read the profile (used after changing the profile photo).
+    refreshProfile: () => setProfileRevision((value) => value + 1),
   }), [session.user, session.error, profile, loading, profileError]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

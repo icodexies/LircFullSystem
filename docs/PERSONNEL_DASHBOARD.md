@@ -22,9 +22,11 @@ person does, from the append-only activity log.
   academic periods, barcode, other) with counts and percentages. This chart
   is the *only* place the type breakdown appears.
 - **Your activity** — your own actions only, with filter chips (hover a chip
-  to see what it covers), "load more" (keyset paging) and links to the
-  managing page. The everyone view lives on the admin User logs page.
-- **Your sign-ins** — when your account opened the system. Until the
+  to see what it covers), Previous/Next pages (10 per page, keyset paging) and
+  links to the managing page. The everyone view lives on the admin User logs
+  page.
+- **Your sign-ins** — when your account opened the system, with Previous/Next
+  pages. Until the
   Supabase dashboard toggle *"Write audit logs to the database"* is enabled
   this reads session records only and says so, with coverage dates.
 

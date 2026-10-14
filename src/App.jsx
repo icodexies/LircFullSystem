@@ -21,6 +21,12 @@ const ResetPassword = lazy(
   () => import("./pages/PublicPages/ResetPasswordPage/ResetPassword.jsx"),
 );
 const MemberLayout = lazy(() => import("./layouts/member/MemberLayout.jsx"));
+const NotificationsPage = lazy(
+  () => import("./pages/PrivatePages/Notifications/Notifications.jsx"),
+);
+const ProfilePage = lazy(
+  () => import("./pages/PrivatePages/Profile/Profile.jsx"),
+);
 const Unauthorized = lazy(() => import("./pages/Unauthorized.jsx"));
 
 const memberScreens = {
@@ -88,6 +94,12 @@ export default function App() {
                       path="/home"
                       element={<Navigate to="/dashboard" replace />}
                     />
+                    {/* Bell and header shortcuts — not sidebar pages. */}
+                    <Route
+                      path="/notifications"
+                      element={<NotificationsPage />}
+                    />
+                    <Route path="/profile" element={<ProfilePage />} />
                     {MEMBER_PAGES.map((page) => {
                       const Screen = memberScreens[page.id];
                       return (

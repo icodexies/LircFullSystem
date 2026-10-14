@@ -13,6 +13,7 @@ const expectedPages = {
     "path-finder",
     "statistics",
     "users",
+    "attendance",
     "barcode-generator",
     "book-borrow",
     "inventory",

@@ -151,12 +151,37 @@ export async function reviewEnrollmentChange(requestId, approve) {
   return data ?? { ok: true };
 }
 
-// Admin only: how many past-year changes are waiting for approval.
-export async function getPendingApprovalCount(signal) {
+// Every filtered visit in one call — the Excel report reads this instead of
+// paging through the on-screen report.
+export async function getAttendanceExport(periodId, filters, signal) {
   const client = await getSupabase();
   const { data, error } = await client
-    .rpc("lirc_pending_change_count")
+    .rpc("lirc_attendance_export", {
+      p_semester_id: periodId,
+      p_filters: filters,
+    })
     .abortSignal(signal);
   if (error) throw attendanceError(error);
-  return Number(data ?? 0);
+  return data?.rows ?? [];
+}
+
+// Validation change requests: every request for admins, own for librarians.
+export async function getEnrollmentRequests(onlyMine, signal) {
+  const client = await getSupabase();
+  const { data, error } = await client
+    .rpc("lirc_enrollment_requests", { p_only_mine: onlyMine })
+    .abortSignal(signal);
+  if (error) throw attendanceError(error);
+  return data?.requests ?? [];
+}
+
+// One request's student, school year and current record — used to open the
+// validation window from a notification or the request tabs.
+export async function getEnrollmentRequestDetail(requestId, signal) {
+  const client = await getSupabase();
+  const { data, error } = await client
+    .rpc("lirc_enrollment_request_detail", { p_request_id: requestId })
+    .abortSignal(signal);
+  if (error) throw attendanceError(error);
+  return data;
 }

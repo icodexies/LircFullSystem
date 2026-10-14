@@ -5,6 +5,7 @@ import { displayTime } from "../../services/attendance/attendanceRules.js";
 import { STATUS_LABELS } from "../../services/attendance/reportFilters.js";
 import { tableButton } from "./StaffUi.jsx";
 import { useToast } from "../../hooks/shared/useToast.js";
+import Avatar from "../ui/Avatar.jsx";
 export default function VisitTable({ rows, onChanged }) {
   const toast = useToast();
   const [busy, setBusy] = useState(null);
@@ -31,6 +32,7 @@ export default function VisitTable({ rows, onChanged }) {
           <thead className="bg-[#F7F6FB]">
             <tr>
               {[
+                "Photo",
                 "Visitor/card",
                 "Visitor type / year level",
                 "Purpose / classifications",
@@ -51,6 +53,9 @@ export default function VisitTable({ rows, onChanged }) {
                 key={row.id}
                 className="border-b border-slate-100 hover:bg-[#F7F6FB]/50"
               >
+                <td className="px-5 py-4 align-top">
+                  <Avatar src={row.avatar_url} className="h-10 w-10" />
+                </td>
                 <td className="px-5 py-4 align-top">
                   <p className="font-semibold">{row.full_name}</p>
                   <p>{row.library_id}</p>

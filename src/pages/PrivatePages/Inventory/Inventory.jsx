@@ -3,6 +3,7 @@
 // immediately and an unfinished inventory can be continued anytime. Finished
 // inventories stay in the history below.
 import { useEffect, useState } from "react";
+import { useAuth } from "../../../hooks/auth/useAuth.js";
 import { useDialog } from "../../../hooks/shared/useDialog.js";
 import { useToast } from "../../../hooks/shared/useToast.js";
 import {
@@ -38,6 +39,8 @@ const TABS = [
 ];
 
 export default function Inventory() {
+  const { role } = useAuth();
+  const isAdmin = role === "admin";
   const toast = useToast();
   const dialog = useDialog();
   const [state, setState] = useState(null);
@@ -231,7 +234,7 @@ export default function Inventory() {
                 {finishing ? "Finishing…" : "Finish Inventory"}
               </button>
             </>
-          ) : (
+          ) : isAdmin ? (
             <button
               type="button"
               className={heroPrimary}
@@ -240,7 +243,7 @@ export default function Inventory() {
             >
               Start Inventory
             </button>
-          )
+          ) : null
         }
       >
         {session && (
@@ -306,7 +309,11 @@ export default function Inventory() {
           {paused.length > 0 && (
             <WorkspacePanel
               title="Paused inventories"
-              description="Paused inventories keep every scan. Resume one to keep scanning, or start a new inventory below."
+              description={
+                isAdmin
+                  ? "Paused inventories keep every scan. Resume one to keep scanning, or start a new inventory below."
+                  : "Paused inventories keep every scan. Resume one to keep scanning."
+              }
             >
               <div className="px-5 py-4 sm:px-6">
                 <ul className="divide-y divide-slate-100">
@@ -352,15 +359,22 @@ export default function Inventory() {
             description="No inventory is open right now."
           >
             <div className="px-5 py-6 sm:px-6">
-              <p className="max-w-xl text-xs leading-relaxed text-slate-500">
-                Press{" "}
-                <strong className="font-semibold text-[#0B1330]">
-                  Start Inventory
-                </strong>{" "}
-                to name a new one — for example "Annual Inventory 2026." An
-                unfinished inventory can be paused and continued anytime from
-                this page.
-              </p>
+              {isAdmin ? (
+                <p className="max-w-xl text-xs leading-relaxed text-slate-500">
+                  Press{" "}
+                  <strong className="font-semibold text-[#0B1330]">
+                    Start Inventory
+                  </strong>{" "}
+                  to name a new one — for example "Annual Inventory 2026." An
+                  unfinished inventory can be paused and continued anytime from
+                  this page.
+                </p>
+              ) : (
+                <p className="max-w-xl text-xs leading-relaxed text-slate-500">
+                  Only an admin can start a new inventory session. Once one is
+                  open, you can scan and review copies on this page.
+                </p>
+              )}
             </div>
           </WorkspacePanel>
         </>

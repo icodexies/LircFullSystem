@@ -10,13 +10,51 @@ export async function getUserProfile(userId, signal) {
   const supabase = await getSupabase();
   const { data, error } = await supabase
     .from("usersData")
-    .select("first_name, surname, library_id, role")
+    .select("first_name, surname, library_id, role, avatar_url")
     .eq("user_id", userId)
     .abortSignal(signal)
     .maybeSingle();
   if (error) throw error;
   if (!data) throw new Error("No library profile is linked to this account.");
   return data;
+}
+
+// The profile page: the signed-in member's own basic information (any role).
+export async function getMyProfile(signal) {
+  const supabase = await getSupabase();
+  const { data, error } = await supabase
+    .rpc("lirc_my_profile")
+    .abortSignal(signal);
+  if (error) throw error;
+  return data;
+}
+
+// Choose a photo (a preset path or the uploaded public URL) or clear it with
+// an empty string to go back to the fallback image.
+export async function setMyAvatar(url) {
+  const supabase = await getSupabase();
+  const { data, error } = await supabase.rpc("lirc_set_my_avatar", {
+    p_url: url,
+  });
+  if (error) throw error;
+  return data?.avatar_url ?? null;
+}
+
+// Upload one image into the member's own folder in the avatars bucket.
+export async function uploadMyAvatar(file) {
+  const supabase = await getSupabase();
+  const { data: sessionData } = await supabase.auth.getSession();
+  const uid = sessionData?.session?.user?.id;
+  if (!uid) throw new Error("Your session has ended. Sign in again.");
+  const extension = (file.name.split(".").pop() || "jpg").toLowerCase();
+  const path = `${uid}/avatar-${Date.now()}.${extension}`;
+  const { error } = await supabase.storage.from("avatars").upload(path, file, {
+    cacheControl: "3600",
+    contentType: file.type || "image/jpeg",
+  });
+  if (error) throw error;
+  const { data } = supabase.storage.from("avatars").getPublicUrl(path);
+  return data.publicUrl;
 }
 
 export async function login({ email, password, remember = false }) {

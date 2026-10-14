@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useAuth } from "../../../hooks/auth/useAuth.js";
+import { ACCESS } from "../../../routes/roles.js";
 import { useSemester } from "../../../hooks/periods/useSemester.js";
 import { usePeriodReport } from "../../../hooks/periods/usePeriodReport.js";
 import { useReportFilters } from "../../../hooks/attendance/useReportFilters.js";
@@ -23,6 +25,8 @@ import VisitTable from "../../../components/attendance/VisitTable.jsx";
 import ManilaClock from "../../../components/attendance/ManilaClock.jsx";
 import Modal from "../../../components/ui/Modal.jsx";
 export default function Attendance() {
+  const { role } = useAuth();
+  const canValidate = ACCESS.validation.includes(role);
   const periods = useSemester();
   const filter = useReportFilters();
   const [revision, setRevision] = useState(0);
@@ -125,6 +129,7 @@ export default function Attendance() {
             <ReportExport
               kind="attendance"
               periodId={id}
+              periodName={periodLabel(periods.selectedSemester)}
               filters={filter.filters}
               disabled={filter.pending || Boolean(filter.error)}
             />
@@ -146,14 +151,16 @@ export default function Attendance() {
         </ReportState>
         <Pagination report={{ ...report, loading }} />
       </WorkspacePanel>
-      <div className="flex flex-wrap gap-5 px-1 text-xs text-slate-500">
-        <Link className="hover:text-[#3B4A86]" to="/enrollments">
-          Library validation →
-        </Link>
-        <Link className="hover:text-[#3B4A86]" to="/academic-periods">
-          Academic periods →
-        </Link>
-      </div>
+      {canValidate && (
+        <div className="flex flex-wrap gap-5 px-1 text-xs text-slate-500">
+          <Link className="hover:text-[#3B4A86]" to="/enrollments">
+            Library validation →
+          </Link>
+          <Link className="hover:text-[#3B4A86]" to="/academic-periods">
+            Academic periods →
+          </Link>
+        </div>
+      )}
       {scanner && (
         <Modal
           title="Scan a library card"

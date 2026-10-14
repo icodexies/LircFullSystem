@@ -2,9 +2,14 @@
 
 The **Inventory** page (staff / librarian / admin) counts the library's
 physical copies shelf by shelf. One inventory is open at a time and every
-scan saves immediately — there is no Save button per book. The workflow:
+scan saves immediately — there is no Save button per book. Only an **admin**
+can start a new inventory; staff and librarians count inside it. The
+workflow:
 
 ## Starting
+
+Only an **admin** sees the **Start Inventory** button — staff and librarians
+join once a session is open.
 
 1. **Start Inventory** opens a window asking for the **inventory name** and
    **year** — for example *Annual Inventory 2026*. Press **Create**.
@@ -71,6 +76,7 @@ scan saves immediately — there is no Save button per book. The workflow:
 | Check | Where |
 | --- | --- |
 | Staff / librarian / admin only | `lirc_private.library_operator_id()` |
+| Starting a new inventory: **admin only** | `lirc_inventory_start` (the Start button hides for other roles) |
 | One *open* inventory at a time (any number paused) | unique index + `lirc_inventory_start` |
 | Pause / resume keep every record; finished inventories stay locked | `lirc_inventory_pause` / `lirc_inventory_resume` |
 | Name ≤ 200 characters, year 1900–2100 | window + `lirc_inventory_start` |
@@ -122,8 +128,8 @@ scan saves immediately — there is no Save button per book. The workflow:
 
 ## Testing it
 
-1. Inventory → **Start Inventory** → keep the suggested name/year →
-   **Create**.
+1. (as an admin) Inventory → **Start Inventory** → keep the suggested
+   name/year → **Create**.
 2. Pick **Good Condition**, scan (or type) a real accession number + Enter →
    the green message shows *"… saved — Good Condition."*, the input clears.
 3. Scan the same number again → amber *"already scanned"* note, no second

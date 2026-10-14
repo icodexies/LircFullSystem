@@ -78,7 +78,7 @@ export const MEMBER_PAGES = [
     path: "/enrollments",
     icon: "school",
     group: "Validation & periods",
-    allowedRoles: ACCESS.attendance,
+    allowedRoles: ACCESS.validation,
   },
   {
     id: "academic-periods",
@@ -86,7 +86,7 @@ export const MEMBER_PAGES = [
     path: "/academic-periods",
     icon: "calendar",
     group: "Validation & periods",
-    allowedRoles: ACCESS.attendance,
+    allowedRoles: ACCESS.validation,
   },
   // --- Books & borrowing ---------------------------------------------------
   {

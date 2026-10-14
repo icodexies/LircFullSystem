@@ -4,6 +4,7 @@
 import { getSupabase } from "../auth/authService.js";
 import { safeFileName } from "./barcodeRules.js";
 import { buildBarcodeWorkbook } from "./barcodeWorkbook.js";
+import { downloadBlob } from "../shared/fileDownload.js";
 
 export function barcodeError(error) {
   if (["42883", "PGRST202", "42703", "42P01", "PGRST205"].includes(error?.code))
@@ -92,15 +93,10 @@ export async function getTemplateNumbers(templateId) {
 export async function downloadBarcodeFile(template, numbers) {
   const workbook = await buildBarcodeWorkbook(numbers);
   const buffer = await workbook.xlsx.writeBuffer();
-  const blob = new Blob([buffer], {
-    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-  });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = `${safeFileName(template.name)}.xlsx`;
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  URL.revokeObjectURL(url);
+  downloadBlob(
+    new Blob([buffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    }),
+    `${safeFileName(template.name)}.xlsx`,
+  );
 }

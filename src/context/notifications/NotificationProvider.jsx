@@ -17,7 +17,7 @@ export default function NotificationProvider({ children }) {
 
   const load = useCallback(async (signal) => {
     try {
-      const feed = await getNotificationFeed(signal);
+      const feed = await getNotificationFeed({ signal });
       if (active.current)
         setState({
           items: feed.items ?? [],

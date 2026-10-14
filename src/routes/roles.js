@@ -22,7 +22,9 @@ export const ACCESS = {
   ],
   staff: [ROLES.STAFF, ROLES.LIBRARIAN, ROLES.ADMIN],
   books: [ROLES.LIBRARIAN, ROLES.ADMIN],
-  attendance: [ROLES.LIBRARIAN, ROLES.ADMIN],
+  // The attendance desk is open to staff too; validation stays librarian/admin.
+  attendance: [ROLES.STAFF, ROLES.LIBRARIAN, ROLES.ADMIN],
+  validation: [ROLES.LIBRARIAN, ROLES.ADMIN],
   admin: [ROLES.ADMIN],
 };
 

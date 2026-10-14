@@ -21,6 +21,7 @@ import {
 } from "../../../components/personnel/WorkCharts.jsx";
 import EmptyState from "../../../components/personnel/EmptyState.jsx";
 import { Spinner } from "../../../components/ui/Loading.jsx";
+import Avatar from "../../../components/ui/Avatar.jsx";
 
 const fmt = (n) => Number(n ?? 0).toLocaleString("en-US");
 const WINDOW_DAYS = 30;
@@ -64,23 +65,29 @@ export default function UserPerformance() {
             </Field>
           </div>
           {selected && (
-            <p className="pb-1.5 text-xs text-slate-500">
-              <span className="font-semibold text-[#0B1330]">
-                {selected.full_name}
-              </span>{" "}
-              · {ROLE_LABELS[selected.role] ?? selected.role} ·{" "}
-              {selected.library_id}
-              {perf.statsLoading
-                ? ""
-                : perf.stats?.last_active_at
-                  ? ` · Last recorded action: ${displayTime(perf.stats.last_active_at)}`
-                  : " · No recorded actions yet"}
-            </p>
+            <div className="flex items-center gap-3 pb-1.5">
+              <Avatar
+                src={perf.stats?.profile?.avatar_url}
+                className="h-12 w-12"
+              />
+              <p className="text-xs text-slate-500">
+                <span className="font-semibold text-[#0B1330]">
+                  {selected.full_name}
+                </span>{" "}
+                · {ROLE_LABELS[selected.role] ?? selected.role} ·{" "}
+                {selected.library_id}
+                {perf.statsLoading
+                  ? ""
+                  : perf.stats?.last_active_at
+                    ? ` · Last recorded action: ${displayTime(perf.stats.last_active_at)}`
+                    : " · No recorded actions yet"}
+              </p>
+            </div>
           )}
           {perf.peopleLoading && (
-            <p className="flex items-center gap-2 pb-1.5 text-xs text-slate-500">
+            <span className="flex items-center gap-2 pb-1.5 text-xs text-slate-500">
               <Spinner size="sm" /> Loading people…
-            </p>
+            </span>
           )}
         </div>
         {perf.peopleError && (

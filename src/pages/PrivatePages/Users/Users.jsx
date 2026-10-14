@@ -34,6 +34,7 @@ import MemberDetails from "../../../components/users/MemberDetails.jsx";
 import MemberEditForm from "../../../components/users/MemberEditForm.jsx";
 import MemberRequestModal from "../../../components/users/MemberRequestModal.jsx";
 import AddUserDialog from "../../../components/users/AddUserDialog.jsx";
+import Avatar from "../../../components/ui/Avatar.jsx";
 import { useToast } from "../../../hooks/shared/useToast.js";
 
 export default function Users() {
@@ -183,13 +184,15 @@ export default function Users() {
         title="Users"
         description="Member records with borrow and attendance history. Profile edits go through admin approval."
         actions={
-          <button
-            type="button"
-            className={heroPrimary}
-            onClick={() => setAdding(true)}
-          >
-            Add User
-          </button>
+          isAdmin ? (
+            <button
+              type="button"
+              className={heroPrimary}
+              onClick={() => setAdding(true)}
+            >
+              Add User
+            </button>
+          ) : null
         }
       />
 
@@ -279,19 +282,22 @@ export default function Users() {
                       key={member.id}
                       className="flex flex-wrap items-center justify-between gap-3 py-3"
                     >
-                      <div className="min-w-0">
-                        <p className="text-sm font-semibold text-[#0B1330]">
-                          {member.full_name}
-                        </p>
-                        <p className="mt-0.5 text-xs text-slate-500">
-                          {member.library_id} ·{" "}
-                          {member.role.replaceAll("_", " ")} ·{" "}
-                          {member.active_loans} active loan
-                          {member.active_loans === 1 ? "" : "s"}
-                          {member.overdue_loans > 0
-                            ? ` · ${member.overdue_loans} overdue`
-                            : ""}
-                        </p>
+                      <div className="flex min-w-0 items-center gap-3">
+                        <Avatar src={member.avatar_url} className="h-10 w-10" />
+                        <div className="min-w-0">
+                          <p className="text-sm font-semibold text-[#0B1330]">
+                            {member.full_name}
+                          </p>
+                          <p className="mt-0.5 text-xs text-slate-500">
+                            {member.library_id} ·{" "}
+                            {member.role.replaceAll("_", " ")} ·{" "}
+                            {member.active_loans} active loan
+                            {member.active_loans === 1 ? "" : "s"}
+                            {member.overdue_loans > 0
+                              ? ` · ${member.overdue_loans} overdue`
+                              : ""}
+                          </p>
+                        </div>
                       </div>
                       <button
                         type="button"
@@ -349,7 +355,7 @@ export default function Users() {
                         className={tableButton}
                         onClick={() => {
                           setReviewing(row);
-                          setTab(isAdmin ? "pending" : row.status);
+                          setTab(row.status);
                         }}
                       >
                         {isAdmin && row.status === "pending" ? "Review" : "View"}

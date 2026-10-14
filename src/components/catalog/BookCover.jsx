@@ -6,8 +6,7 @@ const defaultCover = `${import.meta.env.BASE_URL}images/catalog/book_cover.png`;
 const OPEN_LIBRARY_COVERS = "https://covers.openlibrary.org/b";
 
 // ISBNs the Open Library already had no cover for in this browser session.
-// Remembering them avoids asking again (and avoids repeating the 404 in the
-// console) every time the same book is opened.
+// Remembering them avoids asking again every time the same book is opened.
 const failedCoverIsbns = new Set();
 
 function normalizeIsbn(isbn) {
@@ -32,10 +31,11 @@ export default function BookCover({ book, className = "", size = "M" }) {
     const isbn = normalizeIsbn(book.isbn);
     // No ISBN at all (or an unusable one) means no Open Library request and
     // no console noise; an ISBN with no cover is remembered after one try.
+    // (No "?default=false": that mode answers 404 for missing covers, which
+    // browsers log as errors. Without it Open Library answers 200 with a 1x1
+    // blank that we detect on load instead.)
     if (isbn && !failedCoverIsbns.has(isbn)) {
-      list.push(
-        `${OPEN_LIBRARY_COVERS}/isbn/${isbn}-${size}.jpg?default=false`,
-      );
+      list.push(`${OPEN_LIBRARY_COVERS}/isbn/${isbn}-${size}.jpg`);
     }
     list.push(defaultCover); // final fallback
     return list;
@@ -88,7 +88,14 @@ export default function BookCover({ book, className = "", size = "M" }) {
             loading="lazy"
             decoding="async"
             referrerPolicy="no-referrer"
-            onLoad={() => setLoadedSrc(src)}
+            onLoad={(event) => {
+              // A 1x1 image means Open Library has no cover for this ISBN
+              // (it answers 200 with a blank instead of 404). Treat it as a
+              // miss so the next source takes over and this ISBN is skipped
+              // for the rest of the session.
+              if (event.currentTarget.naturalWidth <= 1) markFailed(src);
+              else setLoadedSrc(src);
+            }}
             onError={() => markFailed(src)}
             className={`h-full w-full object-contain transition-opacity duration-300 ${loaded ? "opacity-100" : "opacity-0"}`}
           />
