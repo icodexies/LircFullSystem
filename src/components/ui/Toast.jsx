@@ -4,9 +4,9 @@
 // be closed with the × button.
 const PALETTES = {
   success: {
-    wrap: "border-emerald-300 bg-emerald-50",
-    icon: "text-emerald-600",
-    text: "text-emerald-700",
+    wrap: "border-[#BFE3D6] bg-[#E7F4EF]",
+    icon: "text-[#0F8A6B]",
+    text: "text-[#0B6B52]",
   },
   error: {
     wrap: "border-red-300 bg-red-50",
@@ -84,7 +84,7 @@ export default function Toast({ variant = "info", title, message, onClose }) {
   return (
     <div
       role={variant === "error" || variant === "warning" ? "alert" : "status"}
-      className={`toast-in pointer-events-auto flex w-full items-start gap-3 rounded-xl border-2 px-4 py-3 shadow-lg shadow-slate-900/10 ${palette.wrap}`}
+      className={`toast-in pointer-events-auto flex w-full items-start gap-3 rounded-xl border px-4 py-3 shadow-[0_4px_12px_rgba(11,19,48,0.12)] ${palette.wrap}`}
     >
       <span className={`mt-0.5 shrink-0 ${palette.icon}`}>
         {ICONS[variant] ?? ICONS.info}

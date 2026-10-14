@@ -327,7 +327,7 @@ export default function AddBookDialog({ onClose, onSaved }) {
             </p>
           </div>
         ) : (
-          <p className="rounded-xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-xs text-emerald-800">
+          <p className="rounded-xl border border-[#BFE3D6] bg-[#E7F4EF] px-4 py-3 text-xs text-[#0B6B52]">
             No existing record found — fill the book information below to
             create a new one.
           </p>
@@ -508,7 +508,7 @@ export default function AddBookDialog({ onClose, onSaved }) {
         </div>
       </section>
 
-      <div className="flex flex-wrap justify-end gap-3 border-t border-slate-100 pt-4">
+      <div className="sticky bottom-0 -mx-6 -mb-6 flex flex-wrap items-center justify-end gap-3 border-t border-slate-200 bg-gradient-to-r from-[#F7F6FB] to-white px-6 py-4">
         <button
           type="button"
           disabled={saving}

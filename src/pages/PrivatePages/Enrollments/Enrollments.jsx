@@ -5,7 +5,7 @@ import {
   SummaryCards,
   StatusBadge,
   WorkspaceNotice,
-  secondaryButton,
+  heroSecondary,
 } from "../../../components/attendance/WorkspaceUi.jsx";
 import { useEffect, useState } from "react";
 import { useSemester } from "../../../hooks/periods/useSemester.js";
@@ -26,6 +26,7 @@ import {
   enrollmentLevelLabel,
   isSupportedYearLevel,
 } from "../../../services/attendance/attendanceRules.js";
+import { STATUS_LABELS } from "../../../services/attendance/reportFilters.js";
 export default function Enrollments() {
   const periods = useSemester();
   const { role } = useAuth();
@@ -61,12 +62,12 @@ export default function Enrollments() {
   return (
     <div className="space-y-6">
       <WorkspaceHeader
-        title="Annual enrollment"
-        description="Confirm student eligibility once per academic year. Both semesters share the same validation."
+        title="Library validation"
+        description="Confirm student eligibility once per academic year. Both semesters share the same library validation."
         actions={
           <button
             type="button"
-            className={secondaryButton}
+            className={heroSecondary}
             onClick={() => setRevision((value) => value + 1)}
           >
             Refresh records
@@ -75,7 +76,7 @@ export default function Enrollments() {
       >
         <span>
           Viewing academic year:{" "}
-          <strong className="font-semibold text-[#0B1330]">
+          <strong className="font-semibold text-white">
             {year?.name ?? "Choose a semester above"}
           </strong>
         </span>
@@ -100,13 +101,13 @@ export default function Enrollments() {
           {
             label: "Validated",
             value: report.data?.summary?.validated,
-            help: "Confirmed status and valid enrolled level",
+            help: "Confirmed status and a valid year level",
             tone: "success",
           },
           {
-            label: "Unverified",
+            label: "Not verified",
             value: report.data?.summary?.unverified,
-            help: "Enrollment still needs confirmation",
+            help: "Validation still needs confirmation",
           },
           {
             label: "Needs level review",
@@ -183,7 +184,8 @@ export default function Enrollments() {
                               : "muted"
                         }
                       >
-                        {row.status.replaceAll("_", " ")}
+                        {STATUS_LABELS[row.status] ??
+                          row.status.replaceAll("_", " ")}
                       </StatusBadge>
                       <p className="mt-2 text-slate-500">
                         Year level: {enrollmentLevelLabel(row.enrollment)}
@@ -240,14 +242,26 @@ export default function Enrollments() {
         <Pagination report={{ ...report, loading }} />
       </WorkspacePanel>
       <p className="px-1 text-[11px] leading-relaxed text-slate-400">
-        Missing annual records are unverified. Saving validation does not record
+        Missing records are not verified. Saving validation does not record
         attendance.
       </p>
       {current && year && (
         <Modal
-          wide
-          title="Validate annual enrollment"
+          title="Validate library record"
           description={`${current.full_name} · ${current.library_id} · ${year.name}`}
+          icon={
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.7"
+              className="h-5 w-5"
+              aria-hidden="true"
+            >
+              <path d="M12 3 2 8l10 5 10-5-10-5Z M6 10.5V16c0 1.7 2.7 3 6 3s6-1.3 6-3v-5.5" />
+            </svg>
+          }
+          size="lg"
           busy={formBusy}
           onClose={() => {
             if (!formBusy) setSelected(null);

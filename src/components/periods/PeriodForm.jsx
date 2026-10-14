@@ -135,14 +135,14 @@ export default function PeriodForm({
           />
         </Field>
       </fieldset>
-      <p className="text-[11px] leading-relaxed text-slate-400">
+      <p className="text-[11px] leading-relaxed text-slate-500">
         {record
           ? semester
             ? "The academic year assignment cannot change. Semester dates are locked once visits exist."
             : "The start year cannot change. Calendar dates must contain every semester in this academic year."
           : "Check the official school calendar before saving."}
       </p>
-      <div className="flex flex-wrap justify-end gap-2 border-t border-slate-100 pt-4">
+      <div className="sticky bottom-0 -mx-6 -mb-6 flex flex-wrap items-center justify-end gap-3 border-t border-slate-200 bg-gradient-to-r from-[#F7F6FB] to-white px-6 py-4">
         <button
           type="button"
           disabled={busy}

@@ -26,6 +26,18 @@ export function containsText(value) {
     .replace(/[\\%_]/g, "\\$&")}%`;
 }
 
+// Split a search into words so every word must appear somewhere in the chosen
+// field (any order) — the same rule as the member, report and inventory
+// searches.
+export function searchWords(value) {
+  return String(value ?? "")
+    .trim()
+    .slice(0, 120)
+    .split(/\s+/)
+    .filter((word) => word !== "")
+    .map((word) => `%${word.replace(/[\\%_]/g, "\\$&")}%`);
+}
+
 export function getPageRange(page, pageSize) {
   if (
     !Number.isSafeInteger(page) ||
@@ -49,7 +61,10 @@ export function applyCatalogFilters(request, query) {
       query.searchBy === "accession_number"
         ? "matching_copies.accession_number"
         : query.searchBy;
-    request = request.ilike(column, containsText(query.search));
+    // Every word must appear in the chosen field (any order).
+    for (const pattern of searchWords(query.search)) {
+      request = request.ilike(column, pattern);
+    }
   }
   if (query.formatId) request = request.eq("book_format_id", query.formatId);
   if (query.shelfId) request = request.eq("shelf_id", query.shelfId);

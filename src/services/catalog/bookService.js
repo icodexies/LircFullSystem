@@ -122,7 +122,7 @@ function addBookError(error) {
     );
   if (error?.code === "23503")
     return new Error(
-      "A copy that has loan records cannot be removed. Its borrowing history must stay.",
+      "A copy that has loan or inventory records cannot be removed. Its history must stay.",
     );
   if (["42883", "PGRST202", "42703", "42P01"].includes(error?.code))
     return new Error(

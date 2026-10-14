@@ -51,7 +51,7 @@ export default function NotificationBell() {
         }
         aria-expanded={open}
         aria-haspopup="true"
-        className="relative rounded-xl border border-slate-200 p-2.5 text-[#0B1330] transition-colors hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3B4A86]"
+        className="relative rounded-xl border border-slate-400 bg-slate-100 p-2.5 text-[#0B1330] transition-colors hover:bg-slate-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3B4A86]"
       >
         <svg
           viewBox="0 0 24 24"
@@ -71,7 +71,7 @@ export default function NotificationBell() {
         )}
       </button>
       {open && (
-        <div className="absolute right-0 top-12 z-40 w-[min(92vw,22rem)] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl">
+        <div className="absolute right-0 top-12 z-40 w-[min(92vw,22rem)] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_4px_12px_rgba(11,19,48,0.12)]">
           <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
             <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">
               Notifications

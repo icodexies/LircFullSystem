@@ -89,4 +89,4 @@ Test homepage section links from a fresh load, carousel arrows/tabs, mobile layo
 - [React Router SPA hosting](https://reactrouter.com/how-to/spa)
 - [Vite production builds](https://vite.dev/guide/build)
 
-The shared academic-period selection now filters attendance by semester and annual student enrollment by the selected semester’s academic year. Catalog and inventory queries remain unscoped. See [attendance and annual validation](ATTENDANCE.md) for workflow and database requirements.
+The shared academic-period selection now filters attendance by semester and annual student enrollment by the selected semester’s academic year. Catalog and inventory queries remain unscoped. See [attendance and library validation](ATTENDANCE.md) for workflow and database requirements.

@@ -48,12 +48,12 @@ test("estimate uses academic-year start, never increments on second semester or 
   assert.equal(estimatedLevel("unsupported", 2026), null);
   assert.equal(estimatedLevel("99-001", 2026), null);
 });
-test("student time-in requires purpose and validated annual enrollment; historical views never time in", () => {
+test("student time-in requires purpose and a complete library validation; historical views never time in", () => {
   assert.match(timeInReason(preview, 2, "", "", now), /purpose/);
   assert.equal(timeInReason(preview, 2, "Reading", "", now), "");
   assert.match(
     timeInReason({ ...preview, enrollment: null }, 2, "Reading", "", now),
-    /unverified/,
+    /not verified/,
   );
   assert.match(
     timeInReason(
@@ -66,7 +66,7 @@ test("student time-in requires purpose and validated annual enrollment; historic
       "",
       now,
     ),
-    /not validated/,
+    /not complete/,
   );
   assert.match(timeInReason(preview, 1, "Reading", "", now), /historical/);
   assert.match(
@@ -93,7 +93,7 @@ test("faculty and personnel without Auth accounts bypass student validation", ()
       "",
     );
 });
-test("annual validation sends only the status; protected fields are ignored", () => {
+test("library validation sends only the status; protected fields are ignored", () => {
   const payload = enrollmentPayload(
     {
       status: "enrolled",

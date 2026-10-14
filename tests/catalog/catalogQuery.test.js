@@ -4,6 +4,7 @@ import {
   containsText,
   getPageRange,
   applyCatalogFilters,
+  searchWords,
   INITIAL_CATALOG_QUERY,
 } from "../../src/services/catalog/catalogQuery.js";
 import {
@@ -52,6 +53,21 @@ test("search wildcards are literal and punctuation never becomes a raw OR filter
     search: 'a,b).title"',
   });
   assert.deepEqual(request.calls[0], ["ilike", "book_name", '%a,b).title"%']);
+});
+
+test("multi-word searches require every word in any order", () => {
+  assert.deepEqual(searchWords("  Clean   Code "), ["%Clean%", "%Code%"]);
+  assert.deepEqual(searchWords("   "), []);
+  const request = requestSpy();
+  applyCatalogFilters(request, {
+    ...INITIAL_CATALOG_QUERY,
+    search: "code  clean",
+  });
+  const ilikes = request.calls.filter((call) => call[0] === "ilike");
+  assert.deepEqual(ilikes, [
+    ["ilike", "book_name", "%code%"],
+    ["ilike", "book_name", "%clean%"],
+  ]);
 });
 
 test("filters target database columns and every sort has an ID tie-breaker", () => {

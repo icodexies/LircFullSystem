@@ -76,3 +76,36 @@ export async function reviewMemberChange(requestId, approve) {
   if (error) throw usersError(error);
   return data ?? { ok: true };
 }
+
+// Add one member (and, for a student, one annual enrollment row).
+export async function addUser(profile, enrollment) {
+  const client = await getSupabase();
+  const { data, error } = await client.rpc("lirc_add_user", {
+    p_profile: profile,
+    p_enrollment: enrollment,
+  });
+  if (error) throw usersError(error);
+  return data;
+}
+
+// Check a whole CSV file first (no saving).
+export async function checkUserImport(rows, yearId) {
+  const client = await getSupabase();
+  const { data, error } = await client.rpc("lirc_check_user_import", {
+    p_rows: rows,
+    p_year_id: yearId,
+  });
+  if (error) throw usersError(error);
+  return data;
+}
+
+// Import the checked rows (the database re-checks everything before saving).
+export async function importUsers(rows, yearId) {
+  const client = await getSupabase();
+  const { data, error } = await client.rpc("lirc_import_users", {
+    p_rows: rows,
+    p_year_id: yearId,
+  });
+  if (error) throw usersError(error);
+  return data;
+}

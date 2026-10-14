@@ -6,6 +6,8 @@ import BookCover from "./BookCover.jsx";
 import CoverUpload from "./CoverUpload.jsx";
 import { uploadBookCover } from "../../services/catalog/bookCoverService.js";
 import { buildBookUpdate } from "../../services/catalog/bookValidation.js";
+import { buttonClass } from "../attendance/StaffUi.jsx";
+import { secondaryButton } from "../attendance/WorkspaceUi.jsx";
 
 const FIELDS = {
   book_name: { label: "Book title", required: true, wide: true, limit: 500 },
@@ -18,11 +20,6 @@ const FIELDS = {
   place_of_publication: { label: "Place of publication", limit: 500 },
   barcode_tag_number: { label: "Barcode tag number", limit: 200 },
   asset_number: { label: "Asset number", limit: 200 },
-  book_image: {
-    label: "Cover image URL or storage path",
-    wide: true,
-    limit: 2000,
-  },
 };
 const SECTIONS = [
   {
@@ -39,19 +36,13 @@ const SECTIONS = [
     fields: ["publish_year", "edition", "publisher", "place_of_publication"],
   },
   {
-    title: "Inventory and cover",
-    fields: ["barcode_tag_number", "asset_number", "book_image"],
+    title: "Inventory",
+    fields: ["barcode_tag_number", "asset_number"],
   },
 ];
 const inputClass =
-  "mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-[#0B1330] placeholder:text-slate-400 focus:border-[#3B4A86] focus:outline-none focus:ring-2 focus:ring-[#3B4A86]/15";
+  "mt-1.5 w-full rounded-xl border border-slate-400 bg-white px-3 py-2.5 text-sm text-[#0B1330] placeholder:text-slate-500 focus:border-[#3B4A86] focus:outline-none focus:ring-2 focus:ring-[#3B4A86]/15";
 const labelClass = "text-xs font-medium text-slate-600";
-const dots = {
-  backgroundImage: "radial-gradient(#fff 1px, transparent 1px)",
-  backgroundSize: "18px 18px",
-  maskImage: "linear-gradient(to left, #000, transparent 65%)",
-  WebkitMaskImage: "linear-gradient(to left, #000, transparent 65%)",
-};
 
 export default function EditBook({ book, lookups, role, onClose, onSaved }) {
   const dialog = useDialog();
@@ -151,28 +142,51 @@ export default function EditBook({ book, lookups, role, onClose, onSaved }) {
   return (
     <CatalogDialog
       title="Edit book record"
+      description={book.book_name}
       onClose={closeEditor}
       busy={saving || preparing}
+      footer={
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <p className="hidden text-[11px] text-slate-500 sm:block">
+            <span className="text-[#3B4A86]">*</span> Required
+          </p>
+          <div className="ml-auto flex gap-3">
+            <button
+              type="button"
+              disabled={saving || preparing}
+              onClick={closeEditor}
+              className={secondaryButton}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              form="edit-book-form"
+              disabled={saving || preparing}
+              className={buttonClass}
+            >
+              {saving ? "Saving..." : "Save changes"}
+            </button>
+          </div>
+        </div>
+      }
     >
-      <form onSubmit={submit} className="p-6">
+      <form id="edit-book-form" onSubmit={submit} className="p-6">
         {/* Context strip: shows the record as currently saved */}
-        <div className="relative overflow-hidden rounded-2xl bg-[#0B1330] p-4 sm:p-5">
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-0 opacity-[0.16]"
-            style={dots}
-          />
-          <div className="relative flex items-center gap-4">
+        <div className="rounded-2xl border border-slate-200 bg-[#F7F6FB] p-4 sm:p-5">
+          <div className="flex items-center gap-4">
             <BookCover
               book={book}
-              className="h-20 w-14 shrink-0 border-white/10 shadow-md"
+              className="h-20 w-14 shrink-0 border-slate-200 shadow-sm"
             />
             <div className="min-w-0">
-              <p className="text-[11px] text-white/60">You're editing</p>
-              <p className="mt-0.5 line-clamp-2 break-words font-serif text-lg font-bold leading-snug text-white">
+              <p className="text-[11px] font-medium text-slate-500">
+                You're editing
+              </p>
+              <p className="mt-0.5 line-clamp-2 break-words font-serif text-lg font-bold leading-snug text-[#0B1330]">
                 {book.book_name}
               </p>
-              <p className="mt-1.5 text-xs leading-relaxed text-white/70">
+              <p className="mt-1.5 text-xs leading-relaxed text-slate-600">
                 Accession numbers and copy statuses are managed separately.
               </p>
             </div>
@@ -262,33 +276,11 @@ export default function EditBook({ book, lookups, role, onClose, onSaved }) {
               setUploadedCover("");
             }}
           />
-          <p className="mt-2 text-xs text-slate-500">
-            A selected upload takes priority over the cover URL and API image.
+          <p className="mt-2 text-xs text-slate-600">
+            A selected upload replaces the current cover when you save.
             Removing the selection keeps the existing cover.
           </p>
         </fieldset>
-        <div className="sticky bottom-0 -mx-6 -mb-6 mt-7 flex items-center justify-between gap-3 border-t border-slate-200 bg-white px-6 py-4">
-          <p className="hidden text-[11px] text-slate-500 sm:block">
-            <span className="text-[#3B4A86]">*</span> Required
-          </p>
-          <div className="ml-auto flex gap-3">
-            <button
-              type="button"
-              disabled={saving || preparing}
-              onClick={closeEditor}
-              className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-semibold text-slate-600 hover:border-[#3B4A86]/40 disabled:opacity-40"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={saving || preparing}
-              className="rounded-xl bg-[#0B1330] px-5 py-2.5 text-xs font-semibold text-white hover:bg-[#3B4A86] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3B4A86] disabled:opacity-40"
-            >
-              {saving ? "Saving..." : "Save changes"}
-            </button>
-          </div>
-        </div>
       </form>
     </CatalogDialog>
   );

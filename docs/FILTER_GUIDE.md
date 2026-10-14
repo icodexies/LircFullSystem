@@ -4,11 +4,22 @@ A filter narrows a list. It does not edit a student, book or visit. Leave a fiel
 
 Start with Search and Status. Open **Advanced filters** only when you need a more specific report. Click a filter chip's × to remove that one filter, or **Reset** to start again. The page also has a **How filters work** information alert in the top-right corner.
 
+## How searching works (all pages)
+
+- Searches ignore uppercase/lowercase and match any part of a word.
+- **Several words work in any order**: every word must appear somewhere in
+  the field you are searching. Typing `mark ian dagos` finds *Mark Ian D.
+  Dagos* — the middle initial between the words no longer blocks the match.
+- **Member searches** (Users page and the borrow card lookup) also fall back
+  to **similar names** when nothing matches exactly, so small typos still
+  find the person.
+- `%`, `_` and `\` are searched as normal text, not wildcards.
+
 ## Semester selector in the header
 
 | Choice | Meaning |
 | --- | --- |
-| Academic year · Semester | The period you want to view. Attendance shows visits from that semester. Annual validation uses its academic year, so both semesters of one year share the same validation records. |
+| Academic year · Semester | The period you want to view. Attendance shows visits from that semester. Library validation uses its academic year, so both semesters of one year share the same validation records. |
 | Active label | The semester currently used for new time-ins by all operators. Choosing a different viewing semester does not change it. Only **Make active** in Academic periods changes it, after confirmation. |
 
 Books are not filtered by semester. Time-out can close an existing visit from an older semester.
@@ -32,16 +43,16 @@ Books are not filtered by semester. Time-out can close an existing visit from an
 | Publication year | Latest publication years first; unknown years come last. |
 | Results per page | Show 10, 20 or 50 books per page. This changes the amount displayed, not the matching books. |
 
-**Example:** choose Accession number and type the copy number on the book label. For a broader search, choose Title and enter part of its title.
+**Example:** choose Accession number and type the copy number on the book label. For a broader search, choose Title and enter part of its title — several words work in any order, so `code clean` finds *Clean Code*.
 
 Book department was removed from OPAC. A person's department still exists in attendance and student reports because it describes the person, not the book.
 
-## Search shared by attendance and annual validation
+## Search shared by attendance and library validation
 
 | Control | Meaning |
 | --- | --- |
 | Search by | Select Full name, Library ID, First name, Surname, Middle initial or Suffix. |
-| Search | Enter part of the value. Search ignores uppercase/lowercase. It only searches the field selected above. |
+| Search | Enter part of the value. Search ignores uppercase/lowercase and several words work in any order. It only searches the field selected above. |
 | Sort | Changes row order, without changing which rows match. |
 | Order | Choose the direction: A → Z / oldest first, or Z → A / newest first. Empty values appear last. |
 
@@ -87,7 +98,7 @@ Attendance sort choices: Time in, Time out, Date recorded, Year level, Library c
 
 ## Annual student validation filters
 
-This list includes current student profiles even when they have no annual validation record. It uses the academic year of the selected semester.
+This list includes current student profiles even when they have no library validation record. It uses the academic year of the selected semester.
 
 | Filter | Meaning / when to use it |
 | --- | --- |
@@ -119,7 +130,7 @@ Annual sort choices: Name, Library card, Year level, Status, Date validated, Dat
 
 The old initial setup used `academic-year start − admission year + 1`. A `22-…` card in 2026 produced 5. Years since admission do not tell us someone's actual year level or whether they withdrew.
 
-The current system computes levels **1–4** for enrolled students from the library card and recorded leave years. Values outside this range display **Unavailable**, rather than being changed automatically. Legacy enrolled values outside 1–4 display **Needs review**, are counted separately, and cannot start a new visit; saving the record again lets the system set the level. Existing data and attendance history remain intact; historical exports retain the stored value and include `needs_review` for annual records.
+The current system computes levels **1–4** for enrolled students from the library card and recorded leave years. Values outside this range display **Unavailable**, rather than being changed automatically. Legacy enrolled values outside 1–4 display **Needs review**, are counted separately, and cannot start a new visit; saving the record again lets the system set the level. Existing data and attendance history remain intact; historical exports retain the stored value and include `needs_review` for validation records.
 
 Annual summary: **total** is all matching students; **validated** is confirmed records without an invalid enrolled level; **unverified** is students whose status is unverified; **needs review** is invalid enrolled levels. Validation does not always mean currently enrolled: a confirmed withdrawal is also a validated record.
 

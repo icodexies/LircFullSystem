@@ -1,6 +1,12 @@
 import { useId, useState } from "react";
 import { useAuth } from "../../../hooks/auth/useAuth.js";
-import { ACCESS } from "../../../routes/roles.js";
+import { ACCESS, ROLE_LABELS } from "../../../routes/roles.js";
+import { WorkspaceHeader } from "../../../components/attendance/WorkspaceUi.jsx";
+import {
+  manilaGreeting,
+  manilaLongDate,
+} from "../../../services/dashboard/dashboardRules.js";
+import PersonnelDashboard from "../../../components/personnel/PersonnelDashboard.jsx";
 
 /* ------------------------------------------------------------------ */
 /*  Design tokens (LIRC): navy #0B1330, sky-400 #38BDF8, slate surfaces */
@@ -37,64 +43,6 @@ function Icon({ name, className = "h-5 w-5" }) {
     </svg>
   );
 }
-
-/* ------------------------------------------------------------------ */
-/*  Hardcoded sample data: admin, staff, librarian                     */
-/*  General on purpose: no role-specific tools yet. When you know what */
-/*  each position can do, replace ACTION_TYPES and STAFF_LOG.          */
-/* ------------------------------------------------------------------ */
-
-// How total actions split into general types (shares add up to 1).
-const ACTION_TYPES = [
-  { id: "Created", label: "Records created", share: 0.25 },
-  { id: "Updated", label: "Records updated", share: 0.36 },
-  { id: "Processed", label: "Transactions processed", share: 0.39 },
-];
-
-// One string per week (Monday to Sunday). 0 = no activity, 4 = very busy.
-// The last week stops at today (Wednesday).
-const ACTIVITY_WEEKS = ["3432100", "2340000", "4343200", "3203100", "0433100", "3340200", "0432100", "3034100", "2442000", "3203100", "4332200", "342"];
-const LEVEL_LABELS = ["No activity", "Light activity", "Moderate activity", "Busy", "Very busy"];
-const LEVEL_CLASSES = ["bg-slate-100", "bg-sky-100", "bg-sky-300", "bg-sky-500", "bg-[#0B1330]"];
-const DAY_NAMES = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-
-// Active rate counts weekdays (Monday to Friday) on which the user did anything.
-function activityMetrics() {
-  const weekdays = ACTIVITY_WEEKS.flatMap((w) => w.slice(0, 5).split("").map(Number));
-  const active = weekdays.filter((n) => n > 0).length;
-  let streak = 0;
-  for (let i = weekdays.length - 1; i >= 0 && weekdays[i] > 0; i--) streak++;
-  let longest = 0;
-  let run = 0;
-  weekdays.forEach((n) => {
-    run = n > 0 ? run + 1 : 0;
-    longest = Math.max(longest, run);
-  });
-  return { total: weekdays.length, active, rate: Math.round((active / weekdays.length) * 100), streak, longest };
-}
-const ACTIVITY = activityMetrics();
-const TEAM_AVERAGE_RATE = 79;
-
-const SESSION_FACTS = [
-  { label: "Average time in the system", value: "5h 12m a day" },
-  { label: "Sign-ins, last 14 days", value: "12" },
-  { label: "Last active", value: "Today, 9:42 AM" },
-];
-
-// Actions per day for the last 14 days (Thursday Sep 24 to Wednesday Oct 7).
-const TREND_LABELS = ["24", "25", "26", "27", "28", "29", "30", "1", "2", "3", "4", "5", "6", "7"];
-const TREND_DATA = [58, 63, 22, 6, 67, 72, 55, 69, 61, 14, 8, 71, 66, 48];
-
-const STAFF_LOG = [
-  { time: "9:42 AM", type: "Created", detail: "Added a new record" },
-  { time: "9:20 AM", type: "Processed", detail: "Completed a transaction" },
-  { time: "8:58 AM", type: "Created", detail: "Added 12 new entries" },
-  { time: "8:41 AM", type: "Updated", detail: "Edited 6 existing records" },
-  { time: "8:30 AM", type: "Signed in", detail: "Signed in to the library system" },
-  { time: "Yesterday, 4:45 PM", type: "Processed", detail: "Completed 3 transactions" },
-  { time: "Yesterday, 3:10 PM", type: "Created", detail: "Added 8 new entries" },
-  { time: "Yesterday, 1:05 PM", type: "Updated", detail: "Corrected 6 records" },
-];
 
 /* ------------------------------------------------------------------ */
 /*  Hardcoded sample data: student and faculty                         */
@@ -208,7 +156,7 @@ const fmt = (n) => n.toLocaleString("en-US");
 /* ------------------------------------------------------------------ */
 function Card({ title, subtitle, action, children, className = "" }) {
   return (
-    <section className={`rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 ${className}`}>
+    <section className={`rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_1px_2px_rgba(11,19,48,0.05)] sm:p-6 ${className}`}>
       {(title || action) && (
         <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
           <div>
@@ -223,33 +171,19 @@ function Card({ title, subtitle, action, children, className = "" }) {
   );
 }
 
-function DeltaChip({ stat, featured }) {
-  const tone = featured
-    ? "bg-white/10 text-slate-200"
-    : stat.good
-      ? "bg-[#F0EDFA] text-[#3B4A86]"
-      : "bg-rose-50 text-rose-700";
+function DashboardHero({ role }) {
+  const { profile } = useAuth();
+  const firstName = profile?.first_name ? `, ${profile.first_name}` : "";
   return (
-    <span className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[11px] font-medium ${tone}`}>
-      <Icon name={stat.trend === "up" ? "up" : "down"} className="h-3 w-3" />
-      {stat.delta}%
-    </span>
-  );
-}
-
-function StatCard({ stat, featured = false }) {
-  return (
-    <div className={`flex min-w-0 flex-col rounded-2xl border p-5 ${featured ? "border-[#0B1330] bg-[#0B1330] text-white" : "border-slate-200 bg-white text-[#0B1330]"}`}>
-      <div className="flex items-start justify-between gap-3">
-        <span className={`flex h-9 w-9 items-center justify-center rounded-lg ${featured ? "bg-white/10 text-sky-300" : "bg-[#F0EDFA] text-[#3B4A86]"}`}>
-          <Icon name={stat.icon} className="h-[18px] w-[18px]" />
-        </span>
-        <DeltaChip stat={stat} featured={featured} />
-      </div>
-      <p className={`mt-5 text-[13px] ${featured ? "text-slate-300" : "text-slate-500"}`}>{stat.label}</p>
-      <p className="mt-1 font-serif text-3xl font-bold tracking-tight">{stat.value}</p>
-      <p className={`mt-2 text-xs ${featured ? "text-slate-400" : "text-slate-500"}`}>{stat.hint}</p>
-    </div>
+    <WorkspaceHeader
+      title={`${manilaGreeting()}${firstName}`}
+      description="Here's what's happening in the library today."
+    >
+      <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[11px] font-semibold text-white">
+        {ROLE_LABELS[role] ?? "Member"} account
+      </span>
+      <span>{manilaLongDate()}</span>
+    </WorkspaceHeader>
   );
 }
 
@@ -357,165 +291,6 @@ function ProgressBar({ value, max, tone = "sky" }) {
   );
 }
 
-const TYPE_STYLES = {
-  Created: "bg-sky-50 text-sky-700",
-  Updated: "bg-[#0B1330]/5 text-[#0B1330]",
-  Processed: "bg-slate-100 text-slate-700",
-  "Signed in": "bg-slate-100 text-slate-500",
-};
-
-/* ------------------------------------------------------------------ */
-/*  Dashboard for admin, staff and librarians                          */
-/* ------------------------------------------------------------------ */
-function ActiveRing({ value }) {
-  return (
-    <div className="relative h-40 w-40 shrink-0">
-      <svg viewBox="0 0 42 42" className="h-full w-full -rotate-90" role="img" aria-label={`Active rate ${value} percent`}>
-        <circle cx="21" cy="21" r="15.9155" fill="none" stroke="#F1F5F9" strokeWidth="4" />
-        <circle cx="21" cy="21" r="15.9155" fill="none" stroke={SKY} strokeWidth="4" strokeLinecap="round" strokeDasharray={`${value} ${100 - value}`} />
-      </svg>
-      <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="font-serif text-4xl font-bold text-[#0B1330]">{value}%</span>
-        <span className="text-xs text-slate-500">active rate</span>
-      </div>
-    </div>
-  );
-}
-
-function ActivityHeatmap() {
-  const lastWeek = ACTIVITY_WEEKS.length - 1;
-  return (
-    <div className="overflow-x-auto pb-1">
-      <div className="flex w-max gap-3">
-        <div className="grid grid-rows-7 gap-1.5 text-[11px] text-slate-400">
-          {DAY_NAMES.map((d, i) => (
-            <span key={d} className="flex h-6 items-center">{i % 2 === 0 ? d : ""}</span>
-          ))}
-        </div>
-        <div className="grid grid-flow-col grid-rows-7 gap-1.5">
-          {ACTIVITY_WEEKS.flatMap((week, w) =>
-            DAY_NAMES.map((day, d) => {
-              const ch = week[d];
-              if (ch === undefined) return <span key={`${w}-${d}`} className="h-6 w-6" aria-hidden="true" />;
-              const level = Number(ch);
-              const isToday = w === lastWeek && d === week.length - 1;
-              return (
-                <span key={`${w}-${d}`} title={`${day}, week ${w + 1}: ${LEVEL_LABELS[level]}`} className={`h-6 w-6 rounded-md ${LEVEL_CLASSES[level]} ${isToday ? "outline outline-2 outline-offset-2 outline-sky-400" : ""}`} />
-              );
-            })
-          )}
-        </div>
-      </div>
-      <div className="mt-4 flex items-center gap-2 text-[11px] text-slate-500">
-        <span>Less</span>
-        {LEVEL_CLASSES.map((c) => (
-          <span key={c} className={`h-3.5 w-3.5 rounded-sm ${c}`} aria-hidden="true" />
-        ))}
-        <span>More</span>
-      </div>
-    </div>
-  );
-}
-
-function StaffDashboard() {
-  // Totals come from the trend data so the cards and the chart always agree.
-  const total = TREND_DATA.reduce((sum, n) => sum + n, 0);
-  const counts = ACTION_TYPES.map((t) => ({ ...t, value: Math.round(total * t.share) }));
-  counts[counts.length - 1].value = total - counts.slice(0, -1).reduce((s, t) => s + t.value, 0);
-  const [created, updated, processed] = counts;
-
-  const diff = ACTIVITY.rate - TEAM_AVERAGE_RATE;
-  const comparison =
-    diff === 0
-      ? `Matches the team average of ${TEAM_AVERAGE_RATE}%`
-      : `${Math.abs(diff)} points ${diff > 0 ? "above" : "below"} the team average of ${TEAM_AVERAGE_RATE}%`;
-
-  const stats = [
-    { id: "total", icon: "activity", label: "Total actions", value: fmt(total), delta: 9.4, trend: "up", good: true, hint: "Everything you did, last 14 days", spark: TREND_DATA.filter((_, i) => i % 2 === 0) },
-    { id: "created", icon: "plus", label: created.label, value: fmt(created.value), delta: 6.8, trend: "up", good: true, hint: "New entries you added", spark: [18, 22, 20, 26, 24, 30, 28, 34] },
-    { id: "updated", icon: "edit", label: updated.label, value: fmt(updated.value), delta: 11.2, trend: "up", good: true, hint: "Edits and corrections", spark: [28, 34, 30, 38, 36, 44, 40, 48] },
-    { id: "processed", icon: "exchange", label: processed.label, value: fmt(processed.value), delta: 8.3, trend: "up", good: true, hint: "Entries you handled", spark: [34, 40, 38, 46, 44, 52, 48, 58] },
-  ];
-
-  return (
-    <div className="space-y-6">
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {stats.map((stat, i) => (
-          <StatCard key={stat.id} stat={stat} featured={i === 0} />
-        ))}
-      </div>
-
-      <div className="grid gap-6 xl:grid-cols-3">
-        <Card title="Active rate" subtitle="Weekdays you were active, last 12 weeks">
-          <div className="flex flex-col items-center gap-5">
-            <ActiveRing value={ACTIVITY.rate} />
-            <p className="text-center text-sm text-slate-600">{comparison}</p>
-            <dl className="grid w-full grid-cols-2 gap-3">
-              <div className="rounded-xl bg-slate-50 p-3">
-                <dt className="text-xs text-slate-500">Active days</dt>
-                <dd className="mt-0.5 text-sm font-semibold text-[#0B1330]">{ACTIVITY.active} of {ACTIVITY.total} weekdays</dd>
-              </div>
-              <div className="rounded-xl bg-slate-50 p-3">
-                <dt className="text-xs text-slate-500">Current streak</dt>
-                <dd className="mt-0.5 text-sm font-semibold text-[#0B1330]">{ACTIVITY.streak} {ACTIVITY.streak === 1 ? "day" : "days"}</dd>
-              </div>
-              <div className="rounded-xl bg-slate-50 p-3">
-                <dt className="text-xs text-slate-500">Longest streak</dt>
-                <dd className="mt-0.5 text-sm font-semibold text-[#0B1330]">{ACTIVITY.longest} days</dd>
-              </div>
-              <div className="rounded-xl bg-slate-50 p-3">
-                <dt className="text-xs text-slate-500">{SESSION_FACTS[1].label}</dt>
-                <dd className="mt-0.5 text-sm font-semibold text-[#0B1330]">{SESSION_FACTS[1].value}</dd>
-              </div>
-            </dl>
-          </div>
-        </Card>
-
-        <Card
-          className="xl:col-span-2"
-          title="Activity trend"
-          subtitle="Actions per day, September 24 to October 7"
-          action={<span className="rounded-full bg-sky-50 px-3 py-1 text-xs font-medium text-sky-700">{SESSION_FACTS[0].value} on average</span>}
-        >
-          <AreaChart labels={TREND_LABELS} data={TREND_DATA} unit="actions" />
-        </Card>
-      </div>
-
-      <div className="grid gap-6 xl:grid-cols-3">
-        <Card className="xl:col-span-2" title="Activity calendar" subtitle="Each square is one day. Darker means more actions.">
-          <ActivityHeatmap />
-        </Card>
-
-        <Card title="What you did" subtitle="Actions by type, last 14 days">
-          <ul className="space-y-4">
-            {counts.map((t) => (
-              <li key={t.id}>
-                <div className="mb-1.5 flex items-baseline justify-between text-sm">
-                  <span className="text-slate-600">{t.label}</span>
-                  <span className="font-medium text-[#0B1330]">{fmt(t.value)}</span>
-                </div>
-                <ProgressBar value={t.value} max={total} tone={t.id === "Updated" ? "navy" : "sky"} />
-              </li>
-            ))}
-          </ul>
-        </Card>
-      </div>
-
-      <Card title="Activity log" subtitle={`Your latest actions. Last active ${SESSION_FACTS[2].value.toLowerCase()}.`}>
-        <ul className="divide-y divide-slate-100">
-          {STAFF_LOG.map((row) => (
-            <li key={`${row.time}-${row.detail}`} className="grid grid-cols-[auto_1fr] items-center gap-x-4 gap-y-1 py-3.5 sm:grid-cols-[150px_100px_1fr]">
-              <span className="text-xs text-slate-500">{row.time}</span>
-              <span className={`w-fit rounded-full px-2.5 py-1 text-[11px] font-medium ${TYPE_STYLES[row.type]}`}>{row.type}</span>
-              <span className="col-span-2 text-sm text-[#0B1330] sm:col-span-1">{row.detail}</span>
-            </li>
-          ))}
-        </ul>
-      </Card>
-    </div>
-  );
-}
-
 /* ------------------------------------------------------------------ */
 /*  Dashboard for students and faculty                                 */
 /* ------------------------------------------------------------------ */
@@ -531,11 +306,12 @@ function MemberDashboard({ role }) {
 
   return (
     <div className="space-y-6">
+      <DashboardHero role={role} />
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {data.stats.map((s, i) => {
           const featured = i === 0;
           return (
-            <div key={s.id} className={`flex min-w-0 flex-col rounded-2xl border p-5 ${featured ? "border-[#0B1330] bg-[#0B1330] text-white" : "border-slate-200 bg-white text-[#0B1330]"}`}>
+            <div key={s.id} className={`flex min-w-0 flex-col rounded-2xl border p-5 shadow-[0_1px_2px_rgba(11,19,48,0.05)] ${featured ? "border-[#0B1330] bg-[#0B1330] text-white" : "border-slate-200 bg-white text-[#0B1330]"}`}>
               <span className={`flex h-9 w-9 items-center justify-center rounded-lg ${featured ? "bg-white/10 text-sky-300" : s.warn ? "bg-rose-50 text-rose-600" : "bg-[#F0EDFA] text-[#3B4A86]"}`}>
                 <Icon name={s.icon} className="h-[18px] w-[18px]" />
               </span>
@@ -655,6 +431,6 @@ function MemberDashboard({ role }) {
 /* ------------------------------------------------------------------ */
 export default function Dashboard() {
   const { role } = useAuth();
-  if (ACCESS.staff.includes(role)) return <StaffDashboard />;
+  if (ACCESS.staff.includes(role)) return <PersonnelDashboard role={role} />;
   return <MemberDashboard role={role === "faculty" ? "faculty" : "student"} />;
 }

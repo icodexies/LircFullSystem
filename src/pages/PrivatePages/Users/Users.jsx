@@ -21,6 +21,7 @@ import {
   WorkspaceHeader,
   WorkspacePanel,
   StatusBadge,
+  heroPrimary,
 } from "../../../components/attendance/WorkspaceUi.jsx";
 import {
   inputClass,
@@ -32,6 +33,7 @@ import { LoadingBlock } from "../../../components/ui/Loading.jsx";
 import MemberDetails from "../../../components/users/MemberDetails.jsx";
 import MemberEditForm from "../../../components/users/MemberEditForm.jsx";
 import MemberRequestModal from "../../../components/users/MemberRequestModal.jsx";
+import AddUserDialog from "../../../components/users/AddUserDialog.jsx";
 import { useToast } from "../../../hooks/shared/useToast.js";
 
 export default function Users() {
@@ -51,6 +53,22 @@ export default function Users() {
     { id: "approved", label: "Approved requests" },
     { id: "rejected", label: "Rejected requests" },
   ];
+  // Short descriptions so the request tabs explain themselves.
+  const requestInfo = {
+    pending: {
+      description:
+        "Waiting for approval — approving saves the edit; rejecting keeps the member record as it is.",
+      empty: "Nothing is waiting for approval right now.",
+    },
+    approved: {
+      description: "Approved edits — already saved to the member record.",
+      empty: "No approved edits yet.",
+    },
+    rejected: {
+      description: "Rejected edits — the member record stayed the same.",
+      empty: "No rejected edits yet.",
+    },
+  };
   const [tab, setTab] = useState("members");
 
   // Member search + selection
@@ -60,6 +78,7 @@ export default function Users() {
   const [selected, setSelected] = useState(null);
   const [memberRevision, setMemberRevision] = useState(0);
   const [editingProfile, setEditingProfile] = useState(null);
+  const [adding, setAdding] = useState(false);
 
   // Options for the edit form and request names
   const [options, setOptions] = useState(null);
@@ -114,12 +133,11 @@ export default function Users() {
     if (deepLinkId) navigate("/users", { replace: true });
   }
 
-  async function find(event) {
-    event.preventDefault();
+  async function runSearch(query) {
     if (busy) return;
     setBusy(true);
     try {
-      const rows = await findMembers(search);
+      const rows = await findMembers(query);
       setMembers(rows);
       setSelected(null);
     } catch (error) {
@@ -127,6 +145,16 @@ export default function Users() {
     } finally {
       setBusy(false);
     }
+  }
+
+  function find(event) {
+    event.preventDefault();
+    void runSearch(search);
+  }
+
+  // After adding a user, refresh an open member search.
+  async function userAdded() {
+    if (members !== null) await runSearch(search);
   }
 
   async function editSaved() {
@@ -154,28 +182,45 @@ export default function Users() {
       <WorkspaceHeader
         title="Users"
         description="Member records with borrow and attendance history. Profile edits go through admin approval."
+        actions={
+          <button
+            type="button"
+            className={heroPrimary}
+            onClick={() => setAdding(true)}
+          >
+            Add User
+          </button>
+        }
       />
 
-      <div className="flex flex-wrap gap-2">
-        {tabs.map((item) => (
-          <button
-            key={item.id}
-            type="button"
-            onClick={() => setTab(item.id)}
-            className={`inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3B4A86] ${
-              tab === item.id
-                ? "bg-[#0B1330] text-white"
-                : "border border-slate-200 bg-white text-slate-600 hover:text-[#0B1330]"
-            }`}
-          >
-            {item.label}
-            {item.id === "pending" && pendingCount > 0 && (
-              <span className="rounded-full bg-red-500 px-1.5 text-[10px] font-bold text-white">
-                {pendingCount}
-              </span>
-            )}
-          </button>
-        ))}
+      <div className="space-y-2.5">
+        <div className="flex flex-wrap gap-2">
+          {tabs.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => setTab(item.id)}
+              className={`inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3B4A86] ${
+                tab === item.id
+                  ? "bg-[#0B1330] text-white"
+                  : "border border-slate-400 bg-slate-100 text-slate-700 hover:bg-slate-200 hover:text-[#0B1330]"
+              }`}
+            >
+              {item.label}
+              {item.id === "pending" && pendingCount > 0 && (
+                <span className="rounded-full bg-red-500 px-1.5 text-[10px] font-bold text-white">
+                  {pendingCount}
+                </span>
+              )}
+            </button>
+          ))}
+        </div>
+        {tab !== "members" && (
+          <p className="px-1 text-[11px] leading-relaxed text-slate-400">
+            Edit requests are changes to a member's details — an admin approves
+            them before they are saved.
+          </p>
+        )}
       </div>
 
       {tab === "members" &&
@@ -266,22 +311,14 @@ export default function Users() {
       {tab !== "members" && (
         <WorkspacePanel
           title={tabs.find((item) => item.id === tab)?.label ?? "Requests"}
-          description={
-            isAdmin
-              ? tab === "pending"
-                ? "Edits submitted by staff and librarians, waiting for your approval."
-                : "Edit requests you already reviewed."
-              : "Your own edit requests and their review status."
-          }
+          description={requestInfo[tab]?.description}
         >
           <div className="px-5 py-4 sm:px-6">
             {requests === null ? (
               <LoadingBlock label="Loading requests…" className="min-h-[8rem]" />
             ) : visibleRequests.length === 0 ? (
               <p className="text-xs text-slate-500">
-                {isAdmin && tab === "pending"
-                  ? "No edit requests are waiting for approval."
-                  : `No ${tab} requests yet.`}
+                {requestInfo[tab]?.empty ?? "No requests yet."}
               </p>
             ) : (
               <ul className="divide-y divide-slate-100">
@@ -328,9 +365,21 @@ export default function Users() {
 
       {editingProfile && (
         <Modal
-          wide
           title="Edit member details"
           description={`${editingProfile.full_name} · ${editingProfile.library_id}`}
+          icon={
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.7"
+              className="h-5 w-5"
+              aria-hidden="true"
+            >
+              <path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16v4Z M13.5 6.5l4 4" />
+            </svg>
+          }
+          size="lg"
           onClose={() => setEditingProfile(null)}
           dismissOnBackdrop={false}
         >
@@ -346,12 +395,24 @@ export default function Users() {
 
       {reviewing && (
         <Modal
-          wide
           title={
             isAdmin && reviewing.status === "pending"
               ? "Review edit request"
               : "Edit request details"
           }
+          icon={
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.7"
+              className="h-5 w-5"
+              aria-hidden="true"
+            >
+              <path d="M9 4h6v3H9z M9 5.5H6.5A1.5 1.5 0 0 0 5 7v12a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 19V7a1.5 1.5 0 0 0-1.5-1.5H15 M9 13l2 2 4-4" />
+            </svg>
+          }
+          size="lg"
           onClose={closeReview}
           dismissOnBackdrop={false}
         >
@@ -363,6 +424,13 @@ export default function Users() {
             onReviewed={requestReviewed}
           />
         </Modal>
+      )}
+
+      {adding && (
+        <AddUserDialog
+          onClose={() => setAdding(false)}
+          onSaved={userAdded}
+        />
       )}
     </div>
   );

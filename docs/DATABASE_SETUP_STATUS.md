@@ -6,7 +6,7 @@ Verified and completed on 9 October 2026 through the connected Supabase integrat
 
 Migration `20261009115403_enrolled_year_levels_one_to_four.sql` was applied on 9 October 2026. New enrolled validations and student time-ins require a confirmed level 1–4. Card estimates outside 1–4 are unavailable. Old records are preserved for review, rather than automatically marked withdrawn or made fourth year.
 
-Live read-only verification: **9,643** annual records; **7,687** in the validated count and **1,956** enrolled legacy records needing year-level review. Choose **Annual validation → Advanced filters → Validation state → Needs year-level review** to find them. Confirm their actual level or status using school records. Historical checkout is still permitted. No student status, stored level, active semester or attendance row was rewritten by this correction.
+Live read-only verification: **9,643** validation records; **7,687** in the validated count and **1,956** enrolled legacy records needing year-level review. Choose **Library validation → Advanced filters → Validation state → Needs year-level review** to find them. Confirm their actual level or status using school records. Historical checkout is still permitted. No student status, stored level, active semester or attendance row was rewritten by this correction.
 
 The earlier setup audit below describes the state before this correction. All setup scripts are already applied; do not rerun the initial seed. See [filter explanations](FILTER_GUIDE.md) and [shared dialog usage](DIALOGS.md).
 
@@ -19,7 +19,7 @@ Project: **lmsDatabase** (`jrrwhrnqembviaocrdmi`). The local app's `VITE_SUPABAS
 | Setup | Status |
 | --- | --- |
 | Base academic-period and attendance schema | Already applied; do not rerun |
-| Annual enrollment conversion | Already applied; `academic_year_id` and read-only legacy provenance exist |
+| Library validation conversion | Already applied; `academic_year_id` and read-only legacy provenance exist |
 | Initial 2026-2027 student validation | Already initialized; do not repeat |
 | Academic years 2022-2023 through 2026-2027 | Five years and ten semesters exist |
 | Active semester | 2026-2027 · 1st Semester |
@@ -42,18 +42,18 @@ The earlier setup scripts were applied manually and were absent from the migrati
 
 ## Verified results
 
-- Live annual report: 9,643 students, 9,643 initialized annual validations, first page limited to 20 records, Next available.
+- Live annual report: 9,643 students, 9,643 initialized library validations, first page limited to 20 records, Next available.
 - Live attendance report: zero visits, zero inside, zero unique visitors, no completed-duration average.
 - Classification options: four departments, fifteen programs, three position classifications. Actual profile FK columns map to `departments`, `programs` and `position_classifications` with their `name` labels.
 - Anonymous callers have no EXECUTE grant on the five staff scanner/period/report RPCs. An authenticated caller without a staff profile is rejected by report/options guards and cannot read profiles/enrollments/attendance through RLS.
 - Unique annual-validation/open-visit indexes and attendance/enrollment triggers are present.
-- Final counts match the pre-change audit: 9,991 profiles, 3,034 books, 6,259 physical copies, 9,643 annual validations and zero attendance rows. Active semester remains unchanged.
+- Final counts match the pre-change audit: 9,991 profiles, 3,034 books, 6,259 physical copies, 9,643 library validations and zero attendance rows. Active semester remains unchanged.
 
 These are database-level read checks and metadata verification, not a real scanner/device or production load test. No live attendance writes, student-status changes, account creation or bulk initialization were used as tests.
 
 ## What to do in the app
 
-Your existing database setup does not need another SQL run for these features. Sign in with your admin account, then open Attendance, Annual enrollment or Academic periods. Use the header for personal viewing; use the explicit Make active control only when the school changes the global transaction period. Confirm official calendar dates and correct exceptional student year levels using verified school records.
+Your existing database setup does not need another SQL run for these features. Sign in with your admin account, then open Attendance, Library validation or Academic periods. Use the header for personal viewing; use the explicit Make active control only when the school changes the global transaction period. Confirm official calendar dates and correct exceptional student year levels using verified school records.
 
 The detailed staff workflow remains in [ATTENDANCE.md](ATTENDANCE.md); cover/edit behavior is in [OPAC.md](OPAC.md). Their earlier local-only verification descriptions refer to implementation before this live setup session; this status note records the current live state.
 
@@ -62,3 +62,37 @@ The detailed staff workflow remains in [ATTENDANCE.md](ATTENDANCE.md); cover/edi
 Supabase's advisor still flags the authenticated SECURITY DEFINER entry points, which intentionally enforce the trusted staff guard; their anonymous EXECUTE grants are revoked. The older `get_my_role()` helper is separately flagged for anonymous EXECUTE. Leaked-password protection is disabled. These existing settings were not changed in this session.
 
 References: [function execution advisory](https://supabase.com/docs/guides/database/database-linter?lint=0028_anon_security_definer_function_executable), [password protection setting](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection).
+
+## Personnel dashboard data (applied 14 October 2026)
+
+Nine migrations were written against the verified live definitions, validated
+in rollback transactions, and applied through the linked CLI (each in its own
+transaction; migration history synced):
+
+| Migration | Purpose |
+|---|---|
+| `20261015090000_activity_events` | Append-only `activity_events` + `security_events`, actor derivation, whitelisted change capture, triggers on 12 tables |
+| `20261015091000_inventory_soft_void` | Inventory undo/re-scan keeps history (void instead of delete/overwrite) |
+| `20261015092000_activity_prologues` | One-line action context added to 19 RPCs + 2 helpers (idempotent patcher) |
+| `20261015093000_loan_return_recorded_at` | "When the return was entered" marker on `book_loans` |
+| `20261015094000_provenance` | Evidence-based provenance labels + `provenance_batches` (demo/seed/setup/unknown/live) |
+| `20261015095000_activity_read_rpcs` | `lirc_activity_feed` / `_trace` / `_for_entity` with server-built descriptions |
+| `20261016090000_goals_schema` | Goals, frozen items, members, scope revisions, append-only contribution ledger (+ guards, RLS) |
+| `20261016091000_goals_rpcs` | Goal RPCs (create/activate/revise/review/aggregates/reconcile) |
+| `20261017090000_inventory_pilot_wiring` | Inventory credit rules, physical-check + reconciliation aggregates, `lirc_goal_verify_item`, barcode download history |
+| `20261018090000_personnel_dashboard_rpcs` | `lirc_sign_in_activity`, `lirc_goal_review_queue`, `lirc_goal_my_contribution` gains work/review kinds |
+| `20261018091000_goal_event_descriptions` | Goal events read as real sentences in the activity feed |
+| `20261018100000_activity_log_page` | Admin User logs page (`lirc_activity_log_page`, numbered pages) + personal activity summary |
+| `20261018110000_remove_goals` | The goal system was removed entirely (tables, RPCs, helpers); inventory functions restored to their pre-credit versions; historical goal events stay readable in the log |
+| `20261018120000_activity_filter_groups` | Activity filters match several action families per chip (`action_prefixes`); dashboard shows own actions only |
+| `20261018130000_my_activity_stats` | Personal chart data: 30-day daily counts, per-kind groups, active days, streak and busiest day (server-computed) |
+| `20261018140000_activity_log_search` | User logs: person search (word-order-free + close spellings) and Manila-time date/time range filters |
+| `20261018150000_library_validation_terms` | Terminology: the annual enrollment process reads as "Library validation" in the feed and User logs |
+| `20261018160000_validation_status_labels` | Status words everywhere: `enrolled` reads as "Validated" (borrow checks and validation-change notifications included) |
+
+The goal system is **removed** (14 October 2026). The personnel dashboard and
+the admin **User logs** page read the activity log directly.
+
+
+Details and metric definitions: [PERSONNEL_DASHBOARD.md](PERSONNEL_DASHBOARD.md).
+

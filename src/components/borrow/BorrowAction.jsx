@@ -144,7 +144,7 @@ export default function BorrowAction({ copy, onDone, onCancel }) {
           {busy && !preview ? "Looking up…" : "Look up card"}
         </button>
       </form>
-      <p className="-mt-3 text-[11px] text-slate-400">
+      <p className="-mt-3 text-[11px] text-slate-500">
         Scan or type the card, then press Enter. Enter only looks up the card.
       </p>
 
@@ -165,7 +165,7 @@ export default function BorrowAction({ copy, onDone, onCancel }) {
               className={`text-xs ${studentCheck.ok ? "text-slate-500" : "font-semibold text-amber-800"}`}
             >
               {studentCheck.ok
-                ? "Validated as enrolled for the current school year."
+                ? "Library validation is complete for the current school year."
                 : studentCheck.reason}
             </p>
           )}
@@ -204,7 +204,7 @@ export default function BorrowAction({ copy, onDone, onCancel }) {
           />
         </Field>
       </fieldset>
-      <p className="-mt-3 text-[11px] text-slate-400">
+      <p className="-mt-3 text-[11px] text-slate-500">
         The due date/time must be after the start, at most one year later. Old
         records can use past dates.
       </p>
@@ -229,7 +229,7 @@ export default function BorrowAction({ copy, onDone, onCancel }) {
         </Field>
       )}
 
-      <div className="flex flex-wrap justify-end gap-3 border-t border-slate-100 pt-4">
+      <div className="sticky bottom-0 -mx-5 -mb-5 flex flex-wrap items-center justify-end gap-3 border-t border-slate-200 bg-gradient-to-r from-[#F7F6FB] to-white px-5 py-4 sm:-mx-6 sm:-mb-6 sm:px-6">
         <button
           type="button"
           disabled={busy}

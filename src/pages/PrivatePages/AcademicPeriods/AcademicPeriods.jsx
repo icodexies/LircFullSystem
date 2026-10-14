@@ -20,6 +20,7 @@ import {
   StatusBadge,
   WorkspaceNotice,
   secondaryButton,
+  heroPrimary,
 } from "../../../components/attendance/WorkspaceUi.jsx";
 import Modal from "../../../components/ui/Modal.jsx";
 import { LoadingBlock } from "../../../components/ui/Loading.jsx";
@@ -122,7 +123,7 @@ export default function AcademicPeriods() {
           <button
             type="button"
             disabled={busy}
-            className={buttonClass}
+            className={heroPrimary}
             onClick={() => openEditor("semesters")}
           >
             + New semester
@@ -131,7 +132,7 @@ export default function AcademicPeriods() {
       >
         <span>
           Active for transactions:{" "}
-          <strong className="font-semibold text-[#0B1330]">
+          <strong className="font-semibold text-white">
             {periods.activeSemester
               ? periodLabel(periods.activeSemester)
               : "Not configured"}
@@ -321,10 +322,33 @@ export default function AcademicPeriods() {
       </p>
       {calendarOpen && (
         <Modal
-          wide
           title="Academic year calendars"
           description="Manage the full school-year dates. Each semester must fit within its academic year."
+          icon={
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.7"
+              className="h-5 w-5"
+              aria-hidden="true"
+            >
+              <path d="M4 6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6Z M4 10h16 M8 4V2 M16 4V2 M8 14h.01 M12 14h.01 M16 14h.01 M8 17h.01 M12 17h.01" />
+            </svg>
+          }
+          size="lg"
           onClose={() => setCalendarOpen(false)}
+          footer={
+            <div className="flex flex-wrap items-center justify-end gap-3">
+              <button
+                type="button"
+                className={secondaryButton}
+                onClick={() => setCalendarOpen(false)}
+              >
+                Done
+              </button>
+            </div>
+          }
         >
           <div className="p-6">
             <ul className="divide-y divide-slate-100">
@@ -349,22 +373,25 @@ export default function AcademicPeriods() {
                 </li>
               ))}
             </ul>
-            <div className="mt-4 flex justify-end border-t pt-4">
-              <button
-                type="button"
-                className={buttonClass}
-                onClick={() => setCalendarOpen(false)}
-              >
-                Done
-              </button>
-            </div>
           </div>
         </Modal>
       )}
       {editor && (
         <Modal
-          wide
           busy={formBusy}
+          icon={
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.7"
+              className="h-5 w-5"
+              aria-hidden="true"
+            >
+              <path d="M4 6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6Z M4 10h16 M8 4V2 M16 4V2 M8 14h.01 M12 14h.01 M16 14h.01 M8 17h.01 M12 17h.01" />
+            </svg>
+          }
+          size="lg"
           title={
             editor.kind === "semesters"
               ? editor.record

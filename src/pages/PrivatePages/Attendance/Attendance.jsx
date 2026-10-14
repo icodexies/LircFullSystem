@@ -7,7 +7,6 @@ import { periodLabel } from "../../../services/periods/periodRules.js";
 import {
   ReportState,
   Pagination,
-  buttonClass,
 } from "../../../components/attendance/StaffUi.jsx";
 import {
   WorkspaceHeader,
@@ -15,6 +14,7 @@ import {
   SummaryCards,
   WorkspaceNotice,
   secondaryButton,
+  heroPrimary,
 } from "../../../components/attendance/WorkspaceUi.jsx";
 import ReportFilters from "../../../components/attendance/ReportFilters.jsx";
 import ReportExport from "../../../components/attendance/ReportExport.jsx";
@@ -47,7 +47,7 @@ export default function Attendance() {
         actions={
           <button
             type="button"
-            className={buttonClass}
+            className={heroPrimary}
             onClick={() => setScanner(true)}
           >
             Open scanner
@@ -56,7 +56,7 @@ export default function Attendance() {
       >
         <span>
           Viewing:{" "}
-          <strong className="font-semibold text-[#0B1330]">
+          <strong className="font-semibold text-white">
             {periodLabel(periods.selectedSemester)}
           </strong>
         </span>
@@ -148,7 +148,7 @@ export default function Attendance() {
       </WorkspacePanel>
       <div className="flex flex-wrap gap-5 px-1 text-xs text-slate-500">
         <Link className="hover:text-[#3B4A86]" to="/enrollments">
-          Annual enrollment →
+          Library validation →
         </Link>
         <Link className="hover:text-[#3B4A86]" to="/academic-periods">
           Academic periods →
@@ -156,8 +156,19 @@ export default function Attendance() {
       </div>
       {scanner && (
         <Modal
-          wide
           title="Scan a library card"
+          icon={
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.7"
+              className="h-5 w-5"
+              aria-hidden="true"
+            >
+              <path d="M4 8V6a2 2 0 0 1 2-2h2 M16 4h2a2 2 0 0 1 2 2v2 M20 16v2a2 2 0 0 1-2 2h-2 M8 20H6a2 2 0 0 1-2-2v-2 M4 12h16" />
+            </svg>
+          }
           busy={scannerBusy}
           onClose={() => {
             if (!scannerBusy) setScanner(false);

@@ -6,12 +6,18 @@ import { SEARCH_FIELDS, PAGE_SIZES } from "../../../services/catalog/catalogQuer
 import BookCover from "../../../components/catalog/BookCover.jsx";
 import BookDetails from "../../../components/catalog/BookDetails.jsx";
 import EditBook from "../../../components/catalog/EditBook.jsx";
-import { LoadingBlock } from "../../../components/ui/Loading.jsx";
+import { SkeletonCards } from "../../../components/ui/Skeleton.jsx";
 
 const INITIAL_FILTERS = { formatId: "", shelfId: "", year: "" };
 const control =
-  "w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs text-[#0B1330] focus:border-[#3B4A86] focus:outline-none focus:ring-2 focus:ring-[#3B4A86]/15 disabled:opacity-50";
+  "w-full rounded-xl border border-slate-400 bg-white px-3 py-2.5 text-xs text-[#0B1330] placeholder:text-slate-500 focus:border-[#3B4A86] focus:outline-none focus:ring-2 focus:ring-[#3B4A86]/15 disabled:opacity-50";
 const labelText = "mb-1.5 block text-[11px] font-semibold text-slate-600";
+const dots = {
+  backgroundImage: "radial-gradient(#fff 1px, transparent 1px)",
+  backgroundSize: "18px 18px",
+  maskImage: "linear-gradient(to left, #000, transparent 65%)",
+  WebkitMaskImage: "linear-gradient(to left, #000, transparent 65%)",
+};
 
 export default function OPAC() {
   const catalog = useCatalog();
@@ -32,76 +38,83 @@ export default function OPAC() {
 
   return (
     <>
-      {/* Header + search */}
-      <section>
-        <div className="flex flex-wrap items-start justify-between gap-x-6 gap-y-4">
-          <div className="min-w-0 max-w-xl">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">
-              Online public access catalog
-            </p>
-            <h1 className="mt-1.5 font-serif text-2xl font-bold tracking-tight text-[#0B1330] sm:text-3xl">
-              OPAC
-            </h1>
-            <p className="mt-1.5 text-sm leading-relaxed text-slate-500">
-              Find books, check their library sections, and explore individual
-              copies.
-            </p>
+      {/* Hero: title + search (one navy block per page) */}
+      <section className="relative overflow-hidden rounded-2xl bg-[#0B1330] px-5 py-6 sm:px-8 sm:py-8">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 opacity-[0.16]"
+          style={dots}
+        />
+        <div className="relative">
+          <div className="flex flex-wrap items-start justify-between gap-x-6 gap-y-4">
+            <div className="min-w-0 max-w-xl">
+              <p className="text-xs font-semibold text-white/60">
+                Online public access catalog
+              </p>
+              <h1 className="mt-1.5 font-serif text-2xl font-bold tracking-tight text-white sm:text-3xl">
+                OPAC
+              </h1>
+              <p className="mt-1.5 text-sm leading-relaxed text-white/70">
+                Find books, check their library sections, and explore
+                individual copies.
+              </p>
+            </div>
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[11px] font-semibold text-white">
+              <span
+                className={`h-1.5 w-1.5 rounded-full ${canEdit ? "bg-white" : "bg-white/50"}`}
+                aria-hidden="true"
+              />
+              {canEdit ? "Catalog editor" : "Browse access"}
+            </span>
           </div>
-          <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-[#F7F6FB] px-3 py-1.5 text-[11px] font-semibold text-slate-600">
-            <span
-              className={`h-1.5 w-1.5 rounded-full ${canEdit ? "bg-[#0B1330]" : "bg-slate-400"}`}
-              aria-hidden="true"
-            />
-            {canEdit ? "Catalog editor" : "Browse access"}
-          </span>
-        </div>
 
-        <div className="mt-5 flex flex-col gap-2 sm:flex-row">
-          <label className="sm:w-40">
-            <span className="sr-only">Search by</span>
-            <select
-              aria-label="Search by"
-              value={catalog.query.searchBy}
-              onChange={(event) =>
-                catalog.changeFilter("searchBy", event.target.value)
-              }
-              className={`${control} py-3`}
-            >
-              {Object.entries(SEARCH_FIELDS).map(([field, label]) => (
-                <option key={field} value={field}>
-                  {label}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="relative flex-1">
-            <span className="sr-only">Search catalog</span>
-            <svg
-              className="absolute left-3.5 top-3.5 h-4 w-4 text-[#3B4A86]"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              aria-hidden="true"
-            >
-              <circle cx="10.5" cy="10.5" r="6.5" />
-              <path d="m16 16 4 4" />
-            </svg>
-            <input
-              type="search"
-              maxLength={120}
-              value={catalog.searchInput}
-              onChange={(event) => catalog.setSearchInput(event.target.value)}
-              placeholder={`Search by ${SEARCH_FIELDS[catalog.query.searchBy].toLowerCase()}...`}
-              className={`${control} py-3 pl-10`}
-            />
-          </label>
+          <div className="mt-5 flex flex-col gap-2 sm:flex-row">
+            <label className="sm:w-40">
+              <span className="sr-only">Search by</span>
+              <select
+                aria-label="Search by"
+                value={catalog.query.searchBy}
+                onChange={(event) =>
+                  catalog.changeFilter("searchBy", event.target.value)
+                }
+                className={`${control} py-3`}
+              >
+                {Object.entries(SEARCH_FIELDS).map(([field, label]) => (
+                  <option key={field} value={field}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="relative flex-1">
+              <span className="sr-only">Search catalog</span>
+              <svg
+                className="absolute left-3.5 top-3.5 h-4 w-4 text-[#3B4A86]"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                aria-hidden="true"
+              >
+                <circle cx="10.5" cy="10.5" r="6.5" />
+                <path d="m16 16 4 4" />
+              </svg>
+              <input
+                type="search"
+                maxLength={120}
+                value={catalog.searchInput}
+                onChange={(event) => catalog.setSearchInput(event.target.value)}
+                placeholder={`Search by ${SEARCH_FIELDS[catalog.query.searchBy].toLowerCase()}...`}
+                className={`${control} py-3 pl-10`}
+              />
+            </label>
+          </div>
         </div>
       </section>
 
       {/* Filters */}
       <form
-        className="mt-6 rounded-2xl border border-slate-200 bg-white p-4 sm:p-5"
+        className="mt-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-[0_1px_2px_rgba(11,19,48,0.05)] sm:p-5"
         onSubmit={(event) => {
           event.preventDefault();
           catalog.applyFilters(filters);
@@ -244,7 +257,7 @@ export default function OPAC() {
             type="button"
             onClick={() => catalog.refresh()}
             disabled={busy}
-            className="rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs font-semibold text-slate-600 hover:border-[#3B4A86]/40 hover:text-[#0B1330] disabled:opacity-40"
+            className="rounded-xl border border-slate-400 bg-slate-100 px-3 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-200 hover:text-[#0B1330] disabled:opacity-40"
           >
             Refresh
           </button>
@@ -252,7 +265,7 @@ export default function OPAC() {
       </div>
       <div aria-busy={busy}>
         {catalog.loading ? (
-          <LoadingBlock label="Loading the catalog…" className="min-h-[24rem]" />
+          <SkeletonCards label="Loading the catalog…" />
         ) : catalog.error ? (
           <div
             className="rounded-2xl border border-red-100 bg-red-50 p-6"
@@ -267,7 +280,7 @@ export default function OPAC() {
             <button
               type="button"
               onClick={catalog.refresh}
-              className="mt-4 rounded-lg bg-white px-4 py-2 text-xs font-semibold text-red-800"
+              className="mt-4 rounded-lg border border-red-300 bg-white px-4 py-2 text-xs font-semibold text-red-800 hover:bg-red-100"
             >
               Try again
             </button>
@@ -296,7 +309,7 @@ export default function OPAC() {
             <button
               type="button"
               onClick={reset}
-              className="mt-4 rounded-xl border border-[#3B4A86]/25 bg-white px-4 py-2 text-xs font-semibold text-[#3B4A86] hover:bg-[#F0EDFA]"
+              className="mt-4 rounded-xl border border-[#3B4A86]/40 bg-white px-4 py-2 text-xs font-semibold text-[#3B4A86] hover:bg-[#F0EDFA]"
             >
               Clear search and filters
             </button>
@@ -306,7 +319,7 @@ export default function OPAC() {
             {catalog.books.map((book) => (
               <li
                 key={book.id}
-                className="relative flex min-w-0 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 pt-5 transition-colors [contain-intrinsic-size:auto_260px] [content-visibility:auto] hover:border-[#3B4A86]/40"
+                className="relative flex min-w-0 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 pt-5 shadow-[0_1px_2px_rgba(11,19,48,0.05)] transition-colors [contain-intrinsic-size:auto_260px] [content-visibility:auto] hover:border-[#3B4A86]/40"
               >
                 <span
                   aria-hidden="true"
@@ -409,7 +422,7 @@ export default function OPAC() {
             type="button"
             disabled={busy || catalog.query.page === 1}
             onClick={() => catalog.setPage(catalog.query.page - 1)}
-            className="rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-xs font-semibold text-slate-600 hover:border-[#3B4A86]/40 disabled:opacity-40"
+            className="rounded-xl border border-slate-400 bg-slate-100 px-3.5 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-200 hover:text-[#0B1330] disabled:opacity-40"
           >
             Previous
           </button>
@@ -423,7 +436,7 @@ export default function OPAC() {
             type="button"
             disabled={busy || !catalog.hasNext}
             onClick={() => catalog.setPage(catalog.query.page + 1)}
-            className="rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-xs font-semibold text-slate-600 hover:border-[#3B4A86]/40 disabled:opacity-40"
+            className="rounded-xl border border-slate-400 bg-slate-100 px-3.5 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-200 hover:text-[#0B1330] disabled:opacity-40"
           >
             Next
           </button>

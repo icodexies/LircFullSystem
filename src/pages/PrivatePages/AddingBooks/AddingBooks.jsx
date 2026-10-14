@@ -8,10 +8,10 @@ import {
   WorkspaceHeader,
   WorkspacePanel,
   secondaryButton,
+  heroPrimary,
 } from "../../../components/attendance/WorkspaceUi.jsx";
 import {
   inputClass,
-  buttonClass,
   tableButton,
 } from "../../../components/attendance/StaffUi.jsx";
 import BookCover from "../../../components/catalog/BookCover.jsx";
@@ -32,7 +32,7 @@ export default function AddingBooks() {
         actions={
           <button
             type="button"
-            className={buttonClass}
+            className={heroPrimary}
             onClick={() => setAdding(true)}
           >
             Add Book
@@ -152,9 +152,21 @@ export default function AddingBooks() {
 
       {adding && (
         <Modal
-          wide
           title="Add a book"
           description="Enter the book details, then one accession number per physical copy."
+          icon={
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.7"
+              className="h-5 w-5"
+              aria-hidden="true"
+            >
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20 M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z M12 7v6 M9 10h6" />
+            </svg>
+          }
+          size="lg"
           onClose={() => setAdding(false)}
           dismissOnBackdrop={false}
         >

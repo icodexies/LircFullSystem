@@ -47,21 +47,29 @@ export const MEMBER_PAGES = [
     group: "Members",
     allowedRoles: ACCESS.staff,
   },
-  // --- Attendance & enrollment (operators only) ---------------------------
+  {
+    id: "user-logs",
+    label: "User logs",
+    path: "/user-logs",
+    icon: "activity",
+    group: "Members",
+    allowedRoles: ACCESS.admin,
+  },
+  // --- Attendance and validation (operators only) -------------------------
   {
     id: "attendance",
     label: "Attendance",
     path: "/attendance",
     icon: "attendance",
-    group: "Attendance & enrollment",
+    group: "Attendance",
     allowedRoles: ACCESS.attendance,
   },
   {
     id: "enrollments",
-    label: "Annual enrollment",
+    label: "Library validation",
     path: "/enrollments",
     icon: "school",
-    group: "Attendance & enrollment",
+    group: "Validation & periods",
     allowedRoles: ACCESS.attendance,
   },
   {
@@ -69,7 +77,7 @@ export const MEMBER_PAGES = [
     label: "Academic periods",
     path: "/academic-periods",
     icon: "calendar",
-    group: "Attendance & enrollment",
+    group: "Validation & periods",
     allowedRoles: ACCESS.attendance,
   },
   // --- Books & borrowing ---------------------------------------------------

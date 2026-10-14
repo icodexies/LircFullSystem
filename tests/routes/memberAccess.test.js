@@ -37,6 +37,7 @@ const expectedPages = {
     "path-finder",
     "statistics",
     "users",
+    "user-logs",
     "attendance",
     "enrollments",
     "academic-periods",
@@ -66,8 +67,8 @@ test("missing and unknown roles cannot access any member page", () => {
   }
 });
 
-test("all twelve pages have unique route paths and IDs", () => {
-  assert.equal(MEMBER_PAGES.length, 12);
-  assert.equal(new Set(MEMBER_PAGES.map((page) => page.id)).size, 12);
-  assert.equal(new Set(MEMBER_PAGES.map((page) => page.path)).size, 12);
+test("all thirteen pages have unique route paths and IDs", () => {
+  assert.equal(MEMBER_PAGES.length, 13);
+  assert.equal(new Set(MEMBER_PAGES.map((page) => page.id)).size, 13);
+  assert.equal(new Set(MEMBER_PAGES.map((page) => page.path)).size, 13);
 });

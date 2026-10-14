@@ -2,6 +2,7 @@ import { StatusBadge } from "./WorkspaceUi.jsx";
 import { useRef, useState } from "react";
 import { recordTimeOut } from "../../services/attendance/attendanceService.js";
 import { displayTime } from "../../services/attendance/attendanceRules.js";
+import { STATUS_LABELS } from "../../services/attendance/reportFilters.js";
 import { tableButton } from "./StaffUi.jsx";
 import { useToast } from "../../hooks/shared/useToast.js";
 export default function VisitTable({ rows, onChanged }) {
@@ -63,7 +64,9 @@ export default function VisitTable({ rows, onChanged }) {
                     <p className="mt-1 text-slate-500">{row.year_level_note}</p>
                   )}
                   <p className="mt-1">
-                    Current annual status: {row.current_enrollment_status}
+                    Current validation status:{" "}
+                    {STATUS_LABELS[row.current_enrollment_status] ??
+                      row.current_enrollment_status}
                   </p>
                 </td>
                 <td className="px-5 py-4 align-top">

@@ -3,7 +3,7 @@ import { normalizeCard, enrollmentPayload } from "./attendanceRules.js";
 export function attendanceError(error) {
   if (error?.code === "23505")
     return new Error(
-      "An open visit or annual validation already exists. Scan again to load the current record.",
+      "An open visit or library validation already exists. Scan again to load the current record.",
     );
   if (["42883", "PGRST202", "42703", "42P01"].includes(error?.code))
     return new Error(

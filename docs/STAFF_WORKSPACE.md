@@ -1,13 +1,13 @@
 # Staff page layout
 
-Attendance, Annual enrollment and Academic periods use the same simple structure:
+Attendance, Library validation and Academic periods use the same simple structure:
 
 1. A navy header explains the page and holds its main action.
 2. Summary cards show the important numbers.
 3. A white records panel groups its toolbar, filters and results.
 4. Forms open in modal windows, keeping the main page focused on records.
 
-## Annual enrollment
+## Library validation
 
 Click **Validate / update** beside a student to open their form. **Save validation** opens a second confirmation with Save validation and Cancel. Cancel returns to the filled form without saving. A successful save shows a success message, closes the form and refreshes the list. An error keeps the form available for correction.
 

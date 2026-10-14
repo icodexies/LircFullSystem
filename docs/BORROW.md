@@ -16,7 +16,7 @@ A member's own borrow and attendance history lives on the
    person who borrowed the book, current and returned.
 3. **Borrow a copy** — press *Borrow this copy*, scan the member's card, and
    review: name, card, active/overdue loans, and (for students) whether their
-   annual validation is in order. Staff set the **start and due date+time**
+   library validation is in order. Staff set the **start and due date+time**
    (default: now → +7 days). An *already returned* checkbox records old
    history in one step.
 4. **Returns** — press *Return this copy* on an on-loan accession: scan the

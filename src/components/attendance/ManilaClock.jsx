@@ -6,7 +6,7 @@ export default function ManilaClock() {
     return () => clearInterval(timer);
   }, []);
   return (
-    <time className="text-[11px] tabular-nums text-slate-500">
+    <time className="text-[11px] tabular-nums">
       {new Intl.DateTimeFormat("en-PH", {
         timeZone: "Asia/Manila",
         dateStyle: "medium",

@@ -96,7 +96,7 @@ export default function MemberEditForm({
           </Field>
         ))}
       </fieldset>
-      <div className="flex flex-wrap justify-end gap-3 border-t border-slate-100 pt-4">
+      <div className="sticky bottom-0 -mx-6 -mb-6 flex flex-wrap items-center justify-end gap-3 border-t border-slate-200 bg-gradient-to-r from-[#F7F6FB] to-white px-6 py-4">
         <button
           type="button"
           disabled={busy}

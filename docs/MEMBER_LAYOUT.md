@@ -18,7 +18,7 @@ The `role` column in `usersData` must use one of these exact values: `student`, 
 | Users | No | No | Yes | Yes | Yes |
 | **Attendance & enrollment** | | | | | |
 | Attendance | No | No | No | Yes | Yes |
-| Annual enrollment | No | No | No | Yes | Yes |
+| Library validation | No | No | No | Yes | Yes |
 | Academic periods | No | No | No | Yes | Yes |
 | **Books & borrowing** | | | | | |
 | Adding Books | No | No | No | Yes | Yes |

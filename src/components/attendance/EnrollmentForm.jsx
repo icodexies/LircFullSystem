@@ -1,4 +1,4 @@
-// Annual validation window.
+// Library validation window.
 // - Current school years save directly (status only; the system derives the
 //   year level from the card and recorded leave years).
 // - Past school years change only through the approval workflow: librarians
@@ -98,13 +98,13 @@ export default function EnrollmentForm({
         // Validate before asking; the service repeats this check before saving.
         enrollmentPayload({ status }, profile, year);
         const approved = await dialog.confirm({
-          title: "Save annual validation?",
+          title: "Save library validation?",
           message: `Save ${STATUS_LABELS[status] ?? status} for ${personName(profile)} in ${year.name}? This covers both semesters and does not record a visit.`,
           confirmLabel: "Save validation",
         });
         if (!approved) return;
         await saveEnrollment(profile, year, enrollment, { status });
-        toast.success("Annual validation saved. Attendance has not been recorded.");
+        toast.success("Library validation saved. Attendance has not been recorded.");
       }
       await loadHistory();
       await notifications.refresh();
@@ -177,7 +177,7 @@ export default function EnrollmentForm({
     <form onSubmit={save} className="space-y-5 p-6">
       <p className="rounded-xl bg-[#F7F6FB] p-4 text-xs leading-relaxed text-slate-600">
         Validation for academic year <strong>{year.name}</strong>; covers both
-        semesters. Missing validation means unverified.
+        semesters. Missing validation means not verified.
       </p>
       <p className="text-xs text-slate-600">
         {openedIsPast
@@ -189,7 +189,7 @@ export default function EnrollmentForm({
           label={
             openedIsPast
               ? "Requested status (needs admin approval)"
-              : "Annual status"
+              : "Validation status"
           }
         >
           <select
@@ -229,7 +229,7 @@ export default function EnrollmentForm({
                     <p className="text-xs font-semibold text-[#0B1330]">
                       {item.name}
                       {item.before_admission && (
-                        <span className="ml-2 font-normal text-slate-400">
+                        <span className="ml-2 font-normal text-slate-500">
                           Before admission
                         </span>
                       )}
@@ -351,7 +351,11 @@ export default function EnrollmentForm({
         )}
       </section>
 
-      <div className="flex flex-wrap justify-end gap-3 border-t border-slate-100 pt-4">
+      <p className="text-xs text-slate-500">
+        Saving validation does not record a visit. The server records validator
+        and validation time.
+      </p>
+      <div className="sticky bottom-0 -mx-6 -mb-6 flex flex-wrap items-center justify-end gap-3 border-t border-slate-200 bg-gradient-to-r from-[#F7F6FB] to-white px-6 py-4">
         {onCancel && (
           <button
             type="button"
@@ -372,10 +376,6 @@ export default function EnrollmentForm({
               : "Save validation"}
         </button>
       </div>
-      <p className="text-xs text-slate-500">
-        Saving validation does not record a visit. The server records validator
-        and validation time.
-      </p>
     </form>
   );
 }

@@ -114,15 +114,15 @@ export function timeInReason(
   if (preview.profile.role === "student") {
     const enrollment = preview.enrollment;
     if (!enrollment || enrollment.status === "unverified")
-      return "Student is unverified for the active academic year. Validate enrollment first.";
+      return "Student is not verified for the active academic year. Complete their library validation first.";
     if (needsEnrollmentReview(enrollment))
-      return "Year level needs review. Save the annual validation again so the system can set it from the card.";
+      return "Year level needs review. Save the library validation again so the system can set it from the card.";
     if (
       enrollment.status !== "enrolled" ||
       !enrollment.validated_at ||
       !enrollment.year_level
     )
-      return "Student is not validated as enrolled with a year level for this academic year.";
+      return "Student's library validation is not complete for this academic year.";
   }
   if (!PURPOSES.includes(purpose)) return "Choose the purpose of this visit.";
   if (purpose === "Other" && !other.trim())
@@ -133,7 +133,7 @@ export function timeInReason(
 }
 export function enrollmentPayload(form, profile, year) {
   if (profile.role !== "student")
-    throw new Error("Only students have annual enrollment validation.");
+    throw new Error("Only students have library validation.");
   if (!year?.id || !ENROLLMENT_STATUSES.includes(form.status))
     throw new Error("Choose an academic year and status.");
   // Staff choose the status only. The database derives the year level from

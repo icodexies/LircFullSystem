@@ -10,9 +10,10 @@ import { useToast } from "../../hooks/shared/useToast.js";
 import { getBookCopies } from "../../services/catalog/bookService.js";
 import { getBookLoans } from "../../services/borrow/borrowService.js";
 import { displayTime } from "../../services/attendance/attendanceRules.js";
-import { StatusBadge } from "../attendance/WorkspaceUi.jsx";
+import { StatusBadge, secondaryButton } from "../attendance/WorkspaceUi.jsx";
 import { tableButton } from "../attendance/StaffUi.jsx";
-import { LoadingBlock } from "../ui/Loading.jsx";
+import { SkeletonRows } from "../ui/Skeleton.jsx";
+
 export default function BookLoanDialog({ book, onClose }) {
   const toast = useToast();
   const [page, setPage] = useState(1);
@@ -55,8 +56,18 @@ export default function BookLoanDialog({ book, onClose }) {
       }
       description={book.book_name}
       onClose={onClose}
+      footer={
+        !borrowCopy &&
+        !returnTarget && (
+          <div className="flex flex-wrap items-center justify-end gap-3">
+            <button type="button" onClick={onClose} className={secondaryButton}>
+              Close
+            </button>
+          </div>
+        )
+      }
     >
-      <div className="space-y-6 p-6">
+      <div className="space-y-6 p-5 sm:p-6">
         {borrowCopy ? (
           <BorrowAction
             copy={borrowCopy}
@@ -77,25 +88,36 @@ export default function BookLoanDialog({ book, onClose }) {
           />
         ) : (
           <>
-            <div className="flex gap-4">
-              <BookCover book={book} className="h-28 w-20" />
-              <div className="min-w-0">
-                <h3 className="break-words font-serif text-lg font-bold leading-snug text-[#0B1330]">
-                  {book.book_name}
-                </h3>
-                <p className="mt-1 text-sm text-slate-500">
-                  {book.author || "Author not recorded"}
-                </p>
-                <p className="mt-1 text-xs text-slate-400">
-                  Call number {book.call_number || "not recorded"} ·{" "}
-                  {book.format?.name || "Unspecified format"} ·{" "}
-                  {book.section?.name || "No section"}
-                </p>
+            <div className="rounded-2xl border border-slate-200 bg-[#F7F6FB] p-5">
+              <div className="flex gap-4">
+                <BookCover
+                  book={book}
+                  className="h-28 w-20 shrink-0 border-slate-200 shadow-sm"
+                />
+                <div className="min-w-0">
+                  <span className="inline-flex max-w-full truncate rounded-full bg-[#F0EDFA] px-2.5 py-0.5 text-[11px] font-semibold text-[#3B4A86]">
+                    {book.format?.name || "Unspecified format"}
+                  </span>
+                  <h3 className="mt-2 break-words font-serif text-lg font-bold leading-snug text-[#0B1330]">
+                    {book.book_name}
+                  </h3>
+                  <p className="mt-1.5 text-sm text-slate-600">
+                    {book.author || "Author not recorded"}
+                  </p>
+                  <p className="mt-1 text-xs text-slate-500">
+                    Call number {book.call_number || "not recorded"} ·{" "}
+                    {book.section?.name || "No section"}
+                  </p>
+                </div>
               </div>
             </div>
 
             <section>
-              <h4 className="text-sm font-semibold text-[#0B1330]">
+              <h4 className="flex items-center gap-2 text-sm font-semibold text-[#0B1330]">
+                <span
+                  aria-hidden="true"
+                  className="h-4 w-1 rounded-full bg-[#0B1330]"
+                />
                 Copies (accession numbers)
               </h4>
               <p className="mt-1 text-xs text-slate-500">
@@ -103,7 +125,7 @@ export default function BookLoanDialog({ book, onClose }) {
                 on loan; return it first or choose another copy.
               </p>
               {copies === null ? (
-                <LoadingBlock label="Loading copies…" className="min-h-[8rem]" />
+                <SkeletonRows count={3} label="Loading copies…" />
               ) : copies.rows.length === 0 ? (
                 <p className="mt-3 text-xs text-slate-500">
                   No copy records for this book.
@@ -160,7 +182,7 @@ export default function BookLoanDialog({ book, onClose }) {
                             Borrow this copy
                           </button>
                         ) : (
-                          <span className="text-xs text-slate-400">
+                          <span className="text-xs text-slate-500">
                             Not available ({statusText})
                           </span>
                         )}
@@ -193,14 +215,18 @@ export default function BookLoanDialog({ book, onClose }) {
             </section>
 
             <section className="border-t border-slate-100 pt-5">
-              <h4 className="text-sm font-semibold text-[#0B1330]">
+              <h4 className="flex items-center gap-2 text-sm font-semibold text-[#0B1330]">
+                <span
+                  aria-hidden="true"
+                  className="h-4 w-1 rounded-full bg-[#0B1330]"
+                />
                 Borrowing history
               </h4>
               <p className="mt-1 text-xs text-slate-500">
                 Everyone who borrowed this book — current loans and returns.
               </p>
               {loans === null ? (
-                <LoadingBlock label="Loading history…" className="min-h-[6rem]" />
+                <SkeletonRows count={3} label="Loading history…" />
               ) : loans.length === 0 ? (
                 <p className="mt-3 text-xs text-slate-500">
                   No one has borrowed this book yet.
@@ -215,7 +241,7 @@ export default function BookLoanDialog({ book, onClose }) {
                       <div className="min-w-0">
                         <p className="font-semibold text-[#0B1330]">
                           {loan.holder}{" "}
-                          <span className="font-normal text-slate-400">
+                          <span className="font-normal text-slate-500">
                             · {loan.library_id}
                           </span>
                         </p>

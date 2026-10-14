@@ -1,5 +1,6 @@
 const paths = {
   dashboard: "M3 3h7v7H3z M14 3h7v7h-7z M3 14h7v7H3z M14 14h7v7h-7z",
+  activity: "M3 12h4l3 8 4-16 3 8h4",
   catalog: "M12 5c-3-2-6-2-9-1v15c3-1 6-1 9 1 3-2 6-2 9-1V4c-3-1-6-1-9 1Z M12 5v15",
   map: "m9 3-6 3v15l6-3 6 3 6-3V3l-6 3-6-3Z M9 3v15 M15 6v15",
   statistics: "M4 20V10h4v10 M10 20V4h4v16 M16 20v-7h4v7 M2 20h20",
@@ -15,6 +16,9 @@ const paths = {
     "M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z M16 3v4 M8 3v4 M4 11h16 M8 15h2v2h-2z",
   menu: "M4 6h16 M4 12h16 M4 18h16",
   close: "m6 6 12 12 M18 6 6 18",
+  "chevron-down": "m6 9 6 6 6-6",
+  "chevron-left": "m15 6-6 6 6 6",
+  "chevron-right": "m9 6 6 6-6 6",
   logout: "M9 4H4v16h5 M9 12h12 m-4-4 4 4-4 4",
 };
 

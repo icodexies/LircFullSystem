@@ -102,12 +102,12 @@ export default function ReturnAction({ loan, onDone, onCancel }) {
           onChange={(event) => setReturnedAt(event.target.value)}
         />
       </Field>
-      <p className="-mt-3 text-[11px] text-slate-400">
+      <p className="-mt-3 text-[11px] text-slate-500">
         Defaults to now. Old returns can use a past date, never before the
         borrow date.
       </p>
 
-      <div className="flex flex-wrap justify-end gap-3 border-t border-slate-100 pt-4">
+      <div className="sticky bottom-0 -mx-5 -mb-5 flex flex-wrap items-center justify-end gap-3 border-t border-slate-200 bg-gradient-to-r from-[#F7F6FB] to-white px-5 py-4 sm:-mx-6 sm:-mb-6 sm:px-6">
         <button
           type="button"
           disabled={busy}

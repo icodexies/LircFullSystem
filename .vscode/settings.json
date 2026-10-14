@@ -2,6 +2,7 @@
   "deno.enablePaths": [
     "./supabase/functions"
   ],
+  "deno.path": "C:\\Users\\Renuell\\AppData\\Local\\Microsoft\\WinGet\\Packages\\DenoLand.Deno_Microsoft.Winget.Source_8wekyb3d8bbwe\\deno.exe",
   "deno.lint": true,
   "deno.importMap": "./supabase/functions/register-user/deno.json",
   "[typescript]": {

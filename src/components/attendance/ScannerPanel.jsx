@@ -19,6 +19,7 @@ import {
   timeInReason,
 } from "../../services/attendance/attendanceRules.js";
 import { buttonClass, inputClass, Field } from "./StaffUi.jsx";
+import { secondaryButton } from "./WorkspaceUi.jsx";
 import { Spinner } from "../ui/Loading.jsx";
 import { useToast } from "../../hooks/shared/useToast.js";
 export default function ScannerPanel({ onChanged, onClose, onBusy }) {
@@ -121,17 +122,6 @@ export default function ScannerPanel({ onChanged, onClose, onBusy }) {
   }
   return (
     <section aria-label="Attendance scanner" className="space-y-4 p-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="font-serif text-xl font-bold">Card scanner</h2>
-        <button
-          type="button"
-          disabled={busy}
-          onClick={onClose}
-          className="text-xs underline"
-        >
-          Close scanner
-        </button>
-      </div>
       <Field label="Library card">
         <input
           ref={input}
@@ -182,7 +172,35 @@ export default function ScannerPanel({ onChanged, onClose, onBusy }) {
           />
         </Field>
       )}
-      <div className="flex flex-wrap items-center gap-4">
+      <label className="flex cursor-pointer items-center gap-2 text-xs text-slate-600">
+        <input
+          type="checkbox"
+          checked={tabTerminator}
+          onChange={(event) => setTabTerminator(event.target.checked)}
+          className="h-3.5 w-3.5 accent-[#0B1330]"
+        />
+        This scanner uses Tab as terminator
+      </label>
+      <p className="text-xs text-slate-500">
+        Scan or type the card, then press Enter — nothing else to review.
+        Someone still inside gets a time out (no purpose needed); everyone else
+        gets a time in with the chosen purpose. Nothing is written until the
+        card is scanned.
+      </p>
+      {busy && (
+        <div role="status" className="flex items-center gap-2 text-sm text-slate-600">
+          <Spinner size="sm" /> Processing…
+        </div>
+      )}
+      <div className="sticky bottom-0 -mx-6 -mb-6 flex flex-wrap items-center justify-end gap-3 border-t border-slate-200 bg-gradient-to-r from-[#F7F6FB] to-white px-6 py-4">
+        <button
+          type="button"
+          disabled={busy}
+          onClick={onClose}
+          className={secondaryButton}
+        >
+          Close
+        </button>
         <button
           type="button"
           disabled={busy}
@@ -191,26 +209,7 @@ export default function ScannerPanel({ onChanged, onClose, onBusy }) {
         >
           Record visit
         </button>
-        <label className="text-xs">
-          <input
-            type="checkbox"
-            checked={tabTerminator}
-            onChange={(event) => setTabTerminator(event.target.checked)}
-          />{" "}
-          This scanner uses Tab as terminator
-        </label>
       </div>
-      <p className="text-xs text-slate-500">
-        Scan or type the card, then press Enter — nothing else to review.
-        Someone still inside gets a time out (no purpose needed); everyone else
-        gets a time in with the chosen purpose. Nothing is written until the
-        card is scanned.
-      </p>
-      {busy && (
-        <p role="status" className="flex items-center gap-2 text-sm text-slate-600">
-          <Spinner size="sm" /> Processing…
-        </p>
-      )}
     </section>
   );
 }

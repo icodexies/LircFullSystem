@@ -1,9 +1,14 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { getBookImageUrl } from "../../services/catalog/bookValidation.js";
 import { Spinner } from "../ui/Loading.jsx";
 const defaultCover = `${import.meta.env.BASE_URL}images/catalog/book_cover.png`;
 
 const OPEN_LIBRARY_COVERS = "https://covers.openlibrary.org/b";
+
+// ISBNs the Open Library already had no cover for in this browser session.
+// Remembering them avoids asking again (and avoids repeating the 404 in the
+// console) every time the same book is opened.
+const failedCoverIsbns = new Set();
 
 function normalizeIsbn(isbn) {
   if (!isbn) return null;
@@ -13,13 +18,21 @@ function normalizeIsbn(isbn) {
   return clean.length === 10 || clean.length === 13 ? clean : null;
 }
 
+function isbnFromCoverUrl(url) {
+  const prefix = `${OPEN_LIBRARY_COVERS}/isbn/`;
+  if (!url.startsWith(prefix)) return null;
+  return url.slice(prefix.length).split("-")[0] || null;
+}
+
 export default function BookCover({ book, className = "", size = "M" }) {
   const sources = useMemo(() => {
     const list = [];
     const local = getBookImageUrl(book.book_image);
     if (local) list.push(local);
     const isbn = normalizeIsbn(book.isbn);
-    if (isbn) {
+    // No ISBN at all (or an unusable one) means no Open Library request and
+    // no console noise; an ISBN with no cover is remembered after one try.
+    if (isbn && !failedCoverIsbns.has(isbn)) {
       list.push(
         `${OPEN_LIBRARY_COVERS}/isbn/${isbn}-${size}.jpg?default=false`,
       );
@@ -36,6 +49,24 @@ export default function BookCover({ book, className = "", size = "M" }) {
   const src = sources.find((s) => !failed.includes(s));
   const loaded = src !== undefined && loadedSrc === src;
 
+  // A cover that never answers (slow or blocked Open Library) must not hold
+  // the spinner forever: after a short wait the next source takes over.
+  useEffect(() => {
+    if (!src || loaded) return;
+    const timer = setTimeout(() => {
+      setFailed((prev) => (prev.includes(src) ? prev : [...prev, src]));
+    }, 8000);
+    return () => clearTimeout(timer);
+  }, [src, loaded]);
+
+  function markFailed(failedSrc) {
+    const isbn = isbnFromCoverUrl(failedSrc);
+    if (isbn) failedCoverIsbns.add(isbn);
+    setFailed((prev) =>
+      prev.includes(failedSrc) ? prev : [...prev, failedSrc],
+    );
+  }
+
   return (
     <div
       className={`relative flex shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[#3B4A86]/10 bg-[#F0EDFA] ${className}`}
@@ -43,12 +74,12 @@ export default function BookCover({ book, className = "", size = "M" }) {
       {src ? (
         <>
           {!loaded && (
-            <span
+            <div
               aria-hidden="true"
               className="absolute inset-0 grid place-items-center text-[#3B4A86]"
             >
               <Spinner size={size === "L" ? "md" : "sm"} />
-            </span>
+            </div>
           )}
           <img
             key={src}
@@ -58,7 +89,7 @@ export default function BookCover({ book, className = "", size = "M" }) {
             decoding="async"
             referrerPolicy="no-referrer"
             onLoad={() => setLoadedSrc(src)}
-            onError={() => setFailed((prev) => [...prev, src])}
+            onError={() => markFailed(src)}
             className={`h-full w-full object-contain transition-opacity duration-300 ${loaded ? "opacity-100" : "opacity-0"}`}
           />
         </>

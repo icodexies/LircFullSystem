@@ -58,7 +58,7 @@ export default function MemberRequestModal({
           : "the record stays unchanged"
       }.`,
       confirmLabel: approve ? "Approve" : "Reject",
-      variant: approve ? "confirm" : "warning",
+      variant: approve ? "confirm" : "danger",
     });
     if (!ok) return;
     setBusy(true);
@@ -88,7 +88,7 @@ export default function MemberRequestModal({
         <StatusBadge tone={meta.tone}>{meta.label}</StatusBadge>
       </div>
       <div>
-        <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">
+        <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-600">
           Requested changes
         </p>
         <ul className="mt-2 divide-y divide-slate-100 rounded-xl border border-slate-200">
@@ -97,14 +97,14 @@ export default function MemberRequestModal({
               key={key}
               className="flex flex-wrap items-center justify-between gap-2 px-4 py-3 text-xs"
             >
-              <span className="text-slate-500">
+              <span className="text-slate-600">
                 {EDIT_FIELD_LABELS[key] ?? key}
               </span>
               <span className="text-right">
-                <span className="text-slate-400 line-through">
+                <span className="text-slate-500 line-through">
                   {displayValue(options, key, request.previous_values?.[key])}
                 </span>
-                <span className="mx-2 text-slate-300">→</span>
+                <span className="mx-2 text-slate-400">→</span>
                 <strong className="text-[#0B1330]">
                   {displayValue(options, key, value)}
                 </strong>
@@ -118,7 +118,7 @@ export default function MemberRequestModal({
           Reviewed by {request.reviewed_by} · {displayTime(request.reviewed_at)}
         </p>
       )}
-      <div className="flex flex-wrap justify-end gap-3 border-t border-slate-100 pt-4">
+      <div className="sticky bottom-0 -mx-6 -mb-6 flex flex-wrap items-center justify-end gap-3 border-t border-slate-200 bg-gradient-to-r from-[#F7F6FB] to-white px-6 py-4">
         <button type="button" onClick={onClose} className={secondaryButton}>
           Close
         </button>

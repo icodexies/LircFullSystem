@@ -25,6 +25,9 @@ const Unauthorized = lazy(() => import("./pages/Unauthorized.jsx"));
 
 const memberScreens = {
   dashboard: lazy(() => import("./pages/PrivatePages/Dashboard/Dashboard.jsx")),
+  "user-logs": lazy(
+    () => import("./pages/PrivatePages/UserLogs/UserLogs.jsx"),
+  ),
   opac: lazy(() => import("./pages/PrivatePages/OPAC/OPAC.jsx")),
   "path-finder": lazy(
     () => import("./pages/PrivatePages/PathFinder/PathFinder.jsx"),

@@ -65,7 +65,7 @@ export default function ReportFilters({ kind, form, setForm }) {
     fieldLabel[key] ?? {
       search: "Search",
       search_by: "Search by",
-      status: kind === "enrollment" ? "Annual status" : "Visit status",
+      status: kind === "enrollment" ? "Validation status" : "Visit status",
       sort: "Sort",
       direction: "Order",
     }[key] ?? key;
@@ -89,7 +89,7 @@ export default function ReportFilters({ kind, form, setForm }) {
             variant: "info",
             duration: 0,
             message:
-              "Leave a filter on All to ignore it. Selected filters work together: a student + an open visit shows only students still inside. Reset clears the filters. Attendance uses the selected semester; annual validation uses that semester's academic year. For full explanations, see docs/FILTER_GUIDE.md in the project.",
+              "Leave a filter on All to ignore it. Selected filters work together: a student + an open visit shows only students still inside. Reset clears the filters. Attendance uses the selected semester; library validation uses that semester's academic year. For full explanations, see docs/FILTER_GUIDE.md in the project.",
           })
         }
       >
@@ -117,7 +117,7 @@ export default function ReportFilters({ kind, form, setForm }) {
             onChange={(event) => change("search", event.target.value)}
           />
         </Field>
-        <Field label={kind === "enrollment" ? "Annual status" : "Visit status"}>
+        <Field label={kind === "enrollment" ? "Validation status" : "Visit status"}>
           <select
             className={inputClass}
             value={form.status ?? ""}
@@ -148,8 +148,8 @@ export default function ReportFilters({ kind, form, setForm }) {
           </select>
         </Field>
       </div>
-      <details className="mt-4 rounded-xl border border-slate-200/70 bg-white px-4 py-3">
-        <summary className="cursor-pointer text-xs font-semibold text-slate-600">
+      <details className="mt-4 rounded-xl border border-slate-300 bg-white px-4 py-3">
+        <summary className="cursor-pointer text-xs font-semibold text-slate-700 hover:text-[#0B1330]">
           Advanced filters
         </summary>
         <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">

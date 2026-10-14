@@ -16,7 +16,7 @@ export const SEARCH_OPTIONS = [
 
 // Simple words shown in the status menus and in the active-filter chips.
 export const STATUS_LABELS = {
-  enrolled: "Enrolled",
+  enrolled: "Validated",
   unverified: "Not verified",
   leave_of_absence: "On leave",
   withdrawn: "Withdrawn",
