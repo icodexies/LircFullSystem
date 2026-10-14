@@ -3,6 +3,7 @@ import { useRef, useState } from "react";
 import { recordTimeOut } from "../../services/attendance/attendanceService.js";
 import { displayTime } from "../../services/attendance/attendanceRules.js";
 import { STATUS_LABELS } from "../../services/attendance/reportFilters.js";
+import { ROLE_LABELS } from "../../routes/roles.js";
 import { tableButton } from "./StaffUi.jsx";
 import { useToast } from "../../hooks/shared/useToast.js";
 import Avatar from "../ui/Avatar.jsx";
@@ -57,11 +58,21 @@ export default function VisitTable({ rows, onChanged }) {
                   <Avatar src={row.avatar_url} className="h-10 w-10" />
                 </td>
                 <td className="px-5 py-4 align-top">
-                  <p className="font-semibold">{row.full_name}</p>
-                  <p>{row.library_id}</p>
+                  <p className="font-semibold">
+                    {row.guest_name || row.full_name}
+                  </p>
+                  <p>
+                    {row.library_id}
+                    {row.guest_name ? " · Guest" : ""}
+                  </p>
+                  {row.guest_detail && (
+                    <p className="mt-1 text-slate-500">{row.guest_detail}</p>
+                  )}
                 </td>
                 <td className="px-5 py-4 align-top">
-                  <StatusBadge>{row.role.replaceAll("_", " ")}</StatusBadge>
+                  <StatusBadge>
+                    {ROLE_LABELS[row.role] ?? row.role.replaceAll("_", " ")}
+                  </StatusBadge>
                   <p className="mt-2 text-slate-500">
                     {row.year_level ? `Year level ${row.year_level}` : "Nonstudent"}
                   </p>

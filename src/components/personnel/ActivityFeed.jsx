@@ -1,9 +1,12 @@
 // Activity history: the current user's own actions only. (The admin-only
 // User logs page shows everyone.) Server-built descriptions, keyset
 // "load more", filter chips with plain-language descriptions.
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { displayTime } from "../../services/attendance/attendanceRules.js";
+import { manilaBoundary } from "../../services/attendance/attendanceRules.js";
+import { periodLabel } from "../../services/periods/periodRules.js";
+import { useSemester } from "../../hooks/periods/useSemester.js";
 import {
   activityLink,
   sourceLabel,
@@ -27,9 +30,21 @@ const SOURCE_TONES = {
 
 export default function ActivityFeed({ pageSize = 10 }) {
   const [filter, setFilter] = useState("");
+  // The feed follows the semester chosen in the header, so the record shown
+  // always belongs to the period being looked at.
+  const periods = useSemester();
+  const semester = periods.selectedSemester;
+  const filters = useMemo(() => {
+    const base = filterToParams(filter);
+    if (semester) {
+      base.from_occurred_at = manilaBoundary(semester.starts_on);
+      base.to_occurred_at = manilaBoundary(semester.ends_on, true);
+    }
+    return base;
+  }, [filter, semester]);
   const feed = useActivityFeed({
     scope: "own",
-    filters: filterToParams(filter),
+    filters,
     pageSize,
   });
 
@@ -42,8 +57,9 @@ export default function ActivityFeed({ pageSize = 10 }) {
             Your activity
           </h2>
           <p className="mt-1 text-xs text-slate-500">
-            Your actions — what you did and when. Hover a filter to see what it
-            covers.
+            Your actions in the semester chosen in the header
+            {semester ? ` (${periodLabel(semester)})` : ""} — hover a filter
+            to see what it covers.
           </p>
         </div>
         <div
@@ -83,7 +99,7 @@ export default function ActivityFeed({ pageSize = 10 }) {
       ) : feed.rows.length === 0 ? (
         <EmptyState
           title="No activity yet"
-          description="Actions you take in the library system will appear here — scans, loans, edits, approvals and more."
+          description="Actions you take in the library system during this semester will appear here — scans, loans, edits, approvals and more."
         />
       ) : (
         <>

@@ -5,6 +5,10 @@ export function attendanceError(error) {
     return new Error(
       "An open visit or library validation already exists. Scan again to load the current record.",
     );
+  if (error?.code === "23514")
+    return new Error(
+      "Guest visits need the guest's name. Type it, then record again.",
+    );
   if (["42883", "PGRST202", "42703", "42P01"].includes(error?.code))
     return new Error(
       "Annual attendance setup is incomplete. Apply the annual migration and reporting migration first.",
@@ -22,7 +26,7 @@ export async function lookupCard(card, signal) {
   if (error) throw attendanceError(error);
   return data;
 }
-export async function recordTimeIn(profileId, semesterId, purpose) {
+export async function recordTimeIn(profileId, semesterId, purpose, guest) {
   if (
     !profileId ||
     !semesterId ||
@@ -30,6 +34,10 @@ export async function recordTimeIn(profileId, semesterId, purpose) {
     purpose.trim().length > 250
   )
     throw new Error("Visitor, active semester and purpose are required.");
+  const name = String(guest?.name ?? "").trim();
+  const detail = String(guest?.detail ?? "").trim();
+  if (name.length > 120 || detail.length > 250)
+    throw new Error("Guest name or details are too long.");
   const client = await getSupabase();
   const { data, error } = await client
     .from("attendance")
@@ -37,6 +45,8 @@ export async function recordTimeIn(profileId, semesterId, purpose) {
       user_profile_id: profileId,
       semester_id: semesterId,
       purpose_of_visit: purpose.trim(),
+      ...(name ? { guest_name: name } : {}),
+      ...(detail ? { guest_detail: detail } : {}),
     })
     .select()
     .single();

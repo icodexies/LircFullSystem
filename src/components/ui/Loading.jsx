@@ -1,7 +1,7 @@
 // Loading designs used across the whole app (public pages, login pages and
 // member pages). Three small pieces:
 //
-//   <Spinner />       the Metronome loader from the "ldrs" package
+//   <Spinner />       the DotStream loader from the "ldrs" package
 //                     (https://uiball.com/ldrs); sizes: sm, md, lg.
 //                     It uses the text color around it (currentColor), so
 //                     it is navy on white areas and white on dark areas.
@@ -11,10 +11,10 @@
 //                     checks. It covers everything and blocks clicks,
 //                     scrolling and keyboard focus until it disappears.
 import { useEffect, useRef } from "react";
-import { Metronome } from "ldrs/react";
-import "ldrs/react/Metronome.css";
+import { DotStream } from "ldrs/react";
+import "ldrs/react/DotStream.css";
 
-// Size names used by the app → pixel size for the Metronome.
+// Size names used by the app → pixel size for the DotStream.
 const PIXELS = { sm: 20, md: 32, lg: 48 };
 
 export function Spinner({
@@ -24,11 +24,7 @@ export function Spinner({
 }) {
   return (
     <span aria-hidden="true" className={`inline-flex ${className}`}>
-      <Metronome
-        size={PIXELS[size] ?? PIXELS.md}
-        speed={1.6}
-        color={color}
-      />
+      <DotStream size={PIXELS[size] ?? PIXELS.md} speed="2.5" color={color} />
     </span>
   );
 }

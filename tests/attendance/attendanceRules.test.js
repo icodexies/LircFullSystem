@@ -50,9 +50,9 @@ test("estimate uses academic-year start, never increments on second semester or 
 });
 test("student time-in requires purpose and a complete library validation; historical views never time in", () => {
   assert.match(timeInReason(preview, 2, "", "", now), /purpose/);
-  assert.equal(timeInReason(preview, 2, "Reading", "", now), "");
+  assert.equal(timeInReason(preview, 2, "Study", "", now), "");
   assert.match(
-    timeInReason({ ...preview, enrollment: null }, 2, "Reading", "", now),
+    timeInReason({ ...preview, enrollment: null }, 2, "Study", "", now),
     /not verified/,
   );
   assert.match(
@@ -62,25 +62,26 @@ test("student time-in requires purpose and a complete library validation; histor
         enrollment: { ...preview.enrollment, status: "withdrawn" },
       },
       2,
-      "Reading",
+      "Study",
       "",
       now,
     ),
     /not complete/,
   );
-  assert.match(timeInReason(preview, 1, "Reading", "", now), /historical/);
+  assert.match(timeInReason(preview, 1, "Study", "", now), /historical/);
   assert.match(
-    timeInReason({ ...preview, open_visit: { id: 10 } }, 2, "Reading", "", now),
+    timeInReason({ ...preview, open_visit: { id: 10 } }, 2, "Study", "", now),
     /open visit/,
   );
-  assert.match(timeInReason(preview, 2, "Other", " ", now), /Describe/);
+  assert.match(timeInReason(preview, 2, "Others", " ", now), /Describe/);
 });
-test("faculty and personnel without Auth accounts bypass student validation", () => {
+test("faculty, personnel and guests bypass student validation", () => {
   for (const role of [
     "faculty",
     "non_teaching_personnel",
     "admin",
     "librarian",
+    "guest",
   ])
     assert.equal(
       timeInReason(
@@ -164,7 +165,7 @@ test("past school years are detected using Manila dates", () => {
 
 test("legacy enrolled year five needs review until the record is saved again", () => {
   const invalid = { ...preview, enrollment: { ...preview.enrollment, year_level: 5 } };
-  assert.match(timeInReason(invalid, 2, "Reading", "", now), /needs review/);
+  assert.match(timeInReason(invalid, 2, "Study", "", now), /needs review/);
   // Saving again sends only the status; the database then derives the level.
   assert.deepEqual(
     enrollmentPayload(

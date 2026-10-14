@@ -5,6 +5,8 @@ import { Link } from "react-router-dom";
 import { WorkspaceHeader } from "../../../components/attendance/WorkspaceUi.jsx";
 import { secondaryButton } from "../../../components/attendance/WorkspaceUi.jsx";
 import { useActivityLog } from "../../../hooks/personnel/useActivityLog.js";
+import { useSemester } from "../../../hooks/periods/useSemester.js";
+import { periodLabel } from "../../../services/periods/periodRules.js";
 import {
   activityLink,
   sourceLabel,
@@ -59,6 +61,19 @@ export default function UserLogs() {
   const [fromInput, setFromInput] = useState("");
   const [toInput, setToInput] = useState("");
   const [page, setPage] = useState(1);
+
+  // The header semester is the default window: when it changes (or on first
+  // load) the date fields fill with that semester's range. Editing or
+  // clearing the dates widens the search as usual.
+  const periods = useSemester();
+  const semester = periods.selectedSemester;
+  const [semesterApplied, setSemesterApplied] = useState("");
+  if (semester && semesterApplied !== String(periods.selectedSemesterId)) {
+    setSemesterApplied(String(periods.selectedSemesterId));
+    setFromInput(`${semester.starts_on}T00:00`);
+    setToInput(`${semester.ends_on}T23:59`);
+    setPage(1);
+  }
 
   // Debounce the person search so typing does not refetch on every key.
   useEffect(() => {
@@ -218,7 +233,9 @@ export default function UserLogs() {
           type a name; word order does not matter and close spellings are
           matched.{" "}
           <strong className="font-semibold text-slate-600">When</strong> —
-          limit to a date and time range (Philippine time; blank means
+          defaults to the semester chosen in the header
+          {semester ? ` (${periodLabel(semester)})` : ""} — edit or clear the
+          dates to widen the search (Philippine time; blank means
           everything).{" "}
           <strong className="font-semibold text-slate-600">Who</strong> — the
           role of the person who did it.{" "}

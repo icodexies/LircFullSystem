@@ -239,7 +239,7 @@ export async function buildAttendanceReportWorkbook({ rows, summary, context }) 
       visits,
       5 + index,
       [
-        row.full_name,
+        row.guest_name || row.full_name,
         row.library_id,
         ROLE_LABELS[row.role] ?? row.role,
         row.role === "student" ? yearLabel(row.year_level) : "",

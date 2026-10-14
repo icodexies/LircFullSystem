@@ -32,6 +32,7 @@ const ROLE_LABELS = {
   non_teaching_personnel: "Non-teaching staff",
   admin: "Admin",
   librarian: "Librarian",
+  guest: "Guest",
 };
 
 const levels = Array.from({ length: MAX_YEAR_LEVEL }, (_, i) => [

@@ -9,16 +9,16 @@ import {
 // Ten visits: two by the same student, DCI/DBA departments, faculty with
 // positions, one personnel row and one student with no department.
 const rows = [
-  { user_profile_id: 1, role: "student", department: "DCI", program: "IT", year_level: 4, purpose: "Reading" },
-  { user_profile_id: 1, role: "student", department: "DCI", program: "IT", year_level: 4, purpose: "Borrowing/Returning" },
-  { user_profile_id: 2, role: "student", department: "DCI", program: "IT", year_level: 3, purpose: "Reading" },
-  { user_profile_id: 3, role: "student", department: "DCI", program: "CS", year_level: 3, purpose: "Reading" },
-  { user_profile_id: 4, role: "student", department: "DCI", program: "CS", year_level: 4, purpose: "Studying" },
-  { user_profile_id: 5, role: "student", department: "DBA", program: "BA", year_level: 2, purpose: "Reading" },
+  { user_profile_id: 1, role: "student", department: "DCI", program: "IT", year_level: 4, purpose: "Study" },
+  { user_profile_id: 1, role: "student", department: "DCI", program: "IT", year_level: 4, purpose: "Borrow Books" },
+  { user_profile_id: 2, role: "student", department: "DCI", program: "IT", year_level: 3, purpose: "Study" },
+  { user_profile_id: 3, role: "student", department: "DCI", program: "CS", year_level: 3, purpose: "Study" },
+  { user_profile_id: 4, role: "student", department: "DCI", program: "CS", year_level: 4, purpose: "Study" },
+  { user_profile_id: 5, role: "student", department: "DBA", program: "BA", year_level: 2, purpose: "Study" },
   { user_profile_id: 6, role: "faculty", department: "DCI", program: null, position: "Instructor", purpose: "Research" },
   { user_profile_id: 7, role: "faculty", department: "DCI", program: null, position: "Instructor", purpose: "Research" },
-  { user_profile_id: 8, role: "non_teaching_personnel", department: null, program: null, position: "Library Aide", purpose: "Computer Use" },
-  { user_profile_id: 9, role: "student", department: null, program: null, year_level: 1, purpose: "Reading" },
+  { user_profile_id: 8, role: "non_teaching_personnel", department: null, program: null, position: "Library Aide", purpose: "INTERVIEW" },
+  { user_profile_id: 9, role: "student", department: null, program: null, year_level: 1, purpose: "Study" },
 ];
 
 test("summary totals count visits and unique visitors", () => {
@@ -39,11 +39,10 @@ test("visits are counted by visitor type with the friendly role names", () => {
 test("visits are counted by purpose, biggest first", () => {
   const summary = summarizeAttendance(rows);
   assert.deepEqual(summary.byPurpose, [
-    { label: "Reading", count: 5 },
+    { label: "Study", count: 6 },
     { label: "Research", count: 2 },
-    { label: "Borrowing/Returning", count: 1 },
-    { label: "Computer Use", count: 1 },
-    { label: "Studying", count: 1 },
+    { label: "Borrow Books", count: 1 },
+    { label: "INTERVIEW", count: 1 },
   ]);
 });
 
@@ -104,10 +103,10 @@ test("departments read as one tree: programs, then year levels and staff", () =>
 
 test("year lines keep study order, not count order", () => {
   const summary = summarizeAttendance([
-    { user_profile_id: 1, role: "student", department: "DCI", program: "IT", year_level: 4, purpose: "Reading" },
-    { user_profile_id: 2, role: "student", department: "DCI", program: "IT", year_level: 2, purpose: "Reading" },
-    { user_profile_id: 3, role: "student", department: "DCI", program: "IT", year_level: 4, purpose: "Reading" },
-    { user_profile_id: 4, role: "student", department: "DCI", program: "IT", year_level: 4, purpose: "Reading" },
+    { user_profile_id: 1, role: "student", department: "DCI", program: "IT", year_level: 4, purpose: "Study" },
+    { user_profile_id: 2, role: "student", department: "DCI", program: "IT", year_level: 2, purpose: "Study" },
+    { user_profile_id: 3, role: "student", department: "DCI", program: "IT", year_level: 4, purpose: "Study" },
+    { user_profile_id: 4, role: "student", department: "DCI", program: "IT", year_level: 4, purpose: "Study" },
   ]);
   assert.deepEqual(summary.departments[0].programs[0].years, [
     { label: "2nd year", count: 1 },

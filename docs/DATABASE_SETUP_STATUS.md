@@ -101,6 +101,20 @@ transaction; migration history synced):
 | `20261018260000_bsf_department` | Registrar follow-up: BS-F → DTE (its member classified); BSP stays unassigned until classified |
 | `20261018270000_attendance_export_rpc` | One-call attendance export (`lirc_attendance_export`) — the Excel report reads every filtered visit in one request instead of ~100 pages |
 | `20261018280000_library_id_lower_index` | Cleanup: functional index on `lower(library_id)` for case-insensitive card lookups and duplicate checks |
+| `20261018290000_performance_reports` | Monthly AI summaries: `performance_reports` (one row per person per month), `lirc_performance_ai_input` (service-role month dossier), `lirc_performance_reports` (admin list); `is_admin()` execute grant so read policies work |
+| `20261018300000_attendance_recorded_by_nullable` | `attendance.recorded_by` is nullable — legacy imports have no operator on record; the app's own visits always carry one (the guard trigger sets it) |
+| `20261018310000_performance_ai_burst_signal` | AI dossier gains the busiest five-minute window (`max_actions_in_5_min`); the rating weighs same-action bursts heavily (days worked are context only) |
+| `20261018320000_performance_ai_history` | AI dossier gains the person's previous monthly ratings; the stored `trend` (First month / Improved / Steady / Declined) follows on the report list |
+| `20261018330000_guest_visitors` | Guest visitors: the `guest` visitor type, `attendance.guest_name`/`guest_detail` (saved per visit), ten reusable GUEST-01…GUEST-10 profiles, and purpose data on the library's own list (Study, Research, Borrow Books, Return Books, LOA, EXIT CLEARANCE, INTERVIEW, THESIS, OJT, Others) |
+
+Attendance now holds the **real records imported from the previous system**
+(4,498 visits, March–October 2026; the demo/seed rows and their log lines were
+removed). Incomplete legacy rows (no time in or no time out) were left out;
+the import is recorded in `provenance_batches` (label `import`) and is
+reproducible from `supabase/manual/legacy_attendance_import.sql`. The legacy
+purpose labels were re-derived from the same dump, so real Borrow Books /
+Return Books / THESIS / OJT / EXIT CLEARANCE rows keep their true purpose
+(re-run: the small fix block reads the dump; 28 rows changed).
 
 The goal system is **removed** (14 October 2026). The personnel dashboard and
 the admin **User logs** page read the activity log directly.

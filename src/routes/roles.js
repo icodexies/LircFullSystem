@@ -9,6 +9,8 @@ export const ROLES = {
   NON_TEACHING_PERSONNEL: "non_teaching_personnel",
   LIBRARIAN: "librarian",
   ADMIN: "admin",
+  // Walk-in visitors without a library card use the reusable GUEST-nn cards.
+  GUEST: "guest",
 };
 
 export const ACCESS = {
@@ -35,4 +37,5 @@ export const ROLE_LABELS = {
   [ROLES.NON_TEACHING_PERSONNEL]: "Non-teaching personnel",
   [ROLES.LIBRARIAN]: "Librarian",
   [ROLES.ADMIN]: "Admin",
+  [ROLES.GUEST]: "Guest",
 };

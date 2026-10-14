@@ -22,6 +22,7 @@ import {
 import EmptyState from "../../../components/personnel/EmptyState.jsx";
 import { Spinner } from "../../../components/ui/Loading.jsx";
 import Avatar from "../../../components/ui/Avatar.jsx";
+import MonthlySummaries from "../../../components/personnel/MonthlySummaries.jsx";
 
 const fmt = (n) => Number(n ?? 0).toLocaleString("en-US");
 const WINDOW_DAYS = 30;
@@ -193,6 +194,13 @@ export default function UserPerformance() {
             </div>
           )}
         </>
+      )}
+
+      {selected && (
+        <MonthlySummaries
+          profileId={selected.id}
+          profileName={selected.full_name}
+        />
       )}
     </div>
   );

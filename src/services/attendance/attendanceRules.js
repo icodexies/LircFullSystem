@@ -20,14 +20,20 @@ export const VISITOR_ROLES = [
   "non_teaching_personnel",
   "admin",
   "librarian",
+  "guest",
 ];
+// The library's own purpose list. "Others" pairs with a short description.
 export const PURPOSES = [
-  "Reading",
-  "Studying",
+  "Study",
   "Research",
-  "Borrowing/Returning",
-  "Computer Use",
-  "Other",
+  "Borrow Books",
+  "Return Books",
+  "LOA",
+  "EXIT CLEARANCE",
+  "INTERVIEW",
+  "THESIS",
+  "OJT",
+  "Others",
 ];
 export const ENROLLMENT_STATUSES = [
   "enrolled",
@@ -125,9 +131,9 @@ export function timeInReason(
       return "Student's library validation is not complete for this academic year.";
   }
   if (!PURPOSES.includes(purpose)) return "Choose the purpose of this visit.";
-  if (purpose === "Other" && !other.trim())
+  if (purpose === "Others" && !other.trim())
     return "Describe the other purpose.";
-  if ((purpose === "Other" ? other.trim() : purpose).length > 250)
+  if ((purpose === "Others" ? other.trim() : purpose).length > 250)
     return "Purpose must be 250 characters or fewer.";
   return "";
 }

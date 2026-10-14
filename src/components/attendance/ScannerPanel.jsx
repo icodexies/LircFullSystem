@@ -9,6 +9,10 @@
 // stays visible — so a whole queue can be scanned without touching anything
 // else. A time-in is quietly re-checked against a fresh card read right
 // before writing, and the database triggers guard the last race.
+//
+// Guest cards (GUEST-01..GUEST-10) are the one exception: the panel pauses,
+// asks for the guest's real name (and any other information), and saves both
+// on the visit. The card itself stays free for the next visitor.
 import { useEffect, useRef, useState } from "react";
 import { useSemester } from "../../hooks/periods/useSemester.js";
 import {
@@ -27,7 +31,7 @@ import { buttonClass, inputClass, Field } from "./StaffUi.jsx";
 import { secondaryButton } from "./WorkspaceUi.jsx";
 import { Spinner } from "../ui/Loading.jsx";
 
-const DEFAULT_PURPOSE = "Reading";
+const DEFAULT_PURPOSE = "Study";
 
 const TONES = {
   success: "bg-[#E7F4EF] text-[#0B6B52]",
@@ -40,6 +44,11 @@ export default function ScannerPanel({ onChanged, onClose, onBusy }) {
   const [card, setCard] = useState("");
   const [purpose, setPurpose] = useState(DEFAULT_PURPOSE);
   const [other, setOther] = useState("");
+  // A scanned guest card pauses here: the real guest's name (and any other
+  // information) is typed once and saved on the visit.
+  const [guest, setGuest] = useState(null);
+  const [guestName, setGuestName] = useState("");
+  const [guestDetail, setGuestDetail] = useState("");
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState(null);
   useEffect(() => {
@@ -47,6 +56,7 @@ export default function ScannerPanel({ onChanged, onClose, onBusy }) {
   }, [busy, onBusy]);
   const [tabTerminator, setTabTerminator] = useState(false);
   const input = useRef(null);
+  const guestInput = useRef(null);
   const lock = useRef(false);
   const mounted = useRef(true);
   const controller = useRef(null);
@@ -60,14 +70,20 @@ export default function ScannerPanel({ onChanged, onClose, onBusy }) {
   }, []);
   // Back to the card field after every card: cleared input -> plain focus,
   // failed card -> focused and selected so the next scan replaces it.
+  // A guest mid-entry keeps the cursor in the guest name field.
   useEffect(() => {
     if (busy) return;
+    if (guest) {
+      guestInput.current?.focus();
+      return;
+    }
     const field = input.current;
     field?.focus();
     if (field?.value) field.select();
-  }, [busy]);
+  }, [busy, guest]);
 
   // Enter or the button: look up the card, decide, and record in one step.
+  // A guest card is the one exception — it waits for the guest's name.
   async function record() {
     if (lock.current) return;
     lock.current = true;
@@ -75,11 +91,68 @@ export default function ScannerPanel({ onChanged, onClose, onBusy }) {
     controller.current?.abort();
     const abort = new AbortController();
     controller.current = abort;
+    const purposeText = purpose === "Others" ? other.trim() : purpose;
+    const clearGuest = () => {
+      setGuest(null);
+      setGuestName("");
+      setGuestDetail("");
+    };
     try {
-      const normalized = normalizeCard(card);
       const refreshed = await periods.refreshSemesters();
       if (!refreshed)
         throw new Error("Refresh academic periods before scanning.");
+
+      // Second step of a guest visit: the card was read, the name is filled.
+      if (guest) {
+        const name = guestName.trim();
+        if (!name) {
+          if (mounted.current)
+            setResult({
+              tone: "warning",
+              text: "Type the guest's name first.",
+            });
+          return;
+        }
+        const fresh = await lookupCard(guest.card, abort.signal);
+        if (!mounted.current) return;
+        if (fresh.open_visit) {
+          setResult({
+            tone: "warning",
+            text: "This guest card already has an open visit. Scan the card again to record the time out.",
+          });
+          clearGuest();
+          return;
+        }
+        const blocked = timeInReason(
+          fresh,
+          periods.selectedSemesterId,
+          purpose,
+          other,
+        );
+        if (blocked) {
+          setResult({ tone: "warning", text: blocked });
+          clearGuest();
+          return;
+        }
+        await recordTimeIn(
+          fresh.profile.id,
+          fresh.active_semester.id,
+          purposeText,
+          { name, detail: guestDetail.trim() },
+        );
+        if (mounted.current) {
+          setResult({
+            tone: "success",
+            text: `${name} — guest time in recorded · ${purposeText} · ${displayTime(new Date())}`,
+          });
+          clearGuest();
+          setCard("");
+          onChanged();
+        }
+        return;
+      }
+
+      const normalized = normalizeCard(card);
       const preview = await lookupCard(normalized, abort.signal);
       if (!mounted.current) return;
 
@@ -90,7 +163,7 @@ export default function ScannerPanel({ onChanged, onClose, onBusy }) {
         if (mounted.current) {
           setResult({
             tone: "success",
-            text: `${personName(preview.profile)} — time out recorded · ${displayTime(new Date())}`,
+            text: `${preview.open_visit.guest_name || personName(preview.profile)} — time out recorded · ${displayTime(new Date())}`,
           });
           setCard("");
           onChanged();
@@ -110,6 +183,19 @@ export default function ScannerPanel({ onChanged, onClose, onBusy }) {
         return;
       }
 
+      // A guest card waits for the guest's name before anything is saved.
+      if (preview.profile.role === "guest") {
+        if (mounted.current) {
+          setGuest({ card: normalized });
+          setCard("");
+          setResult({
+            tone: "warning",
+            text: `Guest card ${normalized} read — type the guest's name, then press Enter or Record visit.`,
+          });
+        }
+        return;
+      }
+
       // Read the card once more just before writing. A changed semester,
       // enrollment or visit means the staff scans the card again.
       const fresh = await lookupCard(normalized);
@@ -126,14 +212,12 @@ export default function ScannerPanel({ onChanged, onClose, onBusy }) {
       await recordTimeIn(
         fresh.profile.id,
         fresh.active_semester.id,
-        purpose === "Other" ? other.trim() : purpose,
+        purposeText,
       );
       if (mounted.current) {
         setResult({
           tone: "success",
-          text: `${personName(fresh.profile)} — time in recorded · ${
-            purpose === "Other" ? other.trim() : purpose
-          } · ${displayTime(new Date())}`,
+          text: `${personName(fresh.profile)} — time in recorded · ${purposeText} · ${displayTime(new Date())}`,
         });
         setCard("");
         onChanged();
@@ -144,6 +228,13 @@ export default function ScannerPanel({ onChanged, onClose, onBusy }) {
       lock.current = false;
       if (mounted.current) setBusy(false);
     }
+  }
+
+  function cancelGuest() {
+    setGuest(null);
+    setGuestName("");
+    setGuestDetail("");
+    setResult(null);
   }
 
   return (
@@ -183,7 +274,7 @@ export default function ScannerPanel({ onChanged, onClose, onBusy }) {
         </p>
       </div>
 
-      {purpose === "Other" && (
+      {purpose === "Others" && (
         <Field label="Describe purpose">
           <input
             maxLength="250"
@@ -203,28 +294,87 @@ export default function ScannerPanel({ onChanged, onClose, onBusy }) {
       )}
 
       <div className="max-w-xl">
-        <Field label="Library card">
-          <input
-            ref={input}
-            className={inputClass}
-            value={card}
-            disabled={busy}
-            autoComplete="off"
-            maxLength="124"
-            placeholder="Scan or type the card…"
-            onChange={(event) => setCard(event.target.value)}
-            onKeyDown={(event) => {
-              if (
-                event.key === "Enter" ||
-                (event.key === "Tab" && tabTerminator)
-              ) {
-                event.preventDefault();
-                event.stopPropagation();
-                if (!event.repeat) void record();
-              }
-            }}
-          />
-        </Field>
+        {guest ? (
+          <div className="space-y-3 rounded-2xl border border-amber-200 bg-amber-50/70 p-4">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <p className="text-[11px] font-semibold text-amber-900">
+                Guest card {guest.card} — who is visiting?
+              </p>
+              <button
+                type="button"
+                disabled={busy}
+                onClick={cancelGuest}
+                className="text-[11px] font-semibold text-amber-900 underline underline-offset-2 hover:text-amber-950 disabled:opacity-60"
+              >
+                Cancel guest entry
+              </button>
+            </div>
+            <Field label="Guest name">
+              <input
+                ref={guestInput}
+                className={inputClass}
+                value={guestName}
+                disabled={busy}
+                autoComplete="off"
+                maxLength="120"
+                placeholder="Type the guest's full name…"
+                onChange={(event) => setGuestName(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    if (!event.repeat) void record();
+                  }
+                }}
+              />
+            </Field>
+            <Field label="Other information (optional)">
+              <input
+                className={inputClass}
+                value={guestDetail}
+                disabled={busy}
+                autoComplete="off"
+                maxLength="250"
+                placeholder="School, company, contact number…"
+                onChange={(event) => setGuestDetail(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    if (!event.repeat) void record();
+                  }
+                }}
+              />
+            </Field>
+            <p className="text-[11px] text-amber-900/80">
+              The name and details are saved on this visit only — the guest
+              card stays free for the next visitor.
+            </p>
+          </div>
+        ) : (
+          <Field label="Library card">
+            <input
+              ref={input}
+              className={inputClass}
+              value={card}
+              disabled={busy}
+              autoComplete="off"
+              maxLength="124"
+              placeholder="Scan or type the card…"
+              onChange={(event) => setCard(event.target.value)}
+              onKeyDown={(event) => {
+                if (
+                  event.key === "Enter" ||
+                  (event.key === "Tab" && tabTerminator)
+                ) {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  if (!event.repeat) void record();
+                }
+              }}
+            />
+          </Field>
+        )}
       </div>
 
       <label className="flex cursor-pointer items-center gap-2 text-xs text-slate-600">
@@ -258,7 +408,8 @@ export default function ScannerPanel({ onChanged, onClose, onBusy }) {
       <p className="text-xs text-slate-500">
         Scan or type the card, then press Enter — nothing else to review. The
         field clears itself after every card, so a whole queue can be scanned
-        without touching anything else.
+        without touching anything else. Guests without a card use GUEST-01 to
+        GUEST-10 — the panel asks for their name.
       </p>
       <div className="sticky bottom-0 -mx-6 -mb-6 flex flex-wrap items-center justify-end gap-3 border-t border-slate-200 bg-gradient-to-r from-[#F7F6FB] to-white px-6 py-4">
         <button

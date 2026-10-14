@@ -23,8 +23,9 @@ person does, from the append-only activity log.
   is the *only* place the type breakdown appears.
 - **Your activity** — your own actions only, with filter chips (hover a chip
   to see what it covers), Previous/Next pages (10 per page, keyset paging) and
-  links to the managing page. The everyone view lives on the admin User logs
-  page.
+  links to the managing page. The feed follows the semester chosen in the
+  header, so it always shows the period you are looking at. The everyone view
+  lives on the admin User logs page.
 - **Your sign-ins** — when your account opened the system, with Previous/Next
   pages. Until the
   Supabase dashboard toggle *"Write audit logs to the database"* is enabled
@@ -48,8 +49,9 @@ numbered pages (Previous/Next, page X of Y, total count). Filters:
 - **Person** — search by name: every typed word must appear in the person's
   name (any order), and close spellings are matched too ("dla cruz" still
   finds Dela Cruz).
-- **When** — limit to a date and time range, entered in Philippine time
-  (blank means everything).
+- **When** — limit to a date and time range, entered in Philippine time.
+  Defaults to the semester chosen in the header; edit or clear the dates to
+  search everything (blank means all time).
 - **Who** — the role of the person (admin, librarian, staff, faculty,
   student, non-teaching personnel).
 - **Source** — how the change happened, spelled out in the option itself:
@@ -83,6 +85,54 @@ every-action view with person search. All numbers come from the same
 server-side aggregation the personal dashboard uses
 (`lirc_private.activity_summary_for`).
 
+## Monthly AI summaries (admin only)
+
+Below the User performance page: the AI reads one month of a person's
+activity log and writes a rated quality summary — so quality is judged from
+what was actually done, not from raw counts that could be spammed.
+
+- **Six levels**, applied by the system from the AI's score: Excellent
+  (90–100), Very good (80–89), Good (70–79), Satisfactory (60–69), Needs
+  improvement (45–59), Unsatisfactory (0–44).
+- **Quality over attendance**: the score does NOT depend on how many days the
+  person worked — off-duty days, holidays and school circumstances are
+  normal, and real work done on only a few days is fine. Only the quality and
+  substance of the work recorded is judged.
+- **Routine actions are neutral**: recording student time in and out,
+  approving or rejecting a request, standard scans — doing them is part of
+  the job and does not by itself raise the score, and they are not judged one
+  by one.
+- **Anti-spam by design**: repeated same-action bursts and dashboard padding
+  lower the score. The AI weighs `max_single_action_share` (the most repeated
+  action's share of the month) and `max_actions_in_5_min` (the busiest
+  five-minute window), and it must call out spam-like or unusual patterns
+  with a hidden motive explicitly in the concerns (for example: "the same
+  record was edited twice in one minute").
+- **Compared with their own standard**: every generation also receives the
+  person's previous months (scores, levels, headlines and the key numbers).
+  The summary states whether the month did more or less than their usual,
+  whether quality improved or declined, and whether the work got more
+  efficient or thinner. Each report stores a **trend** (First month /
+  Improved / Steady / Declined) shown as a chip on the page, in the view
+  window and in the PDF.
+- **What the AI sees**: the month's aggregates, quality signals (distinct
+  action types, after-hours/weekend counts, review and validation counts, the
+  burst window) and a spread sample of the actual log sentences — up to 4 per
+  active day. It is told to invent nothing and to score thin months
+  conservatively.
+- **Server-side**: the `performance-summary` Edge Function holds the Gemini
+  key (Supabase secrets: `GEMINI_API_KEY`, model in `GEMINI_MODEL`), verifies
+  the caller is an admin, and upserts one row per person per month
+  (regenerating replaces it). The free tier sometimes answers "503 high
+  demand" — the function retries transient answers and then walks a fallback
+  model list (`GEMINI_FALLBACK_MODEL`, comma-separated), so a busy model
+  never fails the run; the stored row records which model was used.
+- **The Generate button** on the page is for testing. The automatic
+  first-of-the-month run comes later: a scheduled call with the
+  `x-cron-secret` header (`CRON_SECRET` is already set as a secret).
+- **PDFs** are drawn in the browser on download (jsPDF, lazy-loaded) — the
+  report text lives in the database, ready to view or download anytime.
+
 ## What records what
 
 - **`activity_events`** (append-only, server-attributed): every write to the 12
@@ -105,7 +155,8 @@ server-side aggregation the personal dashboard uses
 `lirc_activity_feed` (own / all for admins), `lirc_activity_log_page`
 (admin, numbered pages), `lirc_activity_my_summary` (dashboard cards),
 `lirc_personnel_performance_people` / `lirc_personnel_performance` (admin
-User performance page), `lirc_sign_in_activity`, plus `lirc_activity_trace` /
+User performance page), `lirc_performance_reports` (monthly AI summaries),
+`lirc_sign_in_activity`, plus `lirc_activity_trace` /
 `lirc_activity_for_entity` for record-level investigations.
 
 ## Next (optional)

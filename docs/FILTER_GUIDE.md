@@ -64,12 +64,12 @@ These filters normally work within the semester selected in the header. Every da
 | --- | --- |
 | Visit status: Still inside | The visitor has a time-in but no time-out yet. They are recorded as inside. |
 | Checked out | The visit has both a time-in and time-out. |
-| Visitor type | The role saved when that visit began, such as student or faculty. Later profile changes do not rewrite it. |
+| Visitor type | The role saved when that visit began, such as student, faculty or guest. Later profile changes do not rewrite it. |
 | Year level at visit | The student's confirmed year level saved when they entered. **Not a student** is for visitors who are not students. New student visits require level 1–4. |
 | Department | The person's department now. **Unassigned** means their profile has no department. |
 | Program | The person's current course/program. Unassigned means none is recorded. |
 | Position | The person's current employee position/classification. Unassigned means none is recorded. |
-| Purpose | Reading, Studying, Research, Borrowing/Returning, Computer Use, or Other. Other includes custom purposes entered by staff. |
+| Purpose | The library's list: Study, Research, Borrow Books, Return Books, LOA, EXIT CLEARANCE, INTERVIEW, THESIS, OJT, or Others. Others includes custom purposes entered by staff. |
 | Purpose contains | Find words in a saved purpose, for example `thesis`. |
 | Visit date from / to | Show visits whose date falls in this range. Both dates are included, Philippine time. |
 | Arrived at or after / at or before | Time of day of arrival, for example 08:00 and 12:00. This applies on every date in the selected range. The range must not cross midnight. |
