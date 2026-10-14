@@ -6,8 +6,9 @@
 // there is only one modal design.
 //
 // Extra local options (used by existing flows): dismissOnBackdrop (default
-// true; forms can block accidental dismissal) and iconClassName (colours the
-// header icon badge, used by confirm variants).
+// true; forms can block accidental dismissal), closeOnEscape (default true;
+// the scanning station turns it off — scanners can send an Escape character),
+// and iconClassName (colours the header icon badge, used by confirm variants).
 import { useEffect, useId, useRef } from "react";
 
 const dots = {
@@ -34,6 +35,7 @@ export default function Modal({
   footer,
   children,
   dismissOnBackdrop = true,
+  closeOnEscape = true,
   iconClassName,
 }) {
   const dialog = useRef(null);
@@ -51,7 +53,7 @@ export default function Modal({
       aria-describedby={description ? descriptionId : undefined}
       onCancel={(event) => {
         event.preventDefault();
-        if (!busy) onClose();
+        if (!busy && closeOnEscape) onClose();
       }}
       onClick={(event) => {
         if (!busy && dismissOnBackdrop && event.target === event.currentTarget) {

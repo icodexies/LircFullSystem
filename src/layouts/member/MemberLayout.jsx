@@ -14,6 +14,7 @@ import { useToast } from "../../hooks/shared/useToast.js";
 
 import SemesterProvider from "../../context/periods/SemesterProvider.jsx";
 import NotificationProvider from "../../context/notifications/NotificationProvider.jsx";
+import ScannerProvider from "../../context/scanner/ScannerProvider.jsx";
 
 function MemberWorkspace() {
   const { profile, role, logout } = useAuth();
@@ -95,7 +96,9 @@ export default function MemberLayout() {
   return (
     <SemesterProvider>
       <NotificationProvider>
-        <MemberWorkspace />
+        <ScannerProvider>
+          <MemberWorkspace />
+        </ScannerProvider>
       </NotificationProvider>
     </SemesterProvider>
   );

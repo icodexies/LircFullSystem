@@ -20,23 +20,26 @@ import {
 } from "../../../components/attendance/WorkspaceUi.jsx";
 import ReportFilters from "../../../components/attendance/ReportFilters.jsx";
 import ReportExport from "../../../components/attendance/ReportExport.jsx";
-import ScannerPanel from "../../../components/attendance/ScannerPanel.jsx";
 import VisitTable from "../../../components/attendance/VisitTable.jsx";
 import ManilaClock from "../../../components/attendance/ManilaClock.jsx";
-import Modal from "../../../components/ui/Modal.jsx";
+import { useScanner } from "../../../hooks/shared/useScanner.js";
 export default function Attendance() {
   const { role } = useAuth();
   const canValidate = ACCESS.validation.includes(role);
+  const scanner = useScanner();
   const periods = useSemester();
   const filter = useReportFilters();
   const [revision, setRevision] = useState(0);
-  const [scanner, setScanner] = useState(false);
-  const [scannerBusy, setScannerBusy] = useState(false);
   const id =
     filter.error || periods.error || periods.loading
       ? null
       : periods.selectedSemesterId;
-  const report = usePeriodReport("attendance", id, filter.filters, revision);
+  const report = usePeriodReport(
+    "attendance",
+    id,
+    filter.filters,
+    `${revision}:${scanner.revision}`,
+  );
   const refresh = () => setRevision((value) => value + 1);
   const historical =
     periods.selectedSemesterId &&
@@ -52,7 +55,7 @@ export default function Attendance() {
           <button
             type="button"
             className={heroPrimary}
-            onClick={() => setScanner(true)}
+            onClick={scanner.openScanner}
           >
             Open scanner
           </button>
@@ -160,34 +163,6 @@ export default function Attendance() {
             Academic periods →
           </Link>
         </div>
-      )}
-      {scanner && (
-        <Modal
-          title="Scan a library card"
-          icon={
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.7"
-              className="h-5 w-5"
-              aria-hidden="true"
-            >
-              <path d="M4 8V6a2 2 0 0 1 2-2h2 M16 4h2a2 2 0 0 1 2 2v2 M20 16v2a2 2 0 0 1-2 2h-2 M8 20H6a2 2 0 0 1-2-2v-2 M4 12h16" />
-            </svg>
-          }
-          busy={scannerBusy}
-          onClose={() => {
-            if (!scannerBusy) setScanner(false);
-          }}
-          dismissOnBackdrop={false}
-        >
-          <ScannerPanel
-            onChanged={refresh}
-            onBusy={setScannerBusy}
-            onClose={() => setScanner(false)}
-          />
-        </Modal>
       )}
     </div>
   );
