@@ -16,6 +16,7 @@ import {
   requestEnrollmentChange,
   reviewEnrollmentChange,
 } from "../../services/attendance/attendanceService.js";
+import { getMemberLoans } from "../../services/borrow/borrowService.js";
 import {
   enrollmentPayload,
   ENROLLMENT_STATUSES,
@@ -44,6 +45,7 @@ export default function EnrollmentForm({
   const [status, setStatus] = useState(enrollment?.status ?? "unverified");
   const [busy, setBusy] = useState(false);
   const [history, setHistory] = useState(null);
+  const [overdue, setOverdue] = useState(null);
   const [editingYearId, setEditingYearId] = useState(null);
   const [rowStatus, setRowStatus] = useState("enrolled");
   const openedIsPast = isPastAcademicYear(year, manilaDate());
@@ -70,6 +72,29 @@ export default function EnrollmentForm({
     };
   }, [profile.id, toast]);
 
+  // Books still out past their due date block the validation; the librarian
+  // then requests admin permission through the same request workflow.
+  useEffect(() => {
+    let active = true;
+    getMemberLoans(profile.id)
+      .then((rows) => {
+        if (active) setOverdue(rows.filter((loan) => loan.is_overdue).length);
+      })
+      .catch(() => {
+        if (active) setOverdue(0);
+      });
+    return () => {
+      active = false;
+    };
+  }, [profile.id]);
+
+  const needsPermission =
+    !openedIsPast && (overdue ?? 0) > 0 && status !== "unverified";
+  const pendingThisYear =
+    (history ?? []).find(
+      (item) => String(item.academic_year_id) === String(year.id),
+    )?.pending ?? null;
+
   function confirmPastChange() {
     return dialog.confirm({
       title: isAdmin ? "Apply this past-year change?" : "Submit for admin approval?",
@@ -82,16 +107,34 @@ export default function EnrollmentForm({
 
   async function save(event) {
     event.preventDefault();
-    if (busy) return;
+    if (busy || pendingThisYear) return;
     setBusy(true);
     onBusy?.(true);
     try {
-      if (openedIsPast) {
-        if (!(await confirmPastChange())) return;
+      if (openedIsPast || needsPermission) {
+        const overdueRequest = needsPermission && !openedIsPast;
+        const approved = await dialog.confirm({
+          title: overdueRequest
+            ? "Request admin permission?"
+            : isAdmin
+              ? "Apply this past-year change?"
+              : "Submit for admin approval?",
+          message: overdueRequest
+            ? `${personName(profile)} has ${overdue} overdue book(s). The request goes to an admin — approving it saves ${STATUS_LABELS[status] ?? status} for ${year.name}.`
+            : isAdmin
+              ? `${personName(profile)} — this changes a past school year and applies immediately.`
+              : `${personName(profile)} — this change is sent to an admin for approval.`,
+          confirmLabel: overdueRequest
+            ? "Submit request"
+            : isAdmin
+              ? "Apply change"
+              : "Submit request",
+        });
+        if (!approved) return;
         const result = await requestEnrollmentChange(profile.id, year.id, status);
         toast.success(
           result?.applied
-            ? "Past-year validation saved."
+            ? "Library validation saved."
             : "Request sent. An admin will review it.",
         );
       } else {
@@ -184,6 +227,15 @@ export default function EnrollmentForm({
           ? "This is a past school year. Changes are sent to an admin for approval (admins apply immediately)."
           : "You only choose the status. The system sets the year level from the library card and any recorded leave years."}
       </p>
+
+      {needsPermission && (
+        <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-xs leading-relaxed text-amber-900">
+          This student has <strong>{overdue} overdue book(s)</strong>. Library
+          validation is blocked until the books are returned — or request admin
+          permission and an admin can allow it. The request appears with the
+          other validation requests on this page.
+        </div>
+      )}
       <fieldset disabled={busy}>
         <Field
           label={
@@ -366,14 +418,23 @@ export default function EnrollmentForm({
             Cancel
           </button>
         )}
-        <button className={buttonClass} disabled={busy}>
+        <button
+          className={buttonClass}
+          disabled={busy || Boolean(pendingThisYear)}
+        >
           {busy
             ? "Saving…"
-            : openedIsPast
-              ? isAdmin
-                ? "Apply change"
-                : "Submit for admin approval"
-              : "Save validation"}
+            : pendingThisYear
+              ? "Waiting for admin approval"
+              : needsPermission
+                ? isAdmin
+                  ? "Apply validation"
+                  : "Request admin permission"
+                : openedIsPast
+                  ? isAdmin
+                    ? "Apply change"
+                    : "Submit for admin approval"
+                  : "Save validation"}
         </button>
       </div>
     </form>

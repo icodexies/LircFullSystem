@@ -45,6 +45,15 @@ server-side totals:
 - **Copies & loans** on a row opens the book's window, so a return can happen
   straight from a record.
 
+## Overdue reminders
+
+Every day at **8:00 AM Philippine time** the system reminds borrowers whose
+books are past due: a bell notification **on the due date** ("is due today"),
+then one **each day while the book stays out** — up to **30 days past the due
+date**, after which it stops. One reminder per loan per day, so nothing is
+ever sent twice. The member needs a **login account** to see the bell; the
+reminders are recorded either way.
+
 ## The rules (all enforced in the database)
 
 | Rule | Detail |

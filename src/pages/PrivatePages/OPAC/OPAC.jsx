@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../../../hooks/auth/useAuth.js";
 import { useCatalog } from "../../../hooks/catalog/useCatalog.js";
 import { ACCESS } from "../../../routes/roles.js";
@@ -25,8 +26,26 @@ export default function OPAC() {
   const canEdit = ACCESS.books.includes(role);
   const [filters, setFilters] = useState(INITIAL_FILTERS);
   const [selection, setSelection] = useState(null);
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const deepBook = searchParams.get("book");
   const busy = catalog.loading || catalog.searching;
   const start = (catalog.query.page - 1) * catalog.query.pageSize + 1;
+
+  // Deep link from the statistics: /opac?book=<id> opens that book's window.
+  useEffect(() => {
+    if (!deepBook || !/^\d+$/.test(deepBook)) return;
+    const timer = window.setTimeout(
+      () => setSelection({ id: Number(deepBook) }),
+      0,
+    );
+    return () => window.clearTimeout(timer);
+  }, [deepBook]);
+
+  function closeSelection() {
+    setSelection(null);
+    if (deepBook) navigate("/opac", { replace: true });
+  }
 
   function setFilter(field, value) {
     setFilters((current) => ({ ...current, [field]: value }));
@@ -450,9 +469,9 @@ export default function OPAC() {
             book={selection.book}
             role={role}
             lookups={catalog.lookups}
-            onClose={() => setSelection(null)}
+            onClose={closeSelection}
             onSaved={() => {
-              setSelection(null);
+              closeSelection();
               catalog.refresh();
             }}
           />
@@ -461,7 +480,7 @@ export default function OPAC() {
             key={`details-${selection.id}`}
             id={selection.id}
             canEdit={canEdit}
-            onClose={() => setSelection(null)}
+            onClose={closeSelection}
             onEdit={(book) => {
               if (canEdit) setSelection({ id: book.id, book });
             }}

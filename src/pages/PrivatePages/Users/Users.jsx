@@ -45,6 +45,7 @@ export default function Users() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const deepLinkId = searchParams.get("request");
+  const deepLinkMember = searchParams.get("member");
 
   // Both roles use the same four lists. Admins see every request and can
   // approve inside the window; staff see their own.
@@ -128,6 +129,16 @@ export default function Users() {
     }, 0);
     return () => window.clearTimeout(timer);
   }, [deepLinkId, requests, isAdmin]);
+
+  // Deep link from the statistics: /users?member=<id> opens that record.
+  useEffect(() => {
+    if (!deepLinkMember || !/^\d+$/.test(deepLinkMember)) return;
+    const timer = window.setTimeout(() => {
+      setTab("members");
+      setSelected({ id: Number(deepLinkMember) });
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, [deepLinkMember]);
 
   function closeReview() {
     setReviewing(null);
@@ -236,7 +247,10 @@ export default function Users() {
               <MemberDetails
                 key={`${selected.id}-${memberRevision}`}
                 member={selected}
-                onBack={() => setSelected(null)}
+                onBack={() => {
+                  setSelected(null);
+                  if (deepLinkMember) navigate("/users", { replace: true });
+                }}
                 onEdit={(profile) => setEditingProfile(profile)}
               />
             </div>

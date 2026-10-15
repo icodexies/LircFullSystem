@@ -107,6 +107,40 @@ transaction; migration history synced):
 | `20261018320000_performance_ai_history` | AI dossier gains the person's previous monthly ratings; the stored `trend` (First month / Improved / Steady / Declined) follows on the report list |
 | `20261018330000_guest_visitors` | Guest visitors: the `guest` visitor type, `attendance.guest_name`/`guest_detail` (saved per visit), ten reusable GUEST-01…GUEST-10 profiles, and purpose data on the library's own list (Study, Research, Borrow Books, Return Books, LOA, EXIT CLEARANCE, INTERVIEW, THESIS, OJT, Others) |
 | `20261018340000_loan_records` | Book Borrow record tabs: `lirc_loan_records` (borrowed / overdue / returned lists with person/role/book/date filters, server-side totals and tab counts) + two tab-sort indexes on `book_loans` |
+| `20261018350000_statistics_overview` | Statistics page numbers: `lirc_statistics_overview` (catalog sizes and availability, borrowing states, member counts by role, current-year validation progress, active-semester visits) — read-only aggregates for any signed-in member |
+| `20261018360000_statistics_details` | Statistics detail views (staff / librarian / admin): `lirc_statistics_borrowing` (12-month borrowed/returned/overdue series, totals, most borrowed books by department / year level / program, most active borrowers, top books) and `lirc_statistics_attendance` (12-month visits/unique series, busiest hours, purpose / visitor-type / department breakdowns, most frequent visitors); overview gains members by department + validation status breakdown |
+| `20261018370000_statistics_book_tree` | The borrowing rankings become one drill-down tree (`books_tree`: department → program → year level, each with its loan count and top five books); the flat rankings are replaced, and the view lists each section as clickable rows opening a modal that walks the tree one level at a time |
+| `20261018380000_statistics_semester_filter` | Statistics follow the header semester: every statistics function gains `p_semester_id` (null → active semester). Borrowing covers loans that started in it, attendance its visits, members its active members (visited or borrowed), validation its school year (annual — both semesters share), catalog stays timeless; monthly lines use the semester's own months |
+| `20261018390000_statistics_record_links` | Statistics record shortcuts: top books, the drill tree's book lists and the top borrowers/visitors now carry their record ids — "View details" opens the book's OPAC window (`/opac?book=<id>`) and "View record" opens the member's Users record (`/users?member=<id>`) |
+| `20261018400000_statistics_attendance_tree` | Attendance statistics organized like the report: `lirc_statistics_attendance` gains `visits_tree` (department → program → year level, each with visits, unique visitors, average stay and its five most frequent visitors) for clickable rows + a drill modal; new `lirc_statistics_borrower` (one member's semester record — frequency, books borrowed, recent loans) powers the "Most active borrowers" modal |
+| `20261018410000_statistics_borrowers` | The Borrowers category: `lirc_statistics_borrowers` (how many borrowed, repeat/first-time, average per borrower, top twenty borrowers, who is overdue right now, borrowers by role and department) + the overview gains the matching `borrowers` summary for the sixth card; stale no-argument statistics overloads dropped |
+| `20261018420000_validation_overdue_permission` | Overdue books block library validation: the enrollment guard rejects a validating save while the student has books past due, and the request workflow accepts a **current-year** request for those students (the admin notification says why); approving it saves the validation. Appears in the page's existing request tabs |
+| `20261018430000_overdue_reminders` | Daily overdue reminders: `notifications.dedupe_key` (one reminder per loan per day), `lirc_private.send_overdue_reminders()` (a reminder on the due date, then daily while overdue, up to 30 days past due), and the pg_cron job `lirc-overdue-reminders` running at 08:00 Philippine time. The bell needs the member to have a login account |
+
+The official **library card holder workbooks** corrected the student programs
+in two passes. First: `LIBRARY CARD HOLDERS UPDATED 2025.xlsx` — 860 records
+realigned to its rosters (mostly **BSP → BSPSY**, plus BSA/BSAIS crossings).
+Then: `UPDATED LIBRARY CARD HOLDERS.xlsx` (adds the 25- cohort) — 180 records
+follow the updated workbook (**BSA/BSAIS** and small corrections); **BSP and
+BSPSY are the same program, always stored as BSPSY**, so the psychology
+students stayed put. The applied scripts are
+`supabase/manual/library_card_programs_update.sql` and the 2026 run below;
+all runs are in `provenance_batches`.
+
+The **2026 intake** arrived as `2026 lib holder.csv`: **1,572 students** with
+`26-` cards received their program and department, and the new **BAC**
+(Bachelor of Arts in Communication) program was added under **Arts and
+Sciences (DAS)**. One row carried `BSA-SS` — not a program code — so a single
+student (26-15261) stays unassigned. Script:
+`supabase/manual/library_card_programs_2026.sql`.
+
+**Duplicate student records merged** (legacy import leftovers): 31 pairs
+where the same name and middle initial appeared on two cards — the newer
+card is kept, its visits and enrollments moved to it, and the duplicate
+removed. Five same-name pairs with **different middle initials** stay as
+different people. Script: `supabase/manual/duplicate_student_merge.sql`.
+The `MAYZIE` workbook copy checked against the database shows no remaining
+conflicts.
 
 Attendance now holds the **real records imported from the previous system**
 (4,498 visits, March–October 2026; the demo/seed rows and their log lines were

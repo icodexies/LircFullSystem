@@ -234,8 +234,8 @@ export default function Enrollments() {
         </div>
         {tab !== "validations" && (
           <p className="px-1 text-[11px] leading-relaxed text-slate-400">
-            Validation change requests are past-year changes — an admin approves
-            them before they are saved.
+            Validation change requests — past-year changes and overdue-book
+            permissions — an admin approves them before they are saved.
           </p>
         )}
       </div>
