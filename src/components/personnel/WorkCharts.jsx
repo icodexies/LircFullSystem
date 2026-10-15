@@ -27,7 +27,7 @@ export function DailyBars({ daily }) {
         {active && (
           <div
             role="status"
-            className="pointer-events-none absolute z-10 -translate-x-1/2 rounded-lg bg-[#0B1330] px-2.5 py-1.5 text-center shadow-[0_4px_12px_rgba(11,19,48,0.25)]"
+            className="pointer-events-none absolute z-10 -translate-x-1/2 rounded-lg bg-navy px-2.5 py-1.5 text-center shadow-[0_4px_12px_rgba(11,19,48,0.25)]"
             style={{
               left: `${leftPct}%`,
               bottom: `calc(${active.pct}% + 12px)`,
@@ -41,7 +41,7 @@ export function DailyBars({ daily }) {
             </span>
             <span
               aria-hidden="true"
-              className="absolute left-1/2 top-full h-2 w-2 -translate-x-1/2 -translate-y-1 rotate-45 rounded-[2px] bg-[#0B1330]"
+              className="absolute left-1/2 top-full h-2 w-2 -translate-x-1/2 -translate-y-1 rotate-45 rounded-[2px] bg-navy"
             />
           </div>
         )}
@@ -59,12 +59,12 @@ export function DailyBars({ daily }) {
               onMouseLeave={() => setHover(null)}
               onFocus={() => setHover(index)}
               onBlur={() => setHover(null)}
-              className={`min-w-0 flex-1 rounded-t-sm transition-opacity duration-150 hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3B4A86] ${
+              className={`min-w-0 flex-1 rounded-t-sm transition-opacity duration-150 hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-strong ${
                 bar.count === 0
                   ? "bg-slate-200"
                   : bar.day === today
-                    ? "bg-[#0F8A6B]"
-                    : "bg-[#0B1330]/75"
+                    ? "bg-jade"
+                    : "bg-navy/75"
               }`}
               style={{ height: bar.count > 0 ? `${bar.pct}%` : "3px" }}
             />
@@ -126,7 +126,7 @@ export function WorkDonut({ groups }) {
           ))}
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="font-serif text-3xl font-bold tracking-tight text-[#0B1330] tabular-nums">
+          <span className="font-serif text-3xl font-bold tracking-tight text-ink tabular-nums">
             {total.toLocaleString("en-US")}
           </span>
           <span className="text-xs text-slate-500">actions</span>
@@ -146,7 +146,7 @@ export function WorkDonut({ groups }) {
               />
               <span className="truncate">{segment.label}</span>
             </span>
-            <span className="shrink-0 text-[#0B1330] tabular-nums">
+            <span className="shrink-0 text-ink tabular-nums">
               {segment.value.toLocaleString("en-US")}{" "}
               <span className="text-slate-500">({segment.pct}%)</span>
             </span>

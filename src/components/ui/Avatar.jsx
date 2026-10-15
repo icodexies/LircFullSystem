@@ -17,7 +17,7 @@ export default function Avatar({ src, alt = "", className = "h-9 w-9" }) {
 
   return (
     <span
-      className={`relative inline-flex shrink-0 overflow-hidden rounded-full border border-[#3B4A86]/10 bg-[#F0EDFA] ${className}`}
+      className={`relative inline-flex shrink-0 overflow-hidden rounded-full border border-accent-strong/10 bg-tint ${className}`}
     >
       <img
         src={resolved}

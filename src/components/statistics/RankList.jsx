@@ -15,14 +15,14 @@ export default function RankList({ items, empty = "Nothing to show yet." }) {
         <li key={`${item.label}-${index}`} className="flex items-start gap-3 py-2.5">
           <span
             aria-hidden="true"
-            className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-[#F0EDFA] text-[10px] font-bold text-[#3B4A86]"
+            className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-tint text-[10px] font-bold text-accent"
           >
             {index + 1}
           </span>
           <div className="min-w-0 flex-1">
             <div className="flex items-center justify-between gap-3 text-xs">
               <span className="min-w-0">
-                <span className="block truncate font-medium text-[#0B1330]">
+                <span className="block truncate font-medium text-ink">
                   {item.label}
                 </span>
                 {item.sub && (
@@ -32,13 +32,13 @@ export default function RankList({ items, empty = "Nothing to show yet." }) {
                 )}
               </span>
               <span className="shrink-0 text-right">
-                <span className="block font-semibold text-[#0B1330] tabular-nums">
+                <span className="block font-semibold text-ink tabular-nums">
                   {Number(item.count).toLocaleString("en-US")}
                 </span>
                 {item.to && (
                   <Link
                     to={item.to}
-                    className="mt-1 inline-flex items-center rounded-lg border border-[#0B1330]/15 px-2 py-1 text-[10px] font-semibold text-[#0B1330] transition-colors hover:bg-[#0B1330] hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3B4A86]"
+                    className="mt-1 inline-flex items-center rounded-lg border border-navy/15 px-2 py-1 text-[10px] font-semibold text-ink transition-colors hover:bg-navy hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-strong"
                   >
                     {item.actionLabel ?? "View details"}
                     <span className="sr-only"> for {item.label}</span>
@@ -48,7 +48,7 @@ export default function RankList({ items, empty = "Nothing to show yet." }) {
                   <button
                     type="button"
                     onClick={item.onClick}
-                    className="mt-1 inline-flex items-center rounded-lg border border-[#0B1330]/15 px-2 py-1 text-[10px] font-semibold text-[#0B1330] transition-colors hover:bg-[#0B1330] hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3B4A86]"
+                    className="mt-1 inline-flex items-center rounded-lg border border-navy/15 px-2 py-1 text-[10px] font-semibold text-ink transition-colors hover:bg-navy hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-strong"
                   >
                     {item.actionLabel ?? "View details"}
                     <span className="sr-only"> for {item.label}</span>
@@ -58,7 +58,7 @@ export default function RankList({ items, empty = "Nothing to show yet." }) {
             </div>
             <div className="mt-1.5 h-1.5 rounded-full bg-slate-100">
               <div
-                className="h-full rounded-full bg-[#3B4A86]/70"
+                className="h-full rounded-full bg-accent-strong/70"
                 style={{ width: `${(Number(item.count) / max) * 100}%` }}
               />
             </div>

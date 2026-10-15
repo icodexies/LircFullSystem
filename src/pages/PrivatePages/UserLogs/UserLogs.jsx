@@ -41,16 +41,16 @@ const SOURCE_OPTIONS = [
 ];
 
 const SOURCE_TONES = {
-  app: "bg-[#E7F4EF] text-[#0B6B52]",
+  app: "bg-jade-soft text-jade-deep",
   auto: "bg-slate-100 text-slate-600",
   direct_table: "bg-amber-50 text-amber-800",
   migration: "bg-slate-100 text-slate-600",
-  import: "bg-[#F0EDFA] text-[#3B4A86]",
+  import: "bg-tint text-accent",
   system: "bg-slate-100 text-slate-600",
 };
 
 const selectClass =
-  "rounded-xl border border-slate-400 bg-white px-3 py-2 text-xs text-[#0B1330] focus:border-[#3B4A86] focus:outline-none focus:ring-2 focus:ring-[#3B4A86]/15";
+  "rounded-xl border border-slate-400 bg-surface px-3 py-2 text-xs text-ink focus:border-accent-strong focus:outline-none focus:ring-2 focus:ring-accent-strong/15";
 
 export default function UserLogs() {
   const [filter, setFilter] = useState("");
@@ -122,7 +122,7 @@ export default function UserLogs() {
         </span>
       </WorkspaceHeader>
 
-      <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-[0_1px_2px_rgba(11,19,48,0.05)] sm:p-5">
+      <section className="rounded-2xl border border-slate-200 bg-surface p-4 shadow-[0_1px_2px_rgba(11,19,48,0.05)] sm:p-5">
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-xs font-semibold text-slate-600">Show:</span>
           {ACTIVITY_GROUPS.map((item) => (
@@ -134,7 +134,7 @@ export default function UserLogs() {
               onClick={() => changeFilter(setFilter, item.id)}
               className={`rounded-full px-3 py-1.5 text-[11px] font-semibold transition-colors ${
                 filter === item.id
-                  ? "bg-[#0B1330] text-white"
+                  ? "bg-navy text-white"
                   : "border border-slate-400 bg-slate-100 text-slate-700 hover:bg-slate-200"
               }`}
             >
@@ -210,7 +210,7 @@ export default function UserLogs() {
           {(filter || role || source || personInput || fromInput || toInput) && (
             <button
               type="button"
-              className="text-[11px] font-semibold text-[#3B4A86] hover:underline"
+              className="text-[11px] font-semibold text-accent hover:underline"
               onClick={() => {
                 setFilter("");
                 setRole("");
@@ -245,10 +245,10 @@ export default function UserLogs() {
         </p>
       </section>
 
-      <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_1px_2px_rgba(11,19,48,0.05)]">
+      <section className="overflow-hidden rounded-2xl border border-slate-200 bg-surface shadow-[0_1px_2px_rgba(11,19,48,0.05)]">
         <div className="flex flex-wrap items-center justify-between gap-2 px-5 py-4">
-          <h2 className="flex items-center gap-2 text-sm font-semibold text-[#0B1330]">
-            <span aria-hidden="true" className="h-4 w-1 rounded-full bg-[#0B1330]" />
+          <h2 className="flex items-center gap-2 text-sm font-semibold text-ink">
+            <span aria-hidden="true" className="h-4 w-1 rounded-full bg-navy" />
             All activity
           </h2>
           {log.loading ? (
@@ -269,7 +269,7 @@ export default function UserLogs() {
           </p>
         )}
 
-        <div className="hidden grid-cols-[150px_190px_1fr_120px_70px] gap-x-4 border-y border-slate-200 bg-[#F7F6FB] px-5 py-2.5 text-[11px] font-semibold text-slate-600 md:grid">
+        <div className="hidden grid-cols-[150px_190px_1fr_120px_70px] gap-x-4 border-y border-slate-200 bg-page px-5 py-2.5 text-[11px] font-semibold text-slate-600 md:grid">
           <span>Time</span>
           <span>Who</span>
           <span>Action</span>
@@ -300,14 +300,14 @@ export default function UserLogs() {
                     {displayTime(row.occurred_at)}
                   </span>
                   <span className="min-w-0">
-                    <span className="block truncate font-medium text-[#0B1330]">
+                    <span className="block truncate font-medium text-ink">
                       {row.actor_name ?? "Unattributed"}
                     </span>
                     <span className="text-[11px] text-slate-500">
                       {roleLabel}
                     </span>
                   </span>
-                  <span className="min-w-0 leading-snug text-[#0B1330]">
+                  <span className="min-w-0 leading-snug text-ink">
                     {row.description}
                   </span>
                   <span
@@ -319,7 +319,7 @@ export default function UserLogs() {
                     {route && (
                       <Link
                         to={route}
-                        className="text-[11px] font-semibold text-[#3B4A86] hover:underline"
+                        className="text-[11px] font-semibold text-accent hover:underline"
                       >
                         Open
                       </Link>

@@ -110,13 +110,13 @@ export default function BorrowAction({ copy, onDone, onCancel }) {
       <div className="flex flex-wrap items-center justify-between gap-2">
         <button
           type="button"
-          className="text-xs font-semibold text-[#3B4A86] hover:underline"
+          className="text-xs font-semibold text-accent hover:underline"
           onClick={onCancel}
         >
           ← Back to copies
         </button>
         <p className="text-xs text-slate-500">
-          Copy <strong className="text-[#0B1330]">{copy.accession_number}</strong>
+          Copy <strong className="text-ink">{copy.accession_number}</strong>
         </p>
       </div>
 
@@ -149,8 +149,8 @@ export default function BorrowAction({ copy, onDone, onCancel }) {
       </p>
 
       {preview && (
-        <div className="space-y-3 rounded-xl bg-[#F7F6FB] p-4">
-          <p className="text-sm font-semibold text-[#0B1330]">
+        <div className="space-y-3 rounded-xl bg-page p-4">
+          <p className="text-sm font-semibold text-ink">
             {preview.profile.full_name} · {preview.profile.library_id}
           </p>
           <p className="text-xs text-slate-500">
@@ -214,7 +214,7 @@ export default function BorrowAction({ copy, onDone, onCancel }) {
           type="checkbox"
           checked={returnedFlag}
           onChange={(event) => setReturnedFlag(event.target.checked)}
-          className="h-3.5 w-3.5 accent-[#0B1330]"
+          className="h-3.5 w-3.5 accent-ink"
         />
         This loan was already returned (old record)
       </label>
@@ -229,7 +229,7 @@ export default function BorrowAction({ copy, onDone, onCancel }) {
         </Field>
       )}
 
-      <div className="sticky bottom-0 -mx-5 -mb-5 flex flex-wrap items-center justify-end gap-3 border-t border-slate-200 bg-gradient-to-r from-[#F7F6FB] to-white px-5 py-4 sm:-mx-6 sm:-mb-6 sm:px-6">
+      <div className="sticky bottom-0 -mx-5 -mb-5 flex flex-wrap items-center justify-end gap-3 border-t border-slate-200 bg-gradient-to-r from-page to-surface px-5 py-4 sm:-mx-6 sm:-mb-6 sm:px-6">
         <button
           type="button"
           disabled={busy}

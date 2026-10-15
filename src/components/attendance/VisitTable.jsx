@@ -30,7 +30,7 @@ export default function VisitTable({ rows, onChanged }) {
     <>
       <div className="overflow-x-auto">
         <table className="w-full min-w-[850px] text-left text-xs">
-          <thead className="bg-[#F7F6FB]">
+          <thead className="bg-page">
             <tr>
               {[
                 "Photo",
@@ -52,7 +52,7 @@ export default function VisitTable({ rows, onChanged }) {
             {rows.map((row) => (
               <tr
                 key={row.id}
-                className="border-b border-slate-100 hover:bg-[#F7F6FB]/50"
+                className="border-b border-slate-100 hover:bg-page/50"
               >
                 <td className="px-5 py-4 align-top">
                   <Avatar src={row.avatar_url} className="h-10 w-10" />

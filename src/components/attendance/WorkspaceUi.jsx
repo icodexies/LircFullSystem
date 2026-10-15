@@ -13,12 +13,12 @@ const dots = {
 
 // Buttons that sit on the navy hero.
 export const heroPrimary =
-  "inline-flex items-center justify-center gap-2 rounded-xl bg-white px-4 py-2.5 text-xs font-semibold text-[#0B1330] transition-colors hover:bg-[#F0EDFA] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white disabled:opacity-40";
+  "inline-flex items-center justify-center gap-2 rounded-xl bg-white px-4 py-2.5 text-xs font-semibold text-navy transition-colors hover:bg-[#F0EDFA] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white disabled:opacity-40";
 export const heroSecondary =
   "inline-flex items-center justify-center gap-2 rounded-xl border border-white/25 bg-white/10 px-4 py-2.5 text-xs font-semibold text-white transition-colors hover:bg-white/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white disabled:opacity-40";
 
 export const secondaryButton =
-  "inline-flex items-center justify-center gap-2 rounded-xl border border-slate-400 bg-slate-100 px-4 py-2.5 text-xs font-semibold text-slate-700 transition-colors hover:border-slate-500 hover:bg-slate-200 hover:text-[#0B1330] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3B4A86] disabled:opacity-40";
+  "inline-flex items-center justify-center gap-2 rounded-xl border border-slate-400 bg-slate-100 px-4 py-2.5 text-xs font-semibold text-slate-700 transition-colors hover:border-slate-500 hover:bg-slate-200 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-strong disabled:opacity-40";
 
 export function WorkspaceHeader({
   eyebrow = "Library operations",
@@ -28,7 +28,7 @@ export function WorkspaceHeader({
   children,
 }) {
   return (
-    <section className="relative overflow-hidden rounded-2xl bg-[#0B1330] px-5 py-6 sm:px-8 sm:py-8">
+    <section className="relative overflow-hidden rounded-2xl bg-navy px-5 py-6 sm:px-8 sm:py-8">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 opacity-[0.16]"
@@ -67,23 +67,23 @@ export function SummaryCards({ items, loading = false }) {
       {items.map(({ label, value, help, tone = "neutral" }) => (
         <div
           key={label}
-          className="relative min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 pt-5 shadow-[0_1px_2px_rgba(11,19,48,0.05)] sm:p-5"
+          className="relative min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-surface p-4 pt-5 shadow-[0_1px_2px_rgba(11,19,48,0.05)] sm:p-5"
         >
           <span
             aria-hidden="true"
-            className="absolute left-0 top-0 h-[3px] w-14 bg-[#0B1330]"
+            className="absolute left-0 top-0 h-[3px] w-14 bg-navy"
           />
           <div className="flex items-center justify-between gap-3">
             <p className="text-xs font-medium text-slate-500">{label}</p>
             <span
               aria-hidden="true"
-              className={`h-2 w-2 shrink-0 rounded-full ${tone === "warning" ? "bg-amber-400" : tone === "success" ? "bg-[#12A47E]" : "bg-[#3B4A86]/40"}`}
+              className={`h-2 w-2 shrink-0 rounded-full ${tone === "warning" ? "bg-amber-400" : tone === "success" ? "bg-jade" : "bg-accent-strong/40"}`}
             />
           </div>
           {loading ? (
             <Skeleton className="mt-3 h-9 w-24" />
           ) : (
-            <p className="mt-3 font-serif text-3xl font-bold tracking-tight text-[#0B1330]">
+            <p className="mt-3 font-serif text-3xl font-bold tracking-tight text-ink">
               {value ?? "—"}
             </p>
           )}
@@ -98,10 +98,10 @@ export function SummaryCards({ items, loading = false }) {
 
 export function WorkspacePanel({ title, description, actions, children }) {
   return (
-    <section className="min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_1px_2px_rgba(11,19,48,0.05)]">
+    <section className="min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-surface shadow-[0_1px_2px_rgba(11,19,48,0.05)]">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-5 py-4 sm:px-5">
         <div>
-          <h2 className="font-serif text-lg font-semibold tracking-tight text-[#0B1330]">
+          <h2 className="font-serif text-lg font-semibold tracking-tight text-ink">
             {title}
           </h2>
           {description && (
@@ -121,8 +121,8 @@ export function WorkspacePanel({ title, description, actions, children }) {
 
 export function StatusBadge({ children, tone = "neutral" }) {
   const styles = {
-    neutral: ["bg-[#F0EDFA] text-[#3B4A86]", "bg-[#3B4A86]"],
-    success: ["bg-[#E7F4EF] text-[#0B6B52]", "bg-[#E7F4EF]0"],
+    neutral: ["bg-tint text-accent", "bg-accent-strong"],
+    success: ["bg-jade-soft text-jade-deep", "bg-jade-soft0"],
     warning: ["bg-amber-50 text-amber-800", "bg-amber-500"],
     muted: ["bg-slate-100 text-slate-600", "bg-slate-400"],
     danger: ["bg-red-50 text-red-700", "bg-red-500"],

@@ -36,8 +36,8 @@ function NavItem({ to, active, children }) {
       aria-current={active ? "location" : undefined}
       className={`inline-flex items-center rounded-full px-3.5 py-1.5 text-sm font-medium transition-all duration-300 ${
         active
-          ? "bg-[#0B1330] text-white shadow-sm"
-          : "text-slate-600 hover:bg-slate-100 hover:text-[#0B1330]"
+          ? "bg-navy text-white shadow-sm"
+          : "text-slate-600 hover:bg-slate-100 hover:text-ink"
       }`}
     >
       {children}
@@ -125,7 +125,7 @@ function NavBar() {
   return (
     <header className="pointer-events-none sticky top-0 z-50 flex justify-center px-4 py-5">
       <Reveal direction="down" distance={24} duration={700} delay={0} easing="smooth">
-        <div className="pointer-events-auto flex items-center gap-2 rounded-full border border-slate-200 bg-white/75 p-1.5 shadow-lg shadow-black/15 md:gap-3">
+        <div className="pointer-events-auto flex items-center gap-2 rounded-full border border-slate-200 bg-surface/75 p-1.5 shadow-lg shadow-black/15 md:gap-3">
           {/* Logo / Brand (clicking it on the home page scrolls back to the top) */}
           <Link
             to="/"
@@ -137,15 +137,15 @@ function NavBar() {
             }}
             className="group flex items-center gap-2.5 pl-0.5 pr-2"
           >
-            <BrandMark className="h-8 w-8 bg-white ring-2 ring-[#0B1330]/15 transition-all duration-300 group-hover:scale-105 group-hover:ring-sky-400" imageClassName="transition-transform duration-300 group-hover:rotate-6" />
+            <BrandMark className="h-8 w-8 bg-surface ring-2 ring-navy/15 transition-all duration-300 group-hover:scale-105 group-hover:ring-sky-400" imageClassName="transition-transform duration-300 group-hover:rotate-6" />
 
             {/* Very small screens: short name */}
-            <span className="font-['Fraunces',serif] text-base font-bold tracking-tight text-[#0B1330] sm:hidden">
+            <span className="font-['Fraunces',serif] text-base font-bold tracking-tight text-ink sm:hidden">
               LIRC
             </span>
 
             {/* sm and up: full name, one style, wrapped on two lines */}
-            <span className="hidden items-center justify-center text-center font-['Fraunces',serif] text-[13px] font-bold leading-[1.15] tracking-tight text-[#0B1330] transition-colors duration-300 group-hover:text-sky-600 sm:flex">
+            <span className="hidden items-center justify-center text-center font-['Fraunces',serif] text-[13px] font-bold leading-[1.15] tracking-tight text-ink transition-colors duration-300 group-hover:text-sky-600 sm:flex">
               <span>
                 Learning and Information
                 <br />

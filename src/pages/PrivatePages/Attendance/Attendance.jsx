@@ -156,10 +156,10 @@ export default function Attendance() {
       </WorkspacePanel>
       {canValidate && (
         <div className="flex flex-wrap gap-5 px-1 text-xs text-slate-500">
-          <Link className="hover:text-[#3B4A86]" to="/enrollments">
+          <Link className="hover:text-accent" to="/enrollments">
             Library validation →
           </Link>
-          <Link className="hover:text-[#3B4A86]" to="/academic-periods">
+          <Link className="hover:text-accent" to="/academic-periods">
             Academic periods →
           </Link>
         </div>

@@ -9,7 +9,7 @@ const Footer = lazy(() => import("../../components/layout/public/Footer.jsx"));
 
 function PublicLayout() {
   return (
-    <div className="min-h-screen">
+    <div className="theme-light min-h-screen">
 
         <NavBar />
 
@@ -17,8 +17,8 @@ function PublicLayout() {
         <Outlet />
       </main>
 
-      <DeferredRender id="contact" reserveClassName="min-h-[48rem] bg-[#0B1330] lg:min-h-[36rem]" rootMargin="900px 0px">
-        <Suspense fallback={<div aria-hidden="true" className="grid min-h-[48rem] place-items-center bg-[#0B1330] text-white/80 lg:min-h-[36rem]"><Spinner size="lg" /></div>}>
+      <DeferredRender id="contact" reserveClassName="min-h-[48rem] bg-navy lg:min-h-[36rem]" rootMargin="900px 0px">
+        <Suspense fallback={<div aria-hidden="true" className="grid min-h-[48rem] place-items-center bg-navy text-white/80 lg:min-h-[36rem]"><Spinner size="lg" /></div>}>
           <Footer />
         </Suspense>
       </DeferredRender>

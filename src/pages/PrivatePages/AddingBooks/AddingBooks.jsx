@@ -103,7 +103,7 @@ export default function AddingBooks() {
                 >
                   <BookCover book={book} className="h-20 w-14" />
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-semibold text-[#0B1330]">
+                    <p className="truncate text-sm font-semibold text-ink">
                       {book.book_name}
                     </p>
                     <p className="mt-0.5 truncate text-xs text-slate-500">

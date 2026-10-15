@@ -164,7 +164,7 @@ export default function ReviewTab({ session, onCounts }) {
                   className="flex flex-wrap items-center justify-between gap-3 py-3"
                 >
                   <div className="min-w-0">
-                    <p className="text-sm font-semibold text-[#0B1330]">
+                    <p className="text-sm font-semibold text-ink">
                       {row.accession_number}
                     </p>
                     <p className="mt-0.5 truncate text-xs text-slate-500">

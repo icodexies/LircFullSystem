@@ -131,7 +131,7 @@ export default function Profile() {
             <div className="flex flex-wrap items-center gap-5">
               <Avatar src={data.avatar_url} className="h-24 w-24" />
               <div className="min-w-0 flex-1">
-                <h2 className="text-lg font-semibold text-[#0B1330]">
+                <h2 className="text-lg font-semibold text-ink">
                   {data.full_name}
                 </h2>
                 <p className="mt-1 text-xs text-slate-500">
@@ -173,7 +173,7 @@ export default function Profile() {
             </div>
 
             <div className="mt-6 border-t border-slate-100 pt-5">
-              <h3 className="text-xs font-semibold text-[#0B1330]">
+              <h3 className="text-xs font-semibold text-ink">
                 Or choose a default
               </h3>
               <p className="mt-1 text-[11px] text-slate-500">
@@ -191,10 +191,10 @@ export default function Profile() {
                       title={option.label}
                       aria-label={`Use ${option.label}`}
                       aria-pressed={active}
-                      className={`relative h-14 w-14 overflow-hidden rounded-full border-2 transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3B4A86] disabled:opacity-60 ${
+                      className={`relative h-14 w-14 overflow-hidden rounded-full border-2 transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-strong disabled:opacity-60 ${
                         active
-                          ? "border-[#0F8A6B]"
-                          : "border-slate-200 hover:border-[#3B4A86]/50"
+                          ? "border-jade"
+                          : "border-slate-200 hover:border-accent-strong/50"
                       }`}
                     >
                       <img
@@ -206,7 +206,7 @@ export default function Profile() {
                       />
                       {active && (
                         <span
-                          className="absolute right-0.5 top-0.5 grid h-4 w-4 place-items-center rounded-full bg-[#0F8A6B] text-[9px] font-bold text-white"
+                          className="absolute right-0.5 top-0.5 grid h-4 w-4 place-items-center rounded-full bg-jade text-[9px] font-bold text-white"
                           aria-hidden="true"
                         >
                           ✓
@@ -224,7 +224,7 @@ export default function Profile() {
                   <dt className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">
                     {label}
                   </dt>
-                  <dd className="mt-1 break-words text-sm text-[#0B1330]">
+                  <dd className="mt-1 break-words text-sm text-ink">
                     {value || "—"}
                   </dd>
                 </div>

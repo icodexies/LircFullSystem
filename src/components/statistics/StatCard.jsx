@@ -28,7 +28,7 @@ export default function StatCard({
       {...(onClick ? { type: "button", onClick } : {})}
       className={`group flex flex-col transition-transform duration-200 hover:-translate-y-1 ${
         onClick
-          ? "w-full cursor-pointer text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3B4A86]"
+          ? "w-full cursor-pointer text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-strong"
           : ""
       }`}
     >
@@ -41,7 +41,7 @@ export default function StatCard({
       >
         {/* pale tab behind the body; visible above it and through the notch */}
         <div
-          className="absolute inset-x-[7%] top-0 rounded-t-[20px] bg-gradient-to-b from-white to-slate-200 ring-2 ring-slate-300 shadow-[0_4px_12px_rgba(11,19,48,0.18)]"
+          className="absolute inset-x-[7%] top-0 rounded-t-[20px] bg-gradient-to-b from-surface to-slate-200 ring-2 ring-slate-300 shadow-[0_4px_12px_rgba(11,19,48,0.18)]"
           style={{ height: TAB + CUT }}
         />
 

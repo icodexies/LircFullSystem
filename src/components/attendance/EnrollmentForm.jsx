@@ -218,7 +218,7 @@ export default function EnrollmentForm({
 
   return (
     <form onSubmit={save} className="space-y-5 p-6">
-      <p className="rounded-xl bg-[#F7F6FB] p-4 text-xs leading-relaxed text-slate-600">
+      <p className="rounded-xl bg-page p-4 text-xs leading-relaxed text-slate-600">
         Validation for academic year <strong>{year.name}</strong>; covers both
         semesters. Missing validation means not verified.
       </p>
@@ -260,7 +260,7 @@ export default function EnrollmentForm({
       </fieldset>
 
       <section className="border-t border-slate-100 pt-5">
-        <h3 className="text-sm font-semibold text-[#0B1330]">
+        <h3 className="text-sm font-semibold text-ink">
           Validation history
         </h3>
         <p className="mt-1 text-xs text-slate-500">
@@ -278,7 +278,7 @@ export default function EnrollmentForm({
               >
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="min-w-0">
-                    <p className="text-xs font-semibold text-[#0B1330]">
+                    <p className="text-xs font-semibold text-ink">
                       {item.name}
                       {item.before_admission && (
                         <span className="ml-2 font-normal text-slate-500">
@@ -363,7 +363,7 @@ export default function EnrollmentForm({
                 )}
 
                 {editingYearId === item.academic_year_id && (
-                  <div className="mt-3 rounded-lg bg-[#F7F6FB] p-3">
+                  <div className="mt-3 rounded-lg bg-page p-3">
                     <Field label="New status">
                       <select
                         className={inputClass}
@@ -407,7 +407,7 @@ export default function EnrollmentForm({
         Saving validation does not record a visit. The server records validator
         and validation time.
       </p>
-      <div className="sticky bottom-0 -mx-6 -mb-6 flex flex-wrap items-center justify-end gap-3 border-t border-slate-200 bg-gradient-to-r from-[#F7F6FB] to-white px-6 py-4">
+      <div className="sticky bottom-0 -mx-6 -mb-6 flex flex-wrap items-center justify-end gap-3 border-t border-slate-200 bg-gradient-to-r from-page to-surface px-6 py-4">
         {onCancel && (
           <button
             type="button"

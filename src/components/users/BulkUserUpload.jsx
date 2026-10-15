@@ -38,8 +38,8 @@ function downloadCsv(fileName, text) {
 
 function ReferenceList({ title, rows }) {
   return (
-    <div className="min-w-0 rounded-xl border border-slate-200 bg-white">
-      <p className="border-b border-slate-100 px-3 py-2 text-[11px] font-semibold text-[#0B1330]">
+    <div className="min-w-0 rounded-xl border border-slate-200 bg-surface">
+      <p className="border-b border-slate-100 px-3 py-2 text-[11px] font-semibold text-ink">
         {title}
       </p>
       <ul className="max-h-36 overflow-y-auto px-3 py-2 text-xs text-slate-600">
@@ -52,7 +52,7 @@ function ReferenceList({ title, rows }) {
               className="flex items-center justify-between gap-2 py-0.5"
             >
               <span className="truncate">{row.name}</span>
-              <span className="shrink-0 font-semibold text-[#3B4A86]">
+              <span className="shrink-0 font-semibold text-accent">
                 {row.id}
               </span>
             </li>
@@ -176,11 +176,11 @@ export default function BulkUserUpload({ onSaved }) {
 
   return (
     <div className="space-y-5">
-      <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-[0_1px_2px_rgba(11,19,48,0.05)] sm:p-5">
-        <h3 className="flex items-center gap-2 text-sm font-semibold text-[#0B1330]">
+      <section className="rounded-2xl border border-slate-200 bg-surface p-4 shadow-[0_1px_2px_rgba(11,19,48,0.05)] sm:p-5">
+        <h3 className="flex items-center gap-2 text-sm font-semibold text-ink">
           <span
             aria-hidden="true"
-            className="h-4 w-1 rounded-full bg-[#0B1330]"
+            className="h-4 w-1 rounded-full bg-navy"
           />
           1. Download a template
         </h3>
@@ -230,11 +230,11 @@ export default function BulkUserUpload({ onSaved }) {
         </p>
       </section>
 
-      <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-[0_1px_2px_rgba(11,19,48,0.05)] sm:p-5">
-        <h3 className="flex items-center gap-2 text-sm font-semibold text-[#0B1330]">
+      <section className="rounded-2xl border border-slate-200 bg-surface p-4 shadow-[0_1px_2px_rgba(11,19,48,0.05)] sm:p-5">
+        <h3 className="flex items-center gap-2 text-sm font-semibold text-ink">
           <span
             aria-hidden="true"
-            className="h-4 w-1 rounded-full bg-[#0B1330]"
+            className="h-4 w-1 rounded-full bg-navy"
           />
           2. Choose the year and upload
         </h3>
@@ -290,10 +290,10 @@ export default function BulkUserUpload({ onSaved }) {
       )}
 
       {preview && !imported && (
-        <section className="rounded-2xl border border-slate-200 bg-white shadow-[0_1px_2px_rgba(11,19,48,0.05)]">
+        <section className="rounded-2xl border border-slate-200 bg-surface shadow-[0_1px_2px_rgba(11,19,48,0.05)]">
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-4 py-3 sm:px-5">
             <div className="min-w-0">
-              <p className="text-sm font-semibold text-[#0B1330]">
+              <p className="text-sm font-semibold text-ink">
                 {preview.valid} row{preview.valid === 1 ? "" : "s"} ready
                 {preview.problems > 0
                   ? ` · ${preview.problems} with problems`
@@ -335,7 +335,7 @@ export default function BulkUserUpload({ onSaved }) {
                 className="flex flex-wrap items-center justify-between gap-2 px-4 py-2.5 text-xs sm:px-5"
               >
                 <div className="min-w-0">
-                  <p className="break-all font-semibold text-[#0B1330]">
+                  <p className="break-all font-semibold text-ink">
                     Row {row.row} · {row.library_id || "—"}
                   </p>
                   {!row.ok && (
@@ -354,7 +354,7 @@ export default function BulkUserUpload({ onSaved }) {
       {imported && (
         <section className="space-y-3">
           <div
-            className={`rounded-xl border px-4 py-3 text-sm leading-relaxed ${imported.failed > 0 ? "border-amber-100 bg-amber-50 text-amber-900" : "border-[#BFE3D6] bg-[#E7F4EF] text-[#0B6B52]"}`}
+            className={`rounded-xl border px-4 py-3 text-sm leading-relaxed ${imported.failed > 0 ? "border-amber-100 bg-amber-50 text-amber-900" : "border-jade-line bg-jade-soft text-jade-deep"}`}
           >
             <p className="font-semibold">
               {imported.added} user{imported.added === 1 ? "" : "s"} added
@@ -367,7 +367,7 @@ export default function BulkUserUpload({ onSaved }) {
             </p>
           </div>
           {imported.failed > 0 && (
-            <ul className="divide-y divide-slate-100 overflow-hidden rounded-xl border border-slate-200 bg-white">
+            <ul className="divide-y divide-slate-100 overflow-hidden rounded-xl border border-slate-200 bg-surface">
               {imported.results
                 .filter((row) => !row.ok)
                 .map((row) => (
@@ -375,7 +375,7 @@ export default function BulkUserUpload({ onSaved }) {
                     key={`${row.row}-${row.library_id}`}
                     className="px-4 py-2.5 text-xs"
                   >
-                    <p className="font-semibold text-[#0B1330]">
+                    <p className="font-semibold text-ink">
                       Row {row.row} · {row.library_id || "—"}
                     </p>
                     <p className="mt-0.5 text-red-700">{row.reason}</p>

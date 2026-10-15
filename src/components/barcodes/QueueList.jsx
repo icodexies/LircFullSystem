@@ -111,8 +111,8 @@ export default function QueueList({ onCounts }) {
           <SkeletonRows count={5} label="Loading the queue…" />
         ) : rows.length === 0 ? (
           <div className="flex h-full items-center justify-center p-5 sm:p-6">
-            <div className="flex w-full max-w-md flex-col items-center rounded-2xl border border-dashed border-slate-200 bg-[#F7F6FB]/60 px-5 py-8 text-center">
-              <span className="grid h-12 w-12 place-items-center rounded-full bg-[#F0EDFA] text-[#3B4A86]">
+            <div className="flex w-full max-w-md flex-col items-center rounded-2xl border border-dashed border-slate-200 bg-page/60 px-5 py-8 text-center">
+              <span className="grid h-12 w-12 place-items-center rounded-full bg-tint text-accent">
                 <svg
                   viewBox="0 0 24 24"
                   fill="none"
@@ -124,7 +124,7 @@ export default function QueueList({ onCounts }) {
                   <path d="M4 6v12 M7 6v12 M10 6v12 M14 6v12 M17 6v12 M20 6v12" />
                 </svg>
               </span>
-              <h3 className="mt-4 font-serif text-xl font-bold text-[#0B1330]">
+              <h3 className="mt-4 font-serif text-xl font-bold text-ink">
                 No numbers yet
               </h3>
               <p className="mt-2 text-sm text-slate-500">
@@ -142,7 +142,7 @@ export default function QueueList({ onCounts }) {
               >
                 <div className="min-w-0">
                   <p
-                    className="truncate text-sm font-semibold text-[#0B1330]"
+                    className="truncate text-sm font-semibold text-ink"
                     title={entry.accession_number}
                   >
                     {entry.accession_number}
@@ -184,7 +184,7 @@ export default function QueueList({ onCounts }) {
           </button>
           <span
             aria-current="page"
-            className="grid h-9 min-w-9 place-items-center rounded-xl bg-[#0B1330] px-3 text-xs font-semibold text-white"
+            className="grid h-9 min-w-9 place-items-center rounded-xl bg-navy px-3 text-xs font-semibold text-white"
           >
             {page}
           </span>

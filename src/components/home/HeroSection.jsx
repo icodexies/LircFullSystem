@@ -84,7 +84,7 @@ export function LeftSide({ slides = [], active, BTN_SLANT }) {
                   <Link
                     to={s.to}
                     tabIndex={on ? 0 : -1}
-                    className="inline-flex items-center gap-2 bg-white px-5 py-2.5 text-xs font-semibold text-[#0B1330] transition-all duration-300 hover:bg-sky-400 active:scale-95 sm:px-7 sm:py-3 sm:text-sm"
+                    className="inline-flex items-center gap-2 bg-white px-5 py-2.5 text-xs font-semibold text-navy transition-all duration-300 hover:bg-sky-400 active:scale-95 sm:px-7 sm:py-3 sm:text-sm"
                     style={{
                       clipPath: BTN_SLANT,
                     }}
@@ -148,7 +148,7 @@ export function RightSide({ slides = [], active, next, prev, setActive, pad }) {
               type="button"
               onClick={prev}
               aria-label="Previous slide"
-              className="flex h-9 w-9 items-center justify-center rounded-full border border-white/30 bg-white/10 text-white backdrop-blur-md transition-all duration-300 hover:bg-white hover:text-[#0B1330] active:scale-95 sm:h-11 sm:w-11"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-white/30 bg-white/10 text-white backdrop-blur-md transition-all duration-300 hover:bg-white hover:text-navy active:scale-95 sm:h-11 sm:w-11"
             >
               <ArrowIcon direction="left" />
             </button>
@@ -157,7 +157,7 @@ export function RightSide({ slides = [], active, next, prev, setActive, pad }) {
               type="button"
               onClick={next}
               aria-label="Next slide"
-              className="flex h-9 w-9 items-center justify-center rounded-full border border-white/30 bg-white/10 text-white backdrop-blur-md transition-all duration-300 hover:bg-white hover:text-[#0B1330] active:scale-95 sm:h-11 sm:w-11"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-white/30 bg-white/10 text-white backdrop-blur-md transition-all duration-300 hover:bg-white hover:text-navy active:scale-95 sm:h-11 sm:w-11"
             >
               <ArrowIcon />
             </button>
@@ -194,10 +194,10 @@ export function RightSide({ slides = [], active, next, prev, setActive, pad }) {
                   className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />
 
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0B1330]/90 via-[#0B1330]/20 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-navy/90 via-navy/20 to-transparent" />
 
                 {/* Number */}
-                <span className="absolute left-1.5 top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-white px-1 text-[9px] font-bold text-[#0B1330] sm:left-3 sm:top-3 sm:h-7 sm:min-w-7 sm:px-1.5 sm:text-[11px]">
+                <span className="absolute left-1.5 top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-white px-1 text-[9px] font-bold text-navy sm:left-3 sm:top-3 sm:h-7 sm:min-w-7 sm:px-1.5 sm:text-[11px]">
                   {pad(i)}
                 </span>
 

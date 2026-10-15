@@ -12,21 +12,21 @@ const variants = {
       "font-semibold text-white/85 hover:-translate-y-0.5 hover:text-white",
 
     button: () =>
-      "border border-white/30 bg-white/10 font-semibold text-white backdrop-blur-md hover:bg-white hover:text-[#0B1330] active:scale-95",
+      "border border-white/30 bg-white/10 font-semibold text-white backdrop-blur-md hover:bg-white hover:text-navy active:scale-95",
   },
 
   // Over white backgrounds
   light: {
     link: ({ isActive }) =>
       isActive
-        ? "border border-[#0B1330] bg-[#0B1330] font-semibold text-white"
-        : "border border-transparent font-medium text-slate-600 hover:bg-slate-100 hover:text-[#0B1330]",
+        ? "border border-navy bg-navy font-semibold text-white"
+        : "border border-transparent font-medium text-slate-600 hover:bg-slate-100 hover:text-ink",
 
     ghost: () =>
-      "font-semibold text-[#0B1330] hover:-translate-y-0.5 hover:text-sky-600",
+      "font-semibold text-ink hover:-translate-y-0.5 hover:text-sky-600",
 
     button: () =>
-      "bg-[#0B1330] font-semibold text-white hover:bg-sky-500 active:scale-95",
+      "bg-navy font-semibold text-white hover:bg-sky-500 active:scale-95",
   },
 };
 

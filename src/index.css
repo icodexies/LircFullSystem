@@ -1,5 +1,208 @@
 @import "tailwindcss";
 
+/* Dark mode is a class on <html> (the theme toggle adds it, a tiny script in
+   index.html applies it before the first paint). The `dark:` variant targets
+   that class instead of the device preference, and never applies inside a
+   `.theme-light` scope (the public pages that keep their designed look). */
+@custom-variant dark (&:where(.dark, .dark *):not(:where(.theme-light, .theme-light *)));
+
+/* Theme tokens. The values here are the light theme; the .dark block below
+   swaps them for the dark theme. Every page uses these through utilities
+   (bg-surface, text-ink, border-navy, …) so the whole app follows the theme
+   without per-page changes. */
+@theme {
+  /* Brand */
+  --color-navy: #0b1330; /* navy surfaces: heroes, primary buttons, active pills */
+  --color-navy-deep: #17214a; /* mid navy used inside gradients */
+  --color-ink: #0b1330; /* navy ink on light surfaces */
+  --color-accent: #3b4a86; /* indigo text and accents */
+  --color-accent-strong: #3b4a86; /* indigo surfaces: buttons, bars, outlines */
+  --color-page: #f7f6fb; /* page background */
+  --color-tint: #f0edfa; /* lavender chips, tiles, skeletons */
+  --color-surface: #ffffff; /* cards, panels, inputs, dialogs */
+  /* Success (jade) */
+  --color-jade: #0f8a6b;
+  --color-jade-deep: #0b6b52;
+  --color-jade-soft: #e7f4ef;
+  --color-jade-line: #bfe3d6;
+}
+
+/* Chart ink for the statistics charts (read through CSS variables so lines,
+   bars and donut segments follow the theme). */
+:root {
+  --chart-1: #0b1330;
+  --chart-2: #3b4a86;
+  --chart-3: #8b93c4;
+  --chart-share-1: #0b1330;
+  --chart-share-2: #3b4a86;
+  --chart-share-3: #5b68a8;
+  --chart-share-4: #7e88c0;
+  --chart-share-5: #a9afd8;
+  --chart-share-6: #c7c3e6;
+  --chart-share-7: #ddd9f2;
+}
+
+/* ---- Dark theme ----------------------------------------------------------
+   Only values change here; the class names across the app stay the same. */
+.dark {
+  color-scheme: dark;
+
+  --color-navy: #1d2750; /* lifted so panels stand out on the dark page */
+  --color-navy-deep: #253163;
+  --color-ink: #eaedf9;
+  --color-accent: #a6b0ea;
+  --color-accent-strong: #5666b8;
+  --color-page: #0a0f21;
+  --color-tint: #1e2749;
+  --color-surface: #141b33;
+  --color-jade: #3bcb9d;
+  --color-jade-deep: #8fe2c4;
+  --color-jade-soft: #113227;
+  --color-jade-line: #2b5a48;
+
+  /* Slate scale, flipped for dark surfaces. */
+  --color-slate-50: #161d38;
+  --color-slate-100: #1c2444;
+  --color-slate-200: #273057;
+  --color-slate-300: #3a4471;
+  --color-slate-400: #7e89b0;
+  --color-slate-500: #9aa4c8;
+  --color-slate-600: #b8c0dd;
+  --color-slate-700: #cdd3ea;
+  --color-slate-800: #e0e4f4;
+  --color-slate-900: #eef1fa;
+  --color-slate-950: #f8f9fe;
+
+  /* Status scales: soft backgrounds and deep texts get dark counterparts. */
+  --color-red-50: #2b161b;
+  --color-red-100: #3b1d24;
+  --color-red-300: #8c4a52;
+  --color-red-500: #f87171;
+  --color-red-600: #f87171;
+  --color-red-700: #fca5a5;
+  --color-red-800: #fecaca;
+  --color-amber-50: #2b2110;
+  --color-amber-100: #3b2f16;
+  --color-amber-200: #57441f;
+  --color-amber-300: #8f7130;
+  --color-amber-400: #d9a23e;
+  --color-amber-500: #f0b429;
+  --color-amber-600: #f5c34d;
+  --color-amber-700: #f7d06e;
+  --color-amber-800: #fadf9b;
+  --color-amber-900: #fcebc0;
+  --color-amber-950: #fef6e0;
+  --color-sky-50: #0b1e2e;
+  --color-sky-300: #7dd3fc;
+  --color-sky-400: #38bdf8;
+  --color-sky-500: #0ea5e9;
+  --color-sky-600: #7dd3fc;
+  --color-sky-700: #bae6fd;
+  --color-rose-50: #2b141d;
+  --color-rose-400: #fb7185;
+  --color-rose-600: #fda4af;
+  --color-rose-700: #fecdd3;
+  --color-blue-50: #0e1c34;
+  --color-blue-300: #93c5fd;
+  --color-blue-600: #93c5fd;
+  --color-blue-700: #bfdbfe;
+
+  /* Chart ink, brightened for the dark surfaces. */
+  --chart-1: #97a5ec;
+  --chart-2: #6d7ed8;
+  --chart-3: #c2bbf0;
+  --chart-share-1: #d8d4f2;
+  --chart-share-2: #bbb5e6;
+  --chart-share-3: #9c9ad6;
+  --chart-share-4: #7f85c4;
+  --chart-share-5: #646dae;
+  --chart-share-6: #4d5896;
+  --chart-share-7: #3a447e;
+}
+
+/* The page behind everything (public pages have no wrapper colour of their
+   own). Kept white in the light theme so nothing changes there. */
+html.dark {
+  background-color: #0a0f21;
+}
+
+/* Public pages (home, register, forgot/reset password) keep their designed
+   look in both themes — dark mode is not appropriate there. This scope
+   re-applies the light values inside the dark document. */
+.theme-light {
+  color-scheme: light;
+  background-color: #ffffff;
+
+  --color-navy: #0b1330;
+  --color-navy-deep: #17214a;
+  --color-ink: #0b1330;
+  --color-accent: #3b4a86;
+  --color-accent-strong: #3b4a86;
+  --color-page: #f7f6fb;
+  --color-tint: #f0edfa;
+  --color-surface: #ffffff;
+  --color-jade: #0f8a6b;
+  --color-jade-deep: #0b6b52;
+  --color-jade-soft: #e7f4ef;
+  --color-jade-line: #bfe3d6;
+
+  --color-slate-50: #f8fafc;
+  --color-slate-100: #f1f5f9;
+  --color-slate-200: #e2e8f0;
+  --color-slate-300: #cbd5e1;
+  --color-slate-400: #94a3b8;
+  --color-slate-500: #64748b;
+  --color-slate-600: #475569;
+  --color-slate-700: #334155;
+  --color-slate-800: #1e293b;
+  --color-slate-900: #0f172a;
+  --color-slate-950: #020617;
+
+  --color-red-50: #fef2f2;
+  --color-red-100: #fee2e2;
+  --color-red-300: #fca5a5;
+  --color-red-500: #ef4444;
+  --color-red-600: #dc2626;
+  --color-red-700: #b91c1c;
+  --color-red-800: #991b1b;
+  --color-amber-50: #fffbeb;
+  --color-amber-100: #fef3c7;
+  --color-amber-200: #fde68a;
+  --color-amber-300: #fcd34d;
+  --color-amber-400: #fbbf24;
+  --color-amber-500: #f59e0b;
+  --color-amber-600: #d97706;
+  --color-amber-700: #b45309;
+  --color-amber-800: #92400e;
+  --color-amber-900: #78350f;
+  --color-amber-950: #451a03;
+  --color-sky-50: #f0f9ff;
+  --color-sky-300: #7dd3fc;
+  --color-sky-400: #38bdf8;
+  --color-sky-500: #0ea5e9;
+  --color-sky-600: #0284c7;
+  --color-sky-700: #0369a1;
+  --color-rose-50: #fff1f2;
+  --color-rose-400: #fb7185;
+  --color-rose-600: #e11d48;
+  --color-rose-700: #be123c;
+  --color-blue-50: #eff6ff;
+  --color-blue-300: #93c5fd;
+  --color-blue-600: #2563eb;
+  --color-blue-700: #1d4ed8;
+
+  --chart-1: #0b1330;
+  --chart-2: #3b4a86;
+  --chart-3: #8b93c4;
+  --chart-share-1: #0b1330;
+  --chart-share-2: #3b4a86;
+  --chart-share-3: #5b68a8;
+  --chart-share-4: #7e88c0;
+  --chart-share-5: #a9afd8;
+  --chart-share-6: #c7c3e6;
+  --chart-share-7: #ddd9f2;
+}
+
 * {
   box-sizing: border-box;
 }

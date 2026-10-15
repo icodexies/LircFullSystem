@@ -77,7 +77,7 @@ export default function MemberRequestModal({
     <div className="space-y-5 p-6">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
-          <p className="text-sm font-semibold text-[#0B1330]">
+          <p className="text-sm font-semibold text-ink">
             {request.member} · {request.member_card}
           </p>
           <p className="mt-0.5 text-xs text-slate-500">
@@ -105,7 +105,7 @@ export default function MemberRequestModal({
                   {displayValue(options, key, request.previous_values?.[key])}
                 </span>
                 <span className="mx-2 text-slate-400">→</span>
-                <strong className="text-[#0B1330]">
+                <strong className="text-ink">
                   {displayValue(options, key, value)}
                 </strong>
               </span>
@@ -118,7 +118,7 @@ export default function MemberRequestModal({
           Reviewed by {request.reviewed_by} · {displayTime(request.reviewed_at)}
         </p>
       )}
-      <div className="sticky bottom-0 -mx-6 -mb-6 flex flex-wrap items-center justify-end gap-3 border-t border-slate-200 bg-gradient-to-r from-[#F7F6FB] to-white px-6 py-4">
+      <div className="sticky bottom-0 -mx-6 -mb-6 flex flex-wrap items-center justify-end gap-3 border-t border-slate-200 bg-gradient-to-r from-page to-surface px-6 py-4">
         <button type="button" onClick={onClose} className={secondaryButton}>
           Close
         </button>

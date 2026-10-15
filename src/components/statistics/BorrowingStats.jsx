@@ -82,7 +82,7 @@ export default function BorrowingStats({ semesterId, semesterLabel }) {
         chip={monthsChip}
       >
         <div className="p-5 sm:p-6">
-          <div className="rounded-xl bg-[#F7F6FB] p-4">
+          <div className="rounded-xl bg-page p-4">
             <LineChart
               labels={labels}
               series={[

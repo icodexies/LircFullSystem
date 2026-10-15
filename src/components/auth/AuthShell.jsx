@@ -21,7 +21,7 @@ export const inputWrap =
 export const inputCls =
   "w-full bg-transparent text-[13px] text-white placeholder:text-white/35 focus:outline-none";
 export const glassButton =
-  "inline-flex w-full items-center justify-center gap-2 rounded-lg bg-white py-2.5 text-[13px] font-medium text-[#0B1330] transition hover:bg-[#E8EEFF] disabled:opacity-60";
+  "inline-flex w-full items-center justify-center gap-2 rounded-lg bg-white py-2.5 text-[13px] font-medium text-navy transition hover:bg-[#E8EEFF] disabled:opacity-60";
 
 export function Field({ label, className = "", children }) {
   return (
@@ -108,11 +108,11 @@ const Instagram = () => (
 
 export default function AuthShell({ onLogin, children }) {
   return (
-    <main className="relative h-[100dvh] w-full overflow-hidden bg-[#060A1C] p-3 sm:p-5">
+    <main className="theme-light relative h-[100dvh] w-full overflow-hidden bg-[#060A1C] p-3 sm:p-5">
       <BlurredBackdrop />
 
       {/* glass frame — fills the viewport, never taller than it */}
-      <div className="relative mx-auto flex h-full max-w-6xl flex-col overflow-hidden rounded-3xl border border-white/30 bg-gradient-to-br from-[#0B1330] via-[#1B2760] to-[#2A3A7A] shadow-[0_20px_80px_rgba(0,0,0,0.45)]">
+      <div className="relative mx-auto flex h-full max-w-6xl flex-col overflow-hidden rounded-3xl border border-white/30 bg-gradient-to-br from-navy via-[#1B2760] to-[#2A3A7A] shadow-[0_20px_80px_rgba(0,0,0,0.45)]">
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_72%_42%,rgba(108,127,216,0.55),transparent_55%)]"

@@ -11,7 +11,7 @@ import { SkeletonCards } from "../../../components/ui/Skeleton.jsx";
 
 const INITIAL_FILTERS = { formatId: "", shelfId: "", year: "" };
 const control =
-  "w-full rounded-xl border border-slate-400 bg-white px-3 py-2.5 text-xs text-[#0B1330] placeholder:text-slate-500 focus:border-[#3B4A86] focus:outline-none focus:ring-2 focus:ring-[#3B4A86]/15 disabled:opacity-50";
+  "w-full rounded-xl border border-slate-400 bg-surface px-3 py-2.5 text-xs text-ink placeholder:text-slate-500 focus:border-accent-strong focus:outline-none focus:ring-2 focus:ring-accent-strong/15 disabled:opacity-50";
 const labelText = "mb-1.5 block text-[11px] font-semibold text-slate-600";
 const dots = {
   backgroundImage: "radial-gradient(#fff 1px, transparent 1px)",
@@ -58,7 +58,7 @@ export default function OPAC() {
   return (
     <>
       {/* Hero: title + search (one navy block per page) */}
-      <section className="relative overflow-hidden rounded-2xl bg-[#0B1330] px-5 py-6 sm:px-8 sm:py-8">
+      <section className="relative overflow-hidden rounded-2xl bg-navy px-5 py-6 sm:px-8 sm:py-8">
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 opacity-[0.16]"
@@ -108,7 +108,7 @@ export default function OPAC() {
             <label className="relative flex-1">
               <span className="sr-only">Search catalog</span>
               <svg
-                className="absolute left-3.5 top-3.5 h-4 w-4 text-[#3B4A86]"
+                className="absolute left-3.5 top-3.5 h-4 w-4 text-accent"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -133,14 +133,14 @@ export default function OPAC() {
 
       {/* Filters */}
       <form
-        className="mt-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-[0_1px_2px_rgba(11,19,48,0.05)] sm:p-5"
+        className="mt-6 rounded-2xl border border-slate-200 bg-surface p-4 shadow-[0_1px_2px_rgba(11,19,48,0.05)] sm:p-5"
         onSubmit={(event) => {
           event.preventDefault();
           catalog.applyFilters(filters);
         }}
       >
         <div className="mb-4 flex items-center gap-2">
-          <span className="grid h-7 w-7 place-items-center rounded-lg bg-[#F0EDFA] text-[#3B4A86]">
+          <span className="grid h-7 w-7 place-items-center rounded-lg bg-tint text-accent">
             <svg
               viewBox="0 0 24 24"
               fill="none"
@@ -154,7 +154,7 @@ export default function OPAC() {
               <circle cx="8" cy="17" r="2" />
             </svg>
           </span>
-          <h2 className="text-sm font-semibold text-[#0B1330]">
+          <h2 className="text-sm font-semibold text-ink">
             Refine results
           </h2>
         </div>
@@ -215,13 +215,13 @@ export default function OPAC() {
             <button
               type="button"
               onClick={reset}
-              className="text-xs font-semibold text-slate-500 hover:text-[#0B1330]"
+              className="text-xs font-semibold text-slate-500 hover:text-ink"
             >
               Clear filters
             </button>
             <button
               type="submit"
-              className="rounded-xl bg-[#0B1330] px-4 py-2.5 text-xs font-semibold text-white hover:bg-[#3B4A86] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3B4A86]"
+              className="rounded-xl bg-navy px-4 py-2.5 text-xs font-semibold text-white hover:bg-accent-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-strong"
             >
               Apply filters
             </button>
@@ -246,8 +246,8 @@ export default function OPAC() {
               catalog.error
                 ? "bg-red-500"
                 : busy
-                  ? "animate-pulse bg-[#3B4A86]/50"
-                  : "bg-[#0B1330]"
+                  ? "animate-pulse bg-accent-strong/50"
+                  : "bg-navy"
             }`}
           />
           {busy
@@ -276,7 +276,7 @@ export default function OPAC() {
             type="button"
             onClick={() => catalog.refresh()}
             disabled={busy}
-            className="rounded-xl border border-slate-400 bg-slate-100 px-3 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-200 hover:text-[#0B1330] disabled:opacity-40"
+            className="rounded-xl border border-slate-400 bg-slate-100 px-3 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-200 hover:text-ink disabled:opacity-40"
           >
             Refresh
           </button>
@@ -299,14 +299,14 @@ export default function OPAC() {
             <button
               type="button"
               onClick={catalog.refresh}
-              className="mt-4 rounded-lg border border-red-300 bg-white px-4 py-2 text-xs font-semibold text-red-800 hover:bg-red-100"
+              className="mt-4 rounded-lg border border-red-300 bg-surface px-4 py-2 text-xs font-semibold text-red-800 hover:bg-red-100"
             >
               Try again
             </button>
           </div>
         ) : catalog.books.length === 0 ? (
-          <div className="flex min-h-60 flex-col items-center justify-center rounded-2xl border border-dashed border-slate-200 bg-[#F7F6FB]/60 px-5 text-center">
-            <span className="grid h-12 w-12 place-items-center rounded-full bg-[#F0EDFA] text-[#3B4A86]">
+          <div className="flex min-h-60 flex-col items-center justify-center rounded-2xl border border-dashed border-slate-200 bg-page/60 px-5 text-center">
+            <span className="grid h-12 w-12 place-items-center rounded-full bg-tint text-accent">
               <svg
                 viewBox="0 0 24 24"
                 fill="none"
@@ -318,7 +318,7 @@ export default function OPAC() {
                 <path d="M5 4h10a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3V4Z M5 17a3 3 0 0 1 3-3h10 M9 8h5" />
               </svg>
             </span>
-            <h2 className="mt-4 font-serif text-xl font-bold text-[#0B1330]">
+            <h2 className="mt-4 font-serif text-xl font-bold text-ink">
               No books found
             </h2>
             <p className="mt-2 max-w-sm text-sm text-slate-500">
@@ -328,7 +328,7 @@ export default function OPAC() {
             <button
               type="button"
               onClick={reset}
-              className="mt-4 rounded-xl border border-[#3B4A86]/40 bg-white px-4 py-2 text-xs font-semibold text-[#3B4A86] hover:bg-[#F0EDFA]"
+              className="mt-4 rounded-xl border border-accent-strong/40 bg-surface px-4 py-2 text-xs font-semibold text-accent hover:bg-tint"
             >
               Clear search and filters
             </button>
@@ -338,11 +338,11 @@ export default function OPAC() {
             {catalog.books.map((book) => (
               <li
                 key={book.id}
-                className="relative flex min-w-0 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 pt-5 shadow-[0_1px_2px_rgba(11,19,48,0.05)] transition-colors [contain-intrinsic-size:auto_260px] [content-visibility:auto] hover:border-[#3B4A86]/40"
+                className="relative flex min-w-0 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-surface p-4 pt-5 shadow-[0_1px_2px_rgba(11,19,48,0.05)] transition-colors [contain-intrinsic-size:auto_260px] [content-visibility:auto] hover:border-accent-strong/40"
               >
                 <span
                   aria-hidden="true"
-                  className="absolute left-0 top-0 h-[3px] w-14 bg-[#0B1330]"
+                  className="absolute left-0 top-0 h-[3px] w-14 bg-navy"
                 />
                 <div className="flex min-w-0 gap-3 sm:gap-4">
                   <BookCover
@@ -350,10 +350,10 @@ export default function OPAC() {
                     className="h-28 w-20 shadow-sm sm:h-32 sm:w-24"
                   />
                   <div className="min-w-0 flex-1">
-                    <span className="inline-flex max-w-full truncate rounded-full bg-[#F0EDFA] px-2.5 py-0.5 text-[10px] font-semibold text-[#3B4A86]">
+                    <span className="inline-flex max-w-full truncate rounded-full bg-tint px-2.5 py-0.5 text-[10px] font-semibold text-accent">
                       {book.format?.name || "Unspecified format"}
                     </span>
-                    <h3 className="mt-2 line-clamp-3 break-words font-serif text-base font-bold leading-snug text-[#0B1330] sm:text-lg">
+                    <h3 className="mt-2 line-clamp-3 break-words font-serif text-base font-bold leading-snug text-ink sm:text-lg">
                       {book.book_name}
                     </h3>
                     <p className="mt-1.5 line-clamp-2 text-xs text-slate-500">
@@ -364,20 +364,20 @@ export default function OPAC() {
                 <dl className="mt-4 grid flex-1 grid-cols-2 gap-x-3 gap-y-2.5 break-words border-t border-slate-100 pt-3">
                   <div className="col-span-2">
                     <dt className="text-[10px] text-slate-400">Section</dt>
-                    <dd className="line-clamp-2 text-xs font-medium text-[#0B1330]/85">
+                    <dd className="line-clamp-2 text-xs font-medium text-ink/85">
                       {book.section?.name || "Not recorded"}
                     </dd>
                   </div>
                   <div>
                     <dt className="text-[10px] text-slate-400">Published</dt>
-                    <dd className="text-xs font-medium text-[#0B1330]/85">
+                    <dd className="text-xs font-medium text-ink/85">
                       {book.publish_year || "Not recorded"}
                       {book.edition ? ` · ${book.edition}` : ""}
                     </dd>
                   </div>
                   <div>
                     <dt className="text-[10px] text-slate-400">Call number</dt>
-                    <dd className="text-xs font-medium text-[#0B1330]/85">
+                    <dd className="text-xs font-medium text-ink/85">
                       {book.call_number || "Not recorded"}
                     </dd>
                   </div>
@@ -385,7 +385,7 @@ export default function OPAC() {
                 <button
                   type="button"
                   onClick={() => setSelection({ id: book.id })}
-                  className="mt-4 flex items-center justify-between rounded-xl border border-[#0B1330]/15 px-3 py-2.5 text-xs font-semibold text-[#0B1330] hover:border-[#0B1330] hover:bg-[#0B1330] hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3B4A86]"
+                  className="mt-4 flex items-center justify-between rounded-xl border border-navy/15 px-3 py-2.5 text-xs font-semibold text-ink hover:border-navy hover:bg-navy hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-strong"
                 >
                   <span>
                     View details
@@ -441,13 +441,13 @@ export default function OPAC() {
             type="button"
             disabled={busy || catalog.query.page === 1}
             onClick={() => catalog.setPage(catalog.query.page - 1)}
-            className="rounded-xl border border-slate-400 bg-slate-100 px-3.5 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-200 hover:text-[#0B1330] disabled:opacity-40"
+            className="rounded-xl border border-slate-400 bg-slate-100 px-3.5 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-200 hover:text-ink disabled:opacity-40"
           >
             Previous
           </button>
           <span
             aria-current="page"
-            className="grid h-9 min-w-9 place-items-center rounded-xl bg-[#0B1330] px-3 text-xs font-semibold text-white"
+            className="grid h-9 min-w-9 place-items-center rounded-xl bg-navy px-3 text-xs font-semibold text-white"
           >
             {catalog.query.page}
           </span>
@@ -455,7 +455,7 @@ export default function OPAC() {
             type="button"
             disabled={busy || !catalog.hasNext}
             onClick={() => catalog.setPage(catalog.query.page + 1)}
-            className="rounded-xl border border-slate-400 bg-slate-100 px-3.5 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-200 hover:text-[#0B1330] disabled:opacity-40"
+            className="rounded-xl border border-slate-400 bg-slate-100 px-3.5 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-200 hover:text-ink disabled:opacity-40"
           >
             Next
           </button>

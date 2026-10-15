@@ -43,7 +43,7 @@ export default function LineChart({ labels, series, unit = "" }) {
         {active !== null && (
           <div
             role="status"
-            className="pointer-events-none absolute z-10 -translate-x-1/2 rounded-lg bg-[#0B1330] px-3 py-2 shadow-[0_4px_12px_rgba(11,19,48,0.25)]"
+            className="pointer-events-none absolute z-10 -translate-x-1/2 rounded-lg bg-navy px-3 py-2 shadow-[0_4px_12px_rgba(11,19,48,0.25)]"
             style={{
               left: `${Math.min(88, Math.max(12, (x(active) / W) * 100))}%`,
               bottom: `calc(${(1 - y(Math.max(...series.map((line) => line.values[active]))) / H) * 100}% + 12px)`,
@@ -82,7 +82,7 @@ export default function LineChart({ labels, series, unit = "" }) {
                 x2={W - PAD.right}
                 y1={y(tick)}
                 y2={y(tick)}
-                stroke="#E2E8F0"
+                className="stroke-slate-200"
                 strokeWidth="1"
               />
               <text
@@ -102,7 +102,7 @@ export default function LineChart({ labels, series, unit = "" }) {
               key={line.key}
               points={line.values.map((value, index) => `${x(index)},${y(value)}`).join(" ")}
               fill="none"
-              stroke={line.color}
+              style={{ stroke: line.color }}
               strokeWidth="2.5"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -115,7 +115,7 @@ export default function LineChart({ labels, series, unit = "" }) {
               x2={x(active)}
               y1={PAD.top}
               y2={H - PAD.bottom}
-              stroke="#94A3B8"
+              className="stroke-slate-400"
               strokeWidth="1"
               strokeDasharray="3 3"
             />
@@ -128,8 +128,8 @@ export default function LineChart({ labels, series, unit = "" }) {
                 cx={x(active)}
                 cy={y(line.values[active])}
                 r="4"
-                fill={line.color}
-                stroke="#FFFFFF"
+                style={{ fill: line.color }}
+                className="stroke-surface"
                 strokeWidth="2"
               />
             ))}

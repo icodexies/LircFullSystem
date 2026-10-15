@@ -52,7 +52,7 @@ export default function CoverUpload({ onChange, onBusy }) {
     onBusy(false);
   }
   return (
-    <div className="rounded-xl border border-dashed border-[#3B4A86]/30 bg-[#F7F6FB] p-4">
+    <div className="rounded-xl border border-dashed border-accent-strong/30 bg-page p-4">
       <label className="block text-xs font-medium text-slate-600">
         Upload a book cover
         <input
@@ -60,7 +60,7 @@ export default function CoverUpload({ onChange, onBusy }) {
           accept="image/jpeg,image/png,image/webp"
           disabled={preparing}
           onChange={choose}
-          className="mt-3 block w-full text-xs file:mr-3 file:rounded-lg file:border-0 file:bg-[#0B1330] file:px-3 file:py-2 file:text-white"
+          className="mt-3 block w-full text-xs file:mr-3 file:rounded-lg file:border-0 file:bg-navy file:px-3 file:py-2 file:text-white"
         />
       </label>
       <p className="mt-2 text-xs text-slate-500">
@@ -85,7 +85,7 @@ export default function CoverUpload({ onChange, onBusy }) {
             <button
               type="button"
               onClick={clear}
-              className="mt-2 font-semibold text-[#3B4A86]"
+              className="mt-2 font-semibold text-accent"
             >
               Remove selected upload
             </button>

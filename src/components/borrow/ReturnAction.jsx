@@ -53,18 +53,18 @@ export default function ReturnAction({ loan, onDone, onCancel }) {
       <div className="flex flex-wrap items-center justify-between gap-2">
         <button
           type="button"
-          className="text-xs font-semibold text-[#3B4A86] hover:underline"
+          className="text-xs font-semibold text-accent hover:underline"
           onClick={onCancel}
         >
           ← Back to copies
         </button>
         <p className="text-xs text-slate-500">
-          Copy <strong className="text-[#0B1330]">{loan.accession_number}</strong>
+          Copy <strong className="text-ink">{loan.accession_number}</strong>
         </p>
       </div>
 
-      <div className="rounded-xl bg-[#F7F6FB] p-4">
-        <p className="text-sm font-semibold text-[#0B1330]">
+      <div className="rounded-xl bg-page p-4">
+        <p className="text-sm font-semibold text-ink">
           Borrowed by {loan.holder} · {loan.library_id}
         </p>
         <p className="mt-0.5 text-xs text-slate-500">
@@ -107,7 +107,7 @@ export default function ReturnAction({ loan, onDone, onCancel }) {
         borrow date.
       </p>
 
-      <div className="sticky bottom-0 -mx-5 -mb-5 flex flex-wrap items-center justify-end gap-3 border-t border-slate-200 bg-gradient-to-r from-[#F7F6FB] to-white px-5 py-4 sm:-mx-6 sm:-mb-6 sm:px-6">
+      <div className="sticky bottom-0 -mx-5 -mb-5 flex flex-wrap items-center justify-end gap-3 border-t border-slate-200 bg-gradient-to-r from-page to-surface px-5 py-4 sm:-mx-6 sm:-mb-6 sm:px-6">
         <button
           type="button"
           disabled={busy}

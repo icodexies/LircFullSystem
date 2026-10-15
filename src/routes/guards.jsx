@@ -24,7 +24,7 @@ function ProfileUnavailable({ message, logout }) {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#F7F4FF] px-6 text-[#0B1330]">
+    <div className="flex min-h-screen items-center justify-center bg-page px-6 text-ink">
       <div className="max-w-sm text-center">
         <p role="alert" className="text-sm font-semibold">{message}</p>
         <div className="mt-4 flex justify-center gap-4 text-sm underline">

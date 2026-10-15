@@ -36,7 +36,7 @@ export function LoadingBlock({
   return (
     <div
       role="status"
-      className={`flex w-full flex-col items-center justify-center gap-3 text-[#3B4A86] ${className}`}
+      className={`flex w-full flex-col items-center justify-center gap-3 text-accent ${className}`}
     >
       <Spinner />
       <p className="text-xs font-medium text-slate-500">{label}</p>
@@ -66,7 +66,7 @@ export function LoadingScreen({ label = "Loading…" }) {
       role="status"
       aria-live="polite"
       aria-busy="true"
-      className="fixed inset-0 z-[200] flex cursor-wait select-none flex-col items-center justify-center gap-4 bg-white/90 text-[#0B1330] outline-none backdrop-blur-sm"
+      className="fixed inset-0 z-[200] flex cursor-wait select-none flex-col items-center justify-center gap-4 bg-surface/90 text-ink outline-none backdrop-blur-sm"
     >
       <Spinner size="lg" />
       <p className="text-sm font-semibold">{label}</p>

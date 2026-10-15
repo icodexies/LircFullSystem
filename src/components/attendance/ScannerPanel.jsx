@@ -34,7 +34,7 @@ import { Spinner } from "../ui/Loading.jsx";
 const DEFAULT_PURPOSE = "Study";
 
 const TONES = {
-  success: "bg-[#E7F4EF] text-[#0B6B52]",
+  success: "bg-jade-soft text-jade-deep",
   warning: "bg-amber-50 text-amber-900",
   error: "bg-red-50 text-red-700",
 };
@@ -258,10 +258,10 @@ export default function ScannerPanel({ onChanged, onClose, onBusy }) {
                 setPurpose(value);
                 input.current?.focus();
               }}
-              className={`inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3B4A86] disabled:opacity-60 ${
+              className={`inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-strong disabled:opacity-60 ${
                 purpose === value
-                  ? "bg-[#0B1330] text-white shadow-sm"
-                  : "border border-slate-400 bg-slate-100 text-slate-700 hover:bg-slate-200 hover:text-[#0B1330]"
+                  ? "bg-navy text-white shadow-sm"
+                  : "border border-slate-400 bg-slate-100 text-slate-700 hover:bg-slate-200 hover:text-ink"
               }`}
             >
               {value}
@@ -382,7 +382,7 @@ export default function ScannerPanel({ onChanged, onClose, onBusy }) {
           type="checkbox"
           checked={tabTerminator}
           onChange={(event) => setTabTerminator(event.target.checked)}
-          className="h-3.5 w-3.5 accent-[#0B1330]"
+          className="h-3.5 w-3.5 accent-ink"
         />
         This scanner uses Tab as terminator
       </label>
@@ -411,7 +411,7 @@ export default function ScannerPanel({ onChanged, onClose, onBusy }) {
         without touching anything else. Guests without a card use GUEST-01 to
         GUEST-10 — the panel asks for their name.
       </p>
-      <div className="sticky bottom-0 -mx-6 -mb-6 flex flex-wrap items-center justify-end gap-3 border-t border-slate-200 bg-gradient-to-r from-[#F7F6FB] to-white px-6 py-4">
+      <div className="sticky bottom-0 -mx-6 -mb-6 flex flex-wrap items-center justify-end gap-3 border-t border-slate-200 bg-gradient-to-r from-page to-surface px-6 py-4">
         <button
           type="button"
           disabled={busy}

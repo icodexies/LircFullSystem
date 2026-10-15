@@ -105,7 +105,7 @@ function buildCards(data) {
       value: number(borrowing.total),
       description: `Loans that started this semester — ${number(borrowing.open)} still out, ${number(borrowing.overdue)} overdue.`,
       icon: ICONS.out,
-      gradient: "from-[#0B1330] to-[#3B4A86]",
+      gradient: "from-navy to-accent-strong",
       badge: percent(borrowing.returned, borrowing.total),
     },
     {
@@ -116,7 +116,7 @@ function buildCards(data) {
         ? `${number(attendance.unique_visitors)} unique visitors in ${semester}.`
         : "No active semester is set in Academic periods.",
       icon: ICONS.activity,
-      gradient: "from-[#3B4A86] to-[#0B1330]",
+      gradient: "from-accent-strong to-navy",
     },
     {
       key: "borrowers",
@@ -124,7 +124,7 @@ function buildCards(data) {
       value: number(borrowers.borrowers),
       description: `${number(borrowers.loans)} loans this semester — ${borrowers.avg_loans ?? "—"} per borrower on average.`,
       icon: ICONS.person,
-      gradient: "from-[#17214A] to-[#0B1330]",
+      gradient: "from-navy-deep to-navy",
       badge: percent(borrowers.repeat, borrowers.borrowers),
       hint: "View borrower statistics →",
     },
@@ -134,7 +134,7 @@ function buildCards(data) {
       value: number(catalog.titles),
       description: `${number(catalog.copies)} physical copies — ${number(catalog.available)} ready to borrow.`,
       icon: ICONS.book,
-      gradient: "from-[#17214A] to-[#3B4A86]",
+      gradient: "from-navy-deep to-accent-strong",
       badge: percent(catalog.available, catalog.copies),
     },
     {
@@ -143,7 +143,7 @@ function buildCards(data) {
       value: number(members.active),
       description: `Visited or borrowed this semester · ${number(members.total)} members on record.`,
       icon: ICONS.users,
-      gradient: "from-[#3B4A86] to-[#17214A]",
+      gradient: "from-accent-strong to-navy-deep",
     },
     {
       key: "validation",
@@ -254,21 +254,21 @@ export default function Statistics() {
 
       {view ? (
         <div className="space-y-6">
-          <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#3B4A86]/10 bg-[#F0EDFA]/60 px-5 py-4">
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-accent-strong/10 bg-tint/60 px-5 py-4">
             <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
               <button
                 type="button"
-                className="text-xs font-semibold text-[#3B4A86] hover:underline"
+                className="text-xs font-semibold text-accent hover:underline"
                 onClick={() => setView(null)}
               >
                 ← All statistics
               </button>
-              <h2 className="font-serif text-xl font-bold tracking-tight text-[#0B1330]">
+              <h2 className="font-serif text-xl font-bold tracking-tight text-ink">
                 {VIEW_TITLES[view]}
               </h2>
             </div>
             {semesterLabel && (
-              <span className="rounded-full bg-white px-3 py-1 text-[10px] font-semibold text-[#3B4A86] ring-1 ring-[#3B4A86]/15">
+              <span className="rounded-full bg-surface px-3 py-1 text-[10px] font-semibold text-accent ring-1 ring-accent-strong/15">
                 {semesterLabel}
               </span>
             )}

@@ -20,11 +20,11 @@ import EmptyState from "./EmptyState.jsx";
 import { Spinner } from "../ui/Loading.jsx";
 
 const SOURCE_TONES = {
-  app: "bg-[#E7F4EF] text-[#0B6B52]",
+  app: "bg-jade-soft text-jade-deep",
   auto: "bg-slate-100 text-slate-600",
   direct_table: "bg-amber-50 text-amber-800",
   migration: "bg-slate-100 text-slate-600",
-  import: "bg-[#F0EDFA] text-[#3B4A86]",
+  import: "bg-tint text-accent",
   system: "bg-slate-100 text-slate-600",
 };
 
@@ -49,7 +49,7 @@ export default function ActivityFeed({ pageSize = 10 }) {
   });
 
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_1px_2px_rgba(11,19,48,0.05)] sm:p-6">
+    <section className="rounded-2xl border border-slate-200 bg-surface p-5 shadow-[0_1px_2px_rgba(11,19,48,0.05)] sm:p-6">
       <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 className={sectionHeadingClass}>
@@ -74,9 +74,9 @@ export default function ActivityFeed({ pageSize = 10 }) {
               title={item.description}
               aria-pressed={filter === item.id}
               onClick={() => setFilter(item.id)}
-              className={`rounded-full px-3 py-1.5 text-[11px] font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3B4A86] ${
+              className={`rounded-full px-3 py-1.5 text-[11px] font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-strong ${
                 filter === item.id
-                  ? "bg-[#0B1330] text-white"
+                  ? "bg-navy text-white"
                   : "border border-slate-400 bg-slate-100 text-slate-700 hover:bg-slate-200"
               }`}
             >
@@ -112,7 +112,7 @@ export default function ActivityFeed({ pageSize = 10 }) {
                   className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1.5 py-3"
                 >
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm leading-snug text-[#0B1330]">
+                    <p className="text-sm leading-snug text-ink">
                       {row.description}
                     </p>
                     <p className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[11px] text-slate-500">
@@ -127,7 +127,7 @@ export default function ActivityFeed({ pageSize = 10 }) {
                   {route && (
                     <Link
                       to={route}
-                      className="shrink-0 text-[11px] font-semibold text-[#3B4A86] hover:underline"
+                      className="shrink-0 text-[11px] font-semibold text-accent hover:underline"
                     >
                       Open record
                     </Link>

@@ -76,7 +76,7 @@ function SidebarContent({
   /* ---------------- collapsed (icon-only rail) ---------------- */
   if (collapsed) {
     return (
-      <div className="flex h-full w-[72px] flex-col bg-gradient-to-b from-[#0B1330] to-[#101A3E] text-white shadow-[inset_-1px_0_0_rgba(56,189,248,0.10)]">
+      <div className="flex h-full w-[72px] flex-col bg-gradient-to-b from-navy to-[#101A3E] text-white shadow-[inset_-1px_0_0_rgba(56,189,248,0.10)]">
         <div className="flex flex-col items-center gap-2 px-3 pb-3 pt-5">
           <Link
             to="/dashboard"
@@ -141,7 +141,7 @@ function SidebarContent({
   })).filter((quick) => quick.page);
 
   return (
-    <div className="flex h-full flex-col bg-gradient-to-b from-[#0B1330] to-[#101A3E] text-white shadow-[inset_-1px_0_0_rgba(56,189,248,0.10)]">
+    <div className="flex h-full flex-col bg-gradient-to-b from-navy to-[#101A3E] text-white shadow-[inset_-1px_0_0_rgba(56,189,248,0.10)]">
       <div className="flex items-start justify-between gap-2 px-4 pb-3 pt-5">
         <Link
           to="/dashboard"
@@ -355,7 +355,7 @@ export default function MemberSidebar({
         onClick={(event) => {
           if (event.target === event.currentTarget) closeMenu();
         }}
-        className="fixed inset-y-0 left-0 m-0 h-dvh max-h-none w-72 max-w-[85vw] border-0 p-0 shadow-2xl backdrop:bg-[#0B1330]/60 backdrop:backdrop-blur-sm lg:hidden"
+        className="fixed inset-y-0 left-0 m-0 h-dvh max-h-none w-72 max-w-[85vw] border-0 p-0 shadow-2xl backdrop:bg-navy/60 backdrop:backdrop-blur-sm lg:hidden"
       >
         <SidebarContent
           role={role}

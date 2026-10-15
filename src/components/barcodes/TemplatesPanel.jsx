@@ -139,7 +139,7 @@ export default function TemplatesPanel({ queuedCount, onCreated }) {
               >
                 <div className="min-w-0">
                   <p
-                    className="truncate text-sm font-semibold text-[#0B1330]"
+                    className="truncate text-sm font-semibold text-ink"
                     title={template.name}
                   >
                     {template.name}
@@ -183,7 +183,7 @@ export default function TemplatesPanel({ queuedCount, onCreated }) {
           </button>
           <span
             aria-current="page"
-            className="grid h-9 min-w-9 place-items-center rounded-xl bg-[#0B1330] px-3 text-xs font-semibold text-white"
+            className="grid h-9 min-w-9 place-items-center rounded-xl bg-navy px-3 text-xs font-semibold text-white"
           >
             {page}
           </span>

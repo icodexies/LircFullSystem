@@ -61,7 +61,7 @@ export default function PeriodForm({
   }
   return (
     <form onSubmit={save} className="space-y-5 p-6">
-      <p className="rounded-xl bg-[#F7F6FB] px-4 py-3 text-xs leading-relaxed text-slate-500">
+      <p className="rounded-xl bg-page px-4 py-3 text-xs leading-relaxed text-slate-500">
         {semester
           ? "Use the official semester name and school dates. Saving does not activate this semester."
           : "Set the school calendar for this academic year. Both semesters must fit within these dates."}
@@ -142,7 +142,7 @@ export default function PeriodForm({
             : "The start year cannot change. Calendar dates must contain every semester in this academic year."
           : "Check the official school calendar before saving."}
       </p>
-      <div className="sticky bottom-0 -mx-6 -mb-6 flex flex-wrap items-center justify-end gap-3 border-t border-slate-200 bg-gradient-to-r from-[#F7F6FB] to-white px-6 py-4">
+      <div className="sticky bottom-0 -mx-6 -mb-6 flex flex-wrap items-center justify-end gap-3 border-t border-slate-200 bg-gradient-to-r from-page to-surface px-6 py-4">
         <button
           type="button"
           disabled={busy}

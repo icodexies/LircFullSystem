@@ -82,7 +82,7 @@ export default function ReportFilters({ kind, form, setForm }) {
     <section className="border-b border-slate-100 bg-slate-50/60 px-5 py-5 sm:px-6">
       <button
         type="button"
-        className="mb-3 text-[11px] font-medium text-[#3B4A86] hover:underline"
+        className="mb-3 text-[11px] font-medium text-accent hover:underline"
         onClick={() =>
           dialog.notify({
             title: "How filters work",
@@ -148,8 +148,8 @@ export default function ReportFilters({ kind, form, setForm }) {
           </select>
         </Field>
       </div>
-      <details className="mt-4 rounded-xl border border-slate-300 bg-white px-4 py-3">
-        <summary className="cursor-pointer text-xs font-semibold text-slate-700 hover:text-[#0B1330]">
+      <details className="mt-4 rounded-xl border border-slate-300 bg-surface px-4 py-3">
+        <summary className="cursor-pointer text-xs font-semibold text-slate-700 hover:text-ink">
           Advanced filters
         </summary>
         <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
@@ -215,14 +215,14 @@ export default function ReportFilters({ kind, form, setForm }) {
             type="button"
             key={key}
             onClick={() => change(key, "")}
-            className="rounded-full border border-[#3B4A86]/10 bg-[#F0EDFA] px-3 py-1 text-[11px] text-[#3B4A86]"
+            className="rounded-full border border-accent-strong/10 bg-tint px-3 py-1 text-[11px] text-accent"
           >
             {chipLabel(key)}: {chipValue(key, value)} ×
           </button>
         ))}
         <button
           type="button"
-          className="text-[11px] font-medium text-[#3B4A86] hover:underline"
+          className="text-[11px] font-medium text-accent hover:underline"
           onClick={() => setForm({})}
         >
           Reset
@@ -231,7 +231,7 @@ export default function ReportFilters({ kind, form, setForm }) {
           <>
             <button
               type="button"
-              className="text-[11px] font-medium text-[#3B4A86] hover:underline"
+              className="text-[11px] font-medium text-accent hover:underline"
               title="Show visits whose date is today (Philippine time). Your other filters stay."
               onClick={() =>
                 setForm((current) => ({
@@ -245,7 +245,7 @@ export default function ReportFilters({ kind, form, setForm }) {
             </button>
             <button
               type="button"
-              className="text-[11px] font-medium text-[#3B4A86] hover:underline"
+              className="text-[11px] font-medium text-accent hover:underline"
               title="Show the whole selected semester (its start and end dates). Your other filters stay."
               onClick={() =>
                 setForm((current) => ({

@@ -16,7 +16,7 @@ export default function SemesterSelector() {
           onChange={(event) =>
             periods.setSelectedSemesterId(event.target.value)
           }
-          className="max-w-full rounded-xl border border-slate-400 bg-white px-3 py-2 text-xs text-[#0B1330] focus:border-[#3B4A86] focus:outline-none focus:ring-2 focus:ring-[#3B4A86]/15"
+          className="max-w-full rounded-xl border border-slate-400 bg-surface px-3 py-2 text-xs text-ink focus:border-accent-strong focus:outline-none focus:ring-2 focus:ring-accent-strong/15"
         >
           {!periods.selectedSemesterId && (
             <option value="">

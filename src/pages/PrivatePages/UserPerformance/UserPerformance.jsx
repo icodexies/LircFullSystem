@@ -72,7 +72,7 @@ export default function UserPerformance() {
                 className="h-12 w-12"
               />
               <p className="text-xs text-slate-500">
-                <span className="font-semibold text-[#0B1330]">
+                <span className="font-semibold text-ink">
                   {selected.full_name}
                 </span>{" "}
                 · {ROLE_LABELS[selected.role] ?? selected.role} ·{" "}

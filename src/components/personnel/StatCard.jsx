@@ -5,8 +5,8 @@ export function StatCard({ label, value, hint, featured = false }) {
     <div
       className={`flex min-w-0 flex-col rounded-2xl border p-5 shadow-[0_1px_2px_rgba(11,19,48,0.05)] ${
         featured
-          ? "border-[#0B1330] bg-[#0B1330] text-white"
-          : "border-slate-200 bg-white text-[#0B1330]"
+          ? "border-navy bg-navy text-white"
+          : "border-slate-200 bg-surface text-ink"
       }`}
     >
       <p
@@ -29,7 +29,7 @@ export function StatCard({ label, value, hint, featured = false }) {
 export function SkeletonCard({ className = "" }) {
   return (
     <div
-      className={`animate-pulse rounded-2xl border border-slate-200 bg-[#F0EDFA] motion-reduce:animate-none ${className}`}
+      className={`animate-pulse rounded-2xl border border-slate-200 bg-tint motion-reduce:animate-none ${className}`}
     />
   );
 }

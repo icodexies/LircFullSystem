@@ -1,5 +1,6 @@
 import DialogProvider from "./context/dialogs/DialogProvider.jsx";
 import ToastProvider from "./context/toasts/ToastProvider.jsx";
+import ThemeProvider from "./context/theme/ThemeProvider.jsx";
 import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { LoadingScreen } from "./components/ui/Loading.jsx";
@@ -68,9 +69,10 @@ const memberScreens = {
 
 export default function App() {
   return (
-    <LoginProvider>
-      <AuthProvider>
-        <BrowserRouter>
+    <ThemeProvider>
+      <LoginProvider>
+        <AuthProvider>
+          <BrowserRouter>
           <ToastProvider>
           <DialogProvider>
             <Suspense fallback={<LoadingScreen label="Loading page…" />}>
@@ -122,7 +124,8 @@ export default function App() {
           </DialogProvider>
           </ToastProvider>
         </BrowserRouter>
-      </AuthProvider>
-    </LoginProvider>
+        </AuthProvider>
+      </LoginProvider>
+    </ThemeProvider>
   );
 }

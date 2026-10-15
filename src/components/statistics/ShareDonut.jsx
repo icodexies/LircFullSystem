@@ -26,7 +26,7 @@ export default function ShareDonut({ items, unit = "total" }) {
     <div className="flex flex-col items-center gap-5 sm:flex-row sm:items-start">
       <div className="relative h-36 w-36 shrink-0">
         <svg viewBox="0 0 42 42" className="h-full w-full -rotate-90" role="img" aria-label="Share">
-          <circle cx="21" cy="21" r="15.9155" fill="none" stroke="#F1F5F9" strokeWidth="5" />
+          <circle cx="21" cy="21" r="15.9155" fill="none" className="stroke-slate-100" strokeWidth="5" />
           {arcs.map((arc) => (
             <circle
               key={arc.label}
@@ -34,7 +34,7 @@ export default function ShareDonut({ items, unit = "total" }) {
               cy="21"
               r="15.9155"
               fill="none"
-              stroke={arc.color}
+              style={{ stroke: arc.color }}
               strokeWidth="5"
               strokeDasharray={`${Math.max(arc.pct - 0.8, 0)} ${100 - arc.pct + 0.8}`}
               strokeDashoffset={-arc.offset}
@@ -42,7 +42,7 @@ export default function ShareDonut({ items, unit = "total" }) {
           ))}
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="font-serif text-2xl font-bold tracking-tight text-[#0B1330] tabular-nums">
+          <span className="font-serif text-2xl font-bold tracking-tight text-ink tabular-nums">
             {total.toLocaleString("en-US")}
           </span>
           <span className="text-[11px] text-slate-500">{unit}</span>
@@ -59,7 +59,7 @@ export default function ShareDonut({ items, unit = "total" }) {
               />
               <span className="truncate">{segment.label}</span>
             </span>
-            <span className="shrink-0 text-[#0B1330] tabular-nums">
+            <span className="shrink-0 text-ink tabular-nums">
               {segment.count.toLocaleString("en-US")}{" "}
               <span className="text-slate-500">({Math.round(segment.pct)}%)</span>
             </span>

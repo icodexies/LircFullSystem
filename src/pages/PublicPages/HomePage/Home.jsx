@@ -25,20 +25,20 @@ function Home() {
     <>
       <Hero />
 
-      <DeferredRender id="collection" reserveClassName="min-h-[48rem] bg-white lg:min-h-[54rem]">
-        <Suspense fallback={<div aria-hidden="true" className="grid min-h-[48rem] place-items-center bg-white text-[#0B1330] lg:min-h-[54rem]"><Spinner size="lg" /></div>}>
+      <DeferredRender id="collection" reserveClassName="min-h-[48rem] bg-surface lg:min-h-[54rem]">
+        <Suspense fallback={<div aria-hidden="true" className="grid min-h-[48rem] place-items-center bg-surface text-ink lg:min-h-[54rem]"><Spinner size="lg" /></div>}>
           <BookCollection />
         </Suspense>
       </DeferredRender>
 
-      <DeferredRender id="digital-sources" reserveClassName="min-h-[54rem] bg-[#0B1330] lg:min-h-[36rem]">
-        <Suspense fallback={<div aria-hidden="true" className="grid min-h-[54rem] place-items-center bg-[#0B1330] text-white/80 lg:min-h-[36rem]"><Spinner size="lg" /></div>}>
+      <DeferredRender id="digital-sources" reserveClassName="min-h-[54rem] bg-navy lg:min-h-[36rem]">
+        <Suspense fallback={<div aria-hidden="true" className="grid min-h-[54rem] place-items-center bg-navy text-white/80 lg:min-h-[36rem]"><Spinner size="lg" /></div>}>
           <DigitalSources />
         </Suspense>
       </DeferredRender>
 
-      <DeferredRender id="about" reserveClassName="min-h-[120rem] bg-white lg:min-h-[110rem]" rootMargin="900px 0px">
-        <Suspense fallback={<div aria-hidden="true" className="grid min-h-[120rem] place-items-center bg-white text-[#0B1330] lg:min-h-[110rem]"><Spinner size="lg" /></div>}>
+      <DeferredRender id="about" reserveClassName="min-h-[120rem] bg-surface lg:min-h-[110rem]" rootMargin="900px 0px">
+        <Suspense fallback={<div aria-hidden="true" className="grid min-h-[120rem] place-items-center bg-surface text-ink lg:min-h-[110rem]"><Spinner size="lg" /></div>}>
           <About />
         </Suspense>
       </DeferredRender>

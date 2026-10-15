@@ -14,7 +14,7 @@ export default function DrillTable({
   return (
     <div className="overflow-x-auto">
       <table className="w-full min-w-[420px] text-left text-xs">
-        <thead className="bg-[#F7F6FB]">
+        <thead className="bg-page">
           <tr>
             <th className="px-5 py-3 font-semibold text-slate-600">{labelHeader}</th>
             <th className="px-5 py-3 text-right font-semibold text-slate-600">{countHeader}</th>
@@ -26,15 +26,15 @@ export default function DrillTable({
             <tr
               key={row.key}
               onClick={() => onOpen(row)}
-              className="cursor-pointer border-t border-slate-100 hover:bg-[#F7F6FB]/60"
+              className="cursor-pointer border-t border-slate-100 hover:bg-page/60"
             >
               <td className="px-5 py-3">
-                <span className="block font-medium text-[#0B1330]">{row.label}</span>
+                <span className="block font-medium text-ink">{row.label}</span>
                 {row.sub && (
                   <span className="block text-[11px] text-slate-500">{row.sub}</span>
                 )}
               </td>
-              <td className="px-5 py-3 text-right font-semibold text-[#0B1330] tabular-nums">
+              <td className="px-5 py-3 text-right font-semibold text-ink tabular-nums">
                 {number(row.count)}
               </td>
               <td className="px-5 py-3 text-right">

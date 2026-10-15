@@ -63,7 +63,7 @@ export default function MemberEditForm({
 
   return (
     <form onSubmit={submit} className="space-y-5 p-6">
-      <p className="rounded-xl bg-[#F7F6FB] p-4 text-xs leading-relaxed text-slate-600">
+      <p className="rounded-xl bg-page p-4 text-xs leading-relaxed text-slate-600">
         Editing <strong>{profile.full_name}</strong> · {profile.library_id}.
         Role, library card and account links cannot be changed here.
       </p>
@@ -96,7 +96,7 @@ export default function MemberEditForm({
           </Field>
         ))}
       </fieldset>
-      <div className="sticky bottom-0 -mx-6 -mb-6 flex flex-wrap items-center justify-end gap-3 border-t border-slate-200 bg-gradient-to-r from-[#F7F6FB] to-white px-6 py-4">
+      <div className="sticky bottom-0 -mx-6 -mb-6 flex flex-wrap items-center justify-end gap-3 border-t border-slate-200 bg-gradient-to-r from-page to-surface px-6 py-4">
         <button
           type="button"
           disabled={busy}

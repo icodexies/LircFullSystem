@@ -217,10 +217,10 @@ export default function Enrollments() {
               key={item.id}
               type="button"
               onClick={() => setTab(item.id)}
-              className={`inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3B4A86] ${
+              className={`inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-strong ${
                 tab === item.id
-                  ? "bg-[#0B1330] text-white"
-                  : "border border-slate-400 bg-slate-100 text-slate-700 hover:bg-slate-200 hover:text-[#0B1330]"
+                  ? "bg-navy text-white"
+                  : "border border-slate-400 bg-slate-100 text-slate-700 hover:bg-slate-200 hover:text-ink"
               }`}
             >
               {item.label}
@@ -303,7 +303,7 @@ export default function Enrollments() {
             <ReportState report={{ ...report, loading }}>
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[800px] text-left text-xs">
-                  <thead className="bg-[#F7F6FB]">
+                  <thead className="bg-page">
                     <tr>
                       {[
                         "Student / card",
@@ -323,10 +323,10 @@ export default function Enrollments() {
                     {report.data?.rows.map((row) => (
                       <tr
                         key={row.id}
-                        className="border-b border-slate-100 hover:bg-[#F7F6FB]/50"
+                        className="border-b border-slate-100 hover:bg-page/50"
                       >
                         <td className="px-5 py-4 align-top">
-                          <p className="font-semibold text-[#0B1330]">
+                          <p className="font-semibold text-ink">
                             {row.full_name}
                           </p>
                           <p className="mt-1 text-slate-500">{row.library_id}</p>
@@ -358,7 +358,7 @@ export default function Enrollments() {
                             ? row.estimated_level
                             : "Unavailable"}
                           <details className="mt-2 text-slate-500">
-                            <summary className="cursor-pointer text-[10px] text-[#3B4A86]">
+                            <summary className="cursor-pointer text-[10px] text-accent">
                               View level note
                             </summary>
                             <p className="mt-2 max-w-xs leading-relaxed">
@@ -376,7 +376,7 @@ export default function Enrollments() {
                           <br />
                           {row.validator}
                           <details className="mt-2 text-slate-500">
-                            <summary className="cursor-pointer text-[10px] text-[#3B4A86]">
+                            <summary className="cursor-pointer text-[10px] text-accent">
                               View reference
                             </summary>
                             <p className="mt-2 max-w-xs leading-relaxed">
@@ -430,7 +430,7 @@ export default function Enrollments() {
                     className="flex flex-wrap items-center justify-between gap-3 py-3"
                   >
                     <div className="min-w-0">
-                      <p className="text-sm font-semibold text-[#0B1330]">
+                      <p className="text-sm font-semibold text-ink">
                         {row.student} · {row.student_card}
                       </p>
                       <p className="mt-0.5 text-xs text-slate-500">

@@ -6,14 +6,14 @@ export default function StatStrip({ items }) {
       {(items ?? []).map((item) => (
         <div
           key={item.label}
-          className="relative min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-white px-4 py-3"
+          className="relative min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-surface px-4 py-3"
         >
           <span
             aria-hidden="true"
-            className="absolute left-0 top-0 h-[3px] w-10 bg-[#0B1330]"
+            className="absolute left-0 top-0 h-[3px] w-10 bg-navy"
           />
           <p className="text-[11px] font-medium text-slate-500">{item.label}</p>
-          <p className="mt-1 font-serif text-xl font-bold tracking-tight text-[#0B1330]">
+          <p className="mt-1 font-serif text-xl font-bold tracking-tight text-ink">
             {item.value}
           </p>
           {item.help && (

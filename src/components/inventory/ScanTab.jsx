@@ -18,7 +18,7 @@ import { Spinner } from "../ui/Loading.jsx";
 import EditScanDialog from "./EditScanDialog.jsx";
 
 const feedbackTones = {
-  success: "border-[#BFE3D6] bg-[#E7F4EF] text-[#0B6B52]",
+  success: "border-jade-line bg-jade-soft text-jade-deep",
   warning: "border-amber-100 bg-amber-50 text-amber-900",
   error: "border-red-100 bg-red-50 text-red-700",
 };
@@ -79,15 +79,15 @@ export default function ScanTab({ session, recent, onScanned, onEntryUpdated }) 
                   setCondition(item.value);
                   input.current?.focus();
                 }}
-                className={`inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3B4A86] ${
+                className={`inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-strong ${
                   condition === item.value
-                    ? "bg-[#0B1330] text-white shadow-sm"
-                    : "border border-slate-400 bg-slate-100 text-slate-700 hover:bg-slate-200 hover:text-[#0B1330]"
+                    ? "bg-navy text-white shadow-sm"
+                    : "border border-slate-400 bg-slate-100 text-slate-700 hover:bg-slate-200 hover:text-ink"
                 }`}
               >
                 <span
                   aria-hidden="true"
-                  className={`h-2 w-2 rounded-full ${item.value === "Good" ? "bg-[#12A47E]" : "bg-amber-400"}`}
+                  className={`h-2 w-2 rounded-full ${item.value === "Good" ? "bg-jade" : "bg-amber-400"}`}
                 />
                 {item.label}
               </button>
@@ -162,7 +162,7 @@ export default function ScanTab({ session, recent, onScanned, onEntryUpdated }) 
                 className="flex flex-wrap items-center justify-between gap-3 px-5 py-3 sm:px-6"
               >
                 <div className="min-w-0">
-                  <p className="text-sm font-semibold text-[#0B1330]">
+                  <p className="text-sm font-semibold text-ink">
                     {entry.accession_number}
                   </p>
                   <p className="mt-0.5 truncate text-xs text-slate-500">

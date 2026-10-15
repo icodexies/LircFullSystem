@@ -19,7 +19,7 @@ export default function BarChart({ items, labelEvery = 2, unit = "", unitLabel =
       {active && (
         <div
           role="status"
-          className="pointer-events-none absolute z-10 -translate-x-1/2 rounded-lg bg-[#0B1330] px-2.5 py-1.5 text-center shadow-[0_4px_12px_rgba(11,19,48,0.25)]"
+          className="pointer-events-none absolute z-10 -translate-x-1/2 rounded-lg bg-navy px-2.5 py-1.5 text-center shadow-[0_4px_12px_rgba(11,19,48,0.25)]"
           style={{
             left: `${leftPct}%`,
             bottom: `calc(${(active.count / max) * 100}% + 12px)`,
@@ -43,8 +43,8 @@ export default function BarChart({ items, labelEvery = 2, unit = "", unitLabel =
             onMouseLeave={() => setHover(null)}
             onFocus={() => setHover(index)}
             onBlur={() => setHover(null)}
-            className={`min-w-0 flex-1 rounded-t-sm transition-opacity duration-150 hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3B4A86] ${
-              item.count === 0 ? "bg-slate-200" : "bg-[#0B1330]/75"
+            className={`min-w-0 flex-1 rounded-t-sm transition-opacity duration-150 hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-strong ${
+              item.count === 0 ? "bg-slate-200" : "bg-navy/75"
             }`}
             style={{ height: item.count > 0 ? `${(item.count / max) * 100}%` : "3px" }}
           />

@@ -4,9 +4,9 @@
 // be closed with the × button.
 const PALETTES = {
   success: {
-    wrap: "border-[#BFE3D6] bg-[#E7F4EF]",
-    icon: "text-[#0F8A6B]",
-    text: "text-[#0B6B52]",
+    wrap: "border-jade-line bg-jade-soft",
+    icon: "text-jade",
+    text: "text-jade-deep",
   },
   error: {
     wrap: "border-red-300 bg-red-50",

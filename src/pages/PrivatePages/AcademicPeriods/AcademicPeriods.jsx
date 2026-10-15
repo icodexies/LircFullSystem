@@ -253,7 +253,7 @@ export default function AcademicPeriods() {
           <span>{rows.length} semesters shown</span>
           <button
             type="button"
-            className="font-medium text-[#3B4A86]"
+            className="font-medium text-accent"
             onClick={() => {
               setYearFilter("");
               setNameFilter("");
@@ -275,7 +275,7 @@ export default function AcademicPeriods() {
             {rows.map((row) => (
               <li
                 key={row.id}
-                className={`flex flex-wrap items-center justify-between gap-4 px-6 py-5 ${row.is_active ? "bg-[#F7F6FB]/70" : ""}`}
+                className={`flex flex-wrap items-center justify-between gap-4 px-6 py-5 ${row.is_active ? "bg-page/70" : ""}`}
               >
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">

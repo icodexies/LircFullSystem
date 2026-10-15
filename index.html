@@ -11,6 +11,20 @@
     <meta property="og:title" content="Learning and Information Resource Center | City College of Calamba" />
     <meta property="og:description" content="Explore books, study spaces, research collections, and online academic resources at the Learning and Information Resource Center of City College of Calamba." />
     <title>Learning and Information Resource Center | City College of Calamba</title>
+    <script>
+      // Apply the saved (or system) theme before the first paint so the page
+      // never flashes light before switching to dark.
+      (function () {
+        try {
+          var saved = localStorage.getItem("lirc-theme");
+          var dark =
+            saved === "dark" ||
+            (saved !== "light" &&
+              window.matchMedia("(prefers-color-scheme: dark)").matches);
+          if (dark) document.documentElement.classList.add("dark");
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

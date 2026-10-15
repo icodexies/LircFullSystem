@@ -4,7 +4,7 @@ export function Skeleton({ className = "" }) {
   return (
     <span
       aria-hidden="true"
-      className={`block animate-pulse rounded-lg bg-[#F0EDFA] motion-reduce:animate-none ${className}`}
+      className={`block animate-pulse rounded-lg bg-tint motion-reduce:animate-none ${className}`}
     />
   );
 }
@@ -19,9 +19,9 @@ export function SkeletonCards({ count = 6, label = "Loading…" }) {
           <div
             key={index}
             aria-hidden="true"
-            className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 pt-5 shadow-[0_1px_2px_rgba(11,19,48,0.05)]"
+            className="relative overflow-hidden rounded-2xl border border-slate-200 bg-surface p-4 pt-5 shadow-[0_1px_2px_rgba(11,19,48,0.05)]"
           >
-            <span className="absolute left-0 top-0 h-[3px] w-14 bg-[#F0EDFA]" />
+            <span className="absolute left-0 top-0 h-[3px] w-14 bg-tint" />
             <div className="flex gap-4">
               <Skeleton className="h-28 w-20 shrink-0" />
               <div className="min-w-0 flex-1 space-y-2.5 pt-1">

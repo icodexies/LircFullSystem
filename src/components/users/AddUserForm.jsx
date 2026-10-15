@@ -127,7 +127,7 @@ export default function AddUserForm({ onClose, onSaved }) {
   if (saved) {
     return (
       <div className="space-y-4">
-        <div className="rounded-xl border border-[#BFE3D6] bg-[#E7F4EF] px-4 py-3 text-sm leading-relaxed text-[#0B6B52]">
+        <div className="rounded-xl border border-jade-line bg-jade-soft px-4 py-3 text-sm leading-relaxed text-jade-deep">
           <p className="font-semibold">{saved.library_id} was added.</p>
           <p className="mt-1 text-xs">
             The member profile
@@ -268,11 +268,11 @@ export default function AddUserForm({ onClose, onSaved }) {
       </fieldset>
 
       {student && (
-        <section className="rounded-2xl border border-slate-200 bg-[#F7F6FB]/60 p-4 sm:p-5">
-          <h3 className="flex items-center gap-2 text-sm font-semibold text-[#0B1330]">
+        <section className="rounded-2xl border border-slate-200 bg-page/60 p-4 sm:p-5">
+          <h3 className="flex items-center gap-2 text-sm font-semibold text-ink">
             <span
               aria-hidden="true"
-              className="h-4 w-1 rounded-full bg-[#0B1330]"
+              className="h-4 w-1 rounded-full bg-navy"
             />
             Library validation
           </h3>
@@ -318,7 +318,7 @@ export default function AddUserForm({ onClose, onSaved }) {
           {estimate && !form.year_level && (
             <p className="mt-2 text-[11px] text-slate-500">
               The card suggests{" "}
-              <strong className="text-[#0B1330]">{estimate}</strong> for{" "}
+              <strong className="text-ink">{estimate}</strong> for{" "}
               {selectedYear?.name}.
             </p>
           )}
@@ -326,7 +326,7 @@ export default function AddUserForm({ onClose, onSaved }) {
             <label className="mt-3 flex cursor-pointer items-start gap-2 text-xs text-slate-600">
               <input
                 type="checkbox"
-                className="mt-0.5 h-3.5 w-3.5 accent-[#0B1330]"
+                className="mt-0.5 h-3.5 w-3.5 accent-ink"
                 checked={form.validate}
                 onChange={(event) =>
                   setForm((current) => ({
@@ -358,7 +358,7 @@ export default function AddUserForm({ onClose, onSaved }) {
         </p>
       )}
 
-      <div className="sticky bottom-0 -mx-5 -mb-5 flex flex-wrap items-center justify-end gap-3 border-t border-slate-200 bg-gradient-to-r from-[#F7F6FB] to-white px-5 py-4 sm:-mx-6 sm:-mb-6 sm:px-6">
+      <div className="sticky bottom-0 -mx-5 -mb-5 flex flex-wrap items-center justify-end gap-3 border-t border-slate-200 bg-gradient-to-r from-page to-surface px-5 py-4 sm:-mx-6 sm:-mb-6 sm:px-6">
         <button
           type="button"
           className={secondaryButton}

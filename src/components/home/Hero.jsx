@@ -31,12 +31,12 @@ export default function Hero() {
 
       <div
         aria-hidden="true"
-        className="absolute inset-0 bg-gradient-to-r from-[#0B1330]/90 via-[#0B1330]/50 to-[#0B1330]/20"
+        className="absolute inset-0 bg-gradient-to-r from-navy/90 via-navy/50 to-navy/20"
       />
 
       <div
         aria-hidden="true"
-        className="absolute inset-0 bg-gradient-to-t from-[#0B1330]/80 via-transparent to-[#0B1330]/30"
+        className="absolute inset-0 bg-gradient-to-t from-navy/80 via-transparent to-navy/30"
       />
 
       <div className="relative z-10 mx-auto flex min-h-screen max-w-7xl flex-col justify-between gap-10 px-6 pb-10 lg:flex-row lg:items-end lg:gap-8 lg:px-10 lg:pb-14">

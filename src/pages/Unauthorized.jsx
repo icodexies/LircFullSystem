@@ -22,20 +22,20 @@ export default function Unauthorized() {
   };
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#F7F4FF] px-4 text-[#0B1330]">
-      <div className="w-full max-w-sm rounded-3xl border-2 border-[#0B1330] bg-white p-8 text-center shadow-[8px_8px_0_#0B1330]">
+    <main className="flex min-h-screen items-center justify-center bg-page px-4 text-ink">
+      <div className="w-full max-w-sm rounded-3xl border-2 border-navy bg-surface p-8 text-center shadow-[8px_8px_0_#0B1330]">
         <h1 className="font-serif text-3xl font-bold">No access</h1>
-        <p className="mt-2 text-sm text-[#0B1330]/60">
+        <p className="mt-2 text-sm text-ink/60">
           Your account doesn't have permission to open this page.
         </p>
         {user && !canReturn ? (
-          <button type="button" onClick={handleLogout} disabled={loggingOut} className="mt-6 inline-block rounded-xl bg-[#0B1330] px-5 py-3 text-xs font-bold uppercase tracking-widest text-white shadow-[0_4px_0_#3B4A86] disabled:opacity-50">
+          <button type="button" onClick={handleLogout} disabled={loggingOut} className="mt-6 inline-block rounded-xl bg-navy px-5 py-3 text-xs font-bold uppercase tracking-widest text-white shadow-[0_4px_0_#3B4A86] disabled:opacity-50">
             {loggingOut ? "Signing out..." : "Sign out"}
           </button>
         ) : (
         <Link
           to={user ? "/dashboard" : "/"}
-          className="mt-6 inline-block rounded-xl bg-[#0B1330] px-5 py-3 text-xs font-bold uppercase tracking-widest text-white shadow-[0_4px_0_#3B4A86]"
+          className="mt-6 inline-block rounded-xl bg-navy px-5 py-3 text-xs font-bold uppercase tracking-widest text-white shadow-[0_4px_0_#3B4A86]"
         >
           {user ? "Back to dashboard" : "Back to home"}
         </Link>

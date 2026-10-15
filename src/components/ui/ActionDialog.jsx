@@ -86,7 +86,7 @@ const ICONS = {
 const BADGES = {
   confirm: "bg-white/10 text-white",
   info: "bg-white/10 text-white",
-  success: "bg-[#E7F4EF] text-[#0B6B52]",
+  success: "bg-jade-soft text-jade-deep",
   warning: "bg-amber-50 text-amber-800",
   error: "bg-red-50 text-red-700",
   danger: "bg-red-50 text-red-700",
@@ -95,7 +95,7 @@ const BADGES = {
 const primaryClass = (variant) =>
   variant === "danger" || variant === "error"
     ? "inline-flex items-center justify-center gap-2 rounded-xl bg-red-600 px-4 py-2.5 text-xs font-semibold text-white transition-colors hover:bg-red-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500 disabled:opacity-40"
-    : "inline-flex items-center justify-center gap-2 rounded-xl bg-[#0B1330] px-4 py-2.5 text-xs font-semibold text-white transition-colors hover:bg-[#3B4A86] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3B4A86] disabled:opacity-40";
+    : "inline-flex items-center justify-center gap-2 rounded-xl bg-navy px-4 py-2.5 text-xs font-semibold text-white transition-colors hover:bg-accent-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-strong disabled:opacity-40";
 
 export default function ActionDialog({
   title,

@@ -77,7 +77,7 @@ function FacebookIcon() {
 }
 
 function SocialBox({ href, label, children }) {
-  const className = "flex h-10 w-10 items-center justify-center border border-white/15 text-slate-300 transition-all duration-300 hover:-translate-y-1 hover:border-sky-400 hover:bg-sky-400 hover:text-[#0B1330] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400";
+  const className = "flex h-10 w-10 items-center justify-center border border-white/15 text-slate-300 transition-all duration-300 hover:-translate-y-1 hover:border-sky-400 hover:bg-sky-400 hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400";
 
   if (!href) {
     return (
@@ -125,7 +125,7 @@ export default function Footer() {
   const next = () => n++;
 
   return (
-    <footer className="relative overflow-hidden bg-[#0B1330] text-slate-300">
+    <footer className="relative overflow-hidden bg-navy text-slate-300">
       {/* soft glow + thin accent line on top */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-sky-400/70 to-transparent" />
       <div aria-hidden="true" className="pointer-events-none absolute -top-32 left-1/2 h-64 w-[36rem] -translate-x-1/2 rounded-full bg-sky-400/10 blur-3xl" />
@@ -217,7 +217,7 @@ export default function Footer() {
                 <button
                   type="submit"
                   aria-label="Subscribe"
-                  className="group flex w-14 items-center justify-center bg-sky-400 text-[#0B1330] transition-colors hover:bg-sky-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-white"
+                  className="group flex w-14 items-center justify-center bg-sky-400 text-ink transition-colors hover:bg-sky-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-white"
                 >
                   <svg viewBox="0 0 24 24" className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                     <path d="M5 12h14M13 6l6 6-6 6" />

@@ -69,14 +69,14 @@ export default function BookCover({ book, className = "", size = "M" }) {
 
   return (
     <div
-      className={`relative flex shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[#3B4A86]/10 bg-[#F0EDFA] ${className}`}
+      className={`relative flex shrink-0 items-center justify-center overflow-hidden rounded-xl border border-accent-strong/10 bg-tint ${className}`}
     >
       {src ? (
         <>
           {!loaded && (
             <div
               aria-hidden="true"
-              className="absolute inset-0 grid place-items-center text-[#3B4A86]"
+              className="absolute inset-0 grid place-items-center text-accent"
             >
               <Spinner size={size === "L" ? "md" : "sm"} />
             </div>
@@ -103,7 +103,7 @@ export default function BookCover({ book, className = "", size = "M" }) {
       ) : (
         <svg
           viewBox="0 0 48 56"
-          className="h-12 w-10 text-[#3B4A86]/55"
+          className="h-12 w-10 text-accent/55"
           fill="none"
           stroke="currentColor"
           strokeWidth="1.5"

@@ -65,15 +65,15 @@ export default function BookBorrow() {
             key={item.id}
             type="button"
             onClick={() => setTab(item.id)}
-            className={`inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3B4A86] ${
+            className={`inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-strong ${
               tab === item.id
-                ? "bg-[#0B1330] text-white"
-                : "border border-slate-400 bg-slate-100 text-slate-700 hover:bg-slate-200 hover:text-[#0B1330]"
+                ? "bg-navy text-white"
+                : "border border-slate-400 bg-slate-100 text-slate-700 hover:bg-slate-200 hover:text-ink"
             }`}
           >
             {item.label}
             {item.id === "borrowed" && counts?.borrowed > 0 && (
-              <span className="rounded-full bg-[#F0EDFA] px-1.5 text-[10px] font-bold text-[#3B4A86]">
+              <span className="rounded-full bg-tint px-1.5 text-[10px] font-bold text-accent">
                 {counts.borrowed}
               </span>
             )}
@@ -149,7 +149,7 @@ export default function BookBorrow() {
                   >
                     <BookCover book={book} className="h-20 w-14" />
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-semibold text-[#0B1330]">
+                      <p className="truncate text-sm font-semibold text-ink">
                         {book.book_name}
                       </p>
                       <p className="mt-0.5 truncate text-xs text-slate-500">

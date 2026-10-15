@@ -67,9 +67,9 @@ export default function Modal({
             onClose();
         }
       }}
-      className={`m-auto open:flex max-h-[90dvh] w-[calc(100%_-_2rem)] flex-col overflow-hidden rounded-2xl border-0 bg-white p-0 text-[#0B1330] shadow-[0_8px_32px_rgba(11,19,48,0.2)] backdrop:bg-[#0B1330]/60 max-sm:inset-x-0 max-sm:bottom-0 max-sm:top-auto max-sm:m-0 max-sm:max-h-[85dvh] max-sm:w-full max-sm:rounded-b-none max-sm:rounded-t-3xl ${SIZES[size] ?? SIZES.md}`}
+      className={`m-auto open:flex max-h-[90dvh] w-[calc(100%_-_2rem)] flex-col overflow-hidden rounded-2xl border-0 bg-surface p-0 text-ink shadow-[0_8px_32px_rgba(11,19,48,0.2)] backdrop:bg-navy/60 max-sm:inset-x-0 max-sm:bottom-0 max-sm:top-auto max-sm:m-0 max-sm:max-h-[85dvh] max-sm:w-full max-sm:rounded-b-none max-sm:rounded-t-3xl ${SIZES[size] ?? SIZES.md}`}
     >
-      <header className="relative shrink-0 overflow-hidden bg-gradient-to-br from-[#0B1330] via-[#17214A] to-[#3B4A86] px-5 py-5 sm:px-6">
+      <header className="relative shrink-0 overflow-hidden bg-gradient-to-br from-navy via-navy-deep to-accent-strong px-5 py-5 sm:px-6">
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 opacity-[0.16]"
@@ -114,12 +114,12 @@ export default function Modal({
         </div>
       </header>
 
-      <div className="min-h-0 flex-1 overflow-y-auto bg-[linear-gradient(to_bottom,#F7F6FB,#ffffff_140px)]">
+      <div className="min-h-0 flex-1 overflow-y-auto bg-[linear-gradient(to_bottom,var(--color-page),var(--color-surface)_140px)]">
         {children}
       </div>
 
       {footer && (
-        <div className="shrink-0 border-t border-slate-200 bg-gradient-to-r from-[#F7F6FB] to-white px-5 py-4 sm:px-6">
+        <div className="shrink-0 border-t border-slate-200 bg-gradient-to-r from-page to-surface px-5 py-4 sm:px-6">
           {footer}
         </div>
       )}

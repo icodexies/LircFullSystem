@@ -136,18 +136,18 @@ export default function Notifications() {
                     <button
                       type="button"
                       onClick={() => openItem(item)}
-                      className={`flex w-full items-start gap-3 rounded-xl px-2 py-3 text-left transition-colors hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3B4A86] ${
-                        item.read_at ? "" : "bg-[#F7F6FB]"
+                      className={`flex w-full items-start gap-3 rounded-xl px-2 py-3 text-left transition-colors hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-strong ${
+                        item.read_at ? "" : "bg-page"
                       }`}
                     >
                       <span
                         aria-hidden="true"
                         className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${
-                          item.read_at ? "bg-slate-200" : "bg-[#3B4A86]"
+                          item.read_at ? "bg-slate-200" : "bg-accent-strong"
                         }`}
                       />
                       <span className="min-w-0 flex-1">
-                        <span className="block text-sm font-semibold text-[#0B1330]">
+                        <span className="block text-sm font-semibold text-ink">
                           {item.title}
                         </span>
                         {item.message && (
@@ -160,7 +160,7 @@ export default function Notifications() {
                         </span>
                       </span>
                       {item.link && (
-                        <span className="shrink-0 text-[11px] font-semibold text-[#3B4A86]">
+                        <span className="shrink-0 text-[11px] font-semibold text-accent">
                           Open →
                         </span>
                       )}

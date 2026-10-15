@@ -55,7 +55,7 @@ function ImageSlot({ image, ratio = "1 / 1", fit = "cover", zoom = 1, bg = "bg-s
         <div
           role="img"
           aria-label={`Photo placeholder: ${image.label}`}
-          className="absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-[inherit] border-2 border-dashed border-[#0B1330]/30 p-4 text-center text-[#0B1330]/60"
+          className="absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-[inherit] border-2 border-dashed border-navy/30 p-4 text-center text-ink/60"
         >
           <ImageIcon />
           <span className="text-sm font-medium">{image.label}</span>
@@ -70,7 +70,7 @@ function Flourish() {
   return (
     <svg
       viewBox="0 0 240 32"
-      className="mx-auto h-6 w-48 text-[#0B1330] sm:w-56"
+      className="mx-auto h-6 w-48 text-ink sm:w-56"
       fill="none"
       stroke="currentColor"
       strokeWidth="1.4"
@@ -178,10 +178,10 @@ function About() {
   const { title, historyTitle, paragraphs, closing } = ABOUT;
 
   return (
-    <section aria-labelledby="about-title" className="relative w-full overflow-hidden bg-white">
+    <section aria-labelledby="about-title" className="relative w-full overflow-hidden bg-surface">
       {/* Navy band with the big title */}
       <div
-        className="relative bg-[#0B1330] pt-16 text-center sm:pt-20"
+        className="relative bg-navy pt-16 text-center sm:pt-20"
         style={{ paddingBottom: `calc(${ARCH_WIDTH} / 2 + 2rem)` }}
       >
         <Skyline />
@@ -212,13 +212,13 @@ function About() {
             />
 
             {/* thick white frame, then the photo in the same arch shape */}
-            <div className="rounded-t-full bg-white p-4 sm:p-5">
+            <div className="rounded-t-full bg-surface p-4 sm:p-5">
               <ImageSlot
                 image={ABOUT_IMAGES.arch}
                 ratio="1 / 1"
                 fit="contain"
                 zoom={1.5}
-                bg="bg-white"
+                bg="bg-surface"
                 className="rounded-b-2xl rounded-t-full"
                 />
             </div>
@@ -229,7 +229,7 @@ function About() {
       {/* History: narrow, centered block with wide empty space on both sides */}
       <div className="mx-auto max-w-4xl px-8 sm:px-14 lg:pb-15">
         <Reveal  className="text-center">
-          <h3 className="inline-flex items-center gap-3 font-[Fraunces] text-4xl text-[#0B1330] sm:text-5xl">
+          <h3 className="inline-flex items-center gap-3 font-[Fraunces] text-4xl text-ink sm:text-5xl">
             <span aria-hidden="true" className="text-5xl font-light sm:text-6xl">{"{"}</span>
             {historyTitle}
             <span aria-hidden="true" className="text-5xl font-light sm:text-6xl">{"}"}</span>
@@ -276,19 +276,19 @@ function About() {
             {/* 1. soft shadow on the "floor" under the disc */}
             <div
                 aria-hidden="true"
-                className="absolute inset-x-8 -bottom-6 h-10 rounded-[50%] bg-[#0B1330]/25 blur-2xl"
+                className="absolute inset-x-8 -bottom-6 h-10 rounded-[50%] bg-navy/25 blur-2xl"
             />
 
             {/* 2. big thin ring, tilted one way */}
             <div
                 aria-hidden="true"
-                className="absolute inset-0 scale-[1.12] -rotate-[8deg] rounded-[50%] border border-[#0B1330]/20 transition-transform duration-700 group-hover:-rotate-[11deg]"
+                className="absolute inset-0 scale-[1.12] -rotate-[8deg] rounded-[50%] border border-navy/20 transition-transform duration-700 group-hover:-rotate-[11deg]"
             />
 
             {/* 3. second ring, tilted the other way, so the two cross like the reference */}
             <div
                 aria-hidden="true"
-                className="absolute inset-0 scale-[1.06] rotate-[5deg] rounded-[50%] border border-[#0B1330]/15 transition-transform duration-700 group-hover:rotate-[8deg]"
+                className="absolute inset-0 scale-[1.06] rotate-[5deg] rounded-[50%] border border-navy/15 transition-transform duration-700 group-hover:rotate-[8deg]"
             />
 
             {/* 4. the raised disc: gradient, highlight on top, shading at the bottom */}
@@ -311,7 +311,7 @@ function About() {
             {/* 5. thin inner gold-ish line for a premium edge */}
             <div
                 aria-hidden="true"
-                className="absolute inset-3 -rotate-[4deg] rounded-[50%] border border-[#0B1330]/10 sm:inset-4"
+                className="absolute inset-3 -rotate-[4deg] rounded-[50%] border border-navy/10 sm:inset-4"
             />
 
             {/* 6. the text, embossed */}
@@ -319,7 +319,7 @@ function About() {
                 {closing.lines.map((line) => (
                 <p
                     key={line}
-                    className="font-[Fraunces] text-3xl leading-[1.05] tracking-tight text-[#0B1330] sm:text-[2.6rem]"
+                    className="font-[Fraunces] text-3xl leading-[1.05] tracking-tight text-ink sm:text-[2.6rem]"
                     style={{ textShadow: "0 1px 0 #fff, 0 3px 6px rgba(11,19,48,0.18)" }}
                 >
                     {line}
@@ -331,7 +331,7 @@ function About() {
                 </div>
 
                 <p
-                className="bg-gradient-to-b from-[#2a3d86] to-[#0B1330] bg-clip-text font-[Fraunces] text-5xl font-light italic leading-none text-transparent sm:text-6xl"
+                className="bg-gradient-to-b from-[#2a3d86] to-navy bg-clip-text font-[Fraunces] text-5xl font-light italic leading-none text-transparent sm:text-6xl"
                 style={{ filter: "drop-shadow(0 3px 4px rgba(11,19,48,0.22))" }}
                 >
                 {closing.script}

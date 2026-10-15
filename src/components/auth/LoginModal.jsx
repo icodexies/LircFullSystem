@@ -121,7 +121,7 @@ function LoginModal({
   };
 
   const inputWrap =
-    "flex items-center gap-3 rounded-xl border border-[#E4DDF5] bg-[#F7F4FF] px-4 py-3 focus-within:border-[#0B1330] focus-within:ring-2 focus-within:ring-[#0B1330]/15";
+    "flex items-center gap-3 rounded-xl border border-tint bg-page px-4 py-3 focus-within:border-navy focus-within:ring-2 focus-within:ring-navy/15";
 
   return (
     <div
@@ -157,7 +157,7 @@ function LoginModal({
       >
       <div className="relative w-full">
         {/* Avatar tab on top */}
-        <div className="absolute -top-12 left-1/2 z-10 h-14 w-24 -translate-x-1/2 overflow-hidden rounded-t-2xl bg-[#E8EEFF]">
+        <div className="absolute -top-12 left-1/2 z-10 h-14 w-24 -translate-x-1/2 overflow-hidden rounded-t-2xl bg-tint">
           {avatarSrc && (
             <img
               src={avatarSrc}
@@ -172,13 +172,13 @@ function LoginModal({
         {/* Card with offset navy shadow */}
         <form
           onSubmit={handleSubmit}
-          className="relative rounded-3xl border-2 border-[#0B1330] bg-white px-7 pb-6 pt-8 shadow-[8px_8px_0_#0B1330]"
+          className="relative rounded-3xl border-2 border-navy bg-surface px-7 pb-6 pt-8 shadow-[8px_8px_0_#0B1330]"
         >
           <button
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="absolute right-4 top-3 text-xl leading-none text-[#0B1330]/50 hover:text-[#0B1330]"
+            className="absolute right-4 top-3 text-xl leading-none text-ink/50 hover:text-ink"
           >
             ×
           </button>
@@ -195,23 +195,23 @@ function LoginModal({
 
           <h2
             id="login-title"
-            className="font-serif text-3xl font-bold leading-tight text-[#0B1330]"
+            className="font-serif text-3xl font-bold leading-tight text-ink"
           >
             Welcome, City
             <br />
             Scholars!
           </h2>
-          <p className="mt-2 text-xs text-[#0B1330]/60">
+          <p className="mt-2 text-xs text-ink/60">
             Ready to jump back into your favorite stories?
           </p>
 
           {/* Email */}
           <label className="mt-6 block">
-            <span className="text-[10px] font-bold uppercase tracking-wide text-[#0B1330]">
+            <span className="text-[10px] font-bold uppercase tracking-wide text-ink">
               Your Email
             </span>
             <div className={`${inputWrap} mt-1`}>
-              <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0 text-[#0B1330]" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0 text-ink" fill="none" stroke="currentColor" strokeWidth="2">
                 <rect x="3" y="5" width="18" height="14" rx="2" />
                 <path d="m3 7 9 6 9-6" />
               </svg>
@@ -222,7 +222,7 @@ function LoginModal({
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="reader@lirc.edu"
-                className="w-full bg-transparent text-sm text-[#0B1330] placeholder:text-[#0B1330]/40 focus:outline-none"
+                className="w-full bg-transparent text-sm text-ink placeholder:text-ink/40 focus:outline-none"
               />
             </div>
           </label>
@@ -230,7 +230,7 @@ function LoginModal({
           {/* Password */}
           <div className="mt-4 block">
             <span className="flex items-center justify-between">
-              <label htmlFor="login-password" className="text-[10px] font-bold uppercase tracking-wide text-[#0B1330]">
+              <label htmlFor="login-password" className="text-[10px] font-bold uppercase tracking-wide text-ink">
                 Your Password
               </label>
               <button
@@ -239,13 +239,13 @@ function LoginModal({
                   if (onForgot) onForgot();
                   else setError("Password recovery is not available yet. Please contact the LIRC library office for help.");
                 }}
-                className="text-[10px] font-semibold text-[#0B1330] underline"
+                className="text-[10px] font-semibold text-ink underline"
               >
                 Forgot?
               </button>
             </span>
             <div className={`${inputWrap} mt-1`}>
-              <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0 text-[#0B1330]" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0 text-ink" fill="none" stroke="currentColor" strokeWidth="2">
                 <rect x="4" y="11" width="16" height="10" rx="2" />
                 <path d="M8 11V7a4 4 0 0 1 8 0v4" />
               </svg>
@@ -257,13 +257,13 @@ function LoginModal({
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full bg-transparent text-sm text-[#0B1330] placeholder:text-[#0B1330]/40 focus:outline-none"
+                className="w-full bg-transparent text-sm text-ink placeholder:text-ink/40 focus:outline-none"
               />
               <button
                 type="button"
                 onClick={() => setShowPw((s) => !s)}
                 aria-label={showPw ? "Hide password" : "Show password"}
-                className="text-[#0B1330]"
+                className="text-ink"
               >
                 <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" />
@@ -275,12 +275,12 @@ function LoginModal({
           </div>
 
           {/* Remember */}
-          <label className="mt-4 flex cursor-pointer items-center gap-2 text-[11px] font-semibold text-[#0B1330]">
+          <label className="mt-4 flex cursor-pointer items-center gap-2 text-[11px] font-semibold text-ink">
             <input
               type="checkbox"
               checked={remember}
               onChange={(e) => setRemember(e.target.checked)}
-              className="h-3.5 w-3.5 accent-[#0B1330]"
+              className="h-3.5 w-3.5 accent-ink"
             />
             Keep me logged in on this device
           </label>
@@ -295,7 +295,7 @@ function LoginModal({
           <button
             type="submit"
             disabled={loading}
-            className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-[#0B1330] py-3 text-xs font-bold uppercase tracking-widest text-white shadow-[0_4px_0_#3B4A86] transition active:translate-y-0.5 active:shadow-[0_2px_0_#3B4A86] disabled:opacity-60"
+            className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-navy py-3 text-xs font-bold uppercase tracking-widest text-white shadow-[0_4px_0_#3B4A86] transition active:translate-y-0.5 active:shadow-[0_2px_0_#3B4A86] disabled:opacity-60"
           >
             {loading ? (
               <>
@@ -311,12 +311,12 @@ function LoginModal({
             )}
           </button>
 
-          <p className="mt-4 text-center text-[11px] text-[#0B1330]/70">
+          <p className="mt-4 text-center text-[11px] text-ink/70">
             New to {brand}?{" "}
             <button
               type="button"
               onClick={onRegister}
-              className="font-bold text-[#0B1330] underline"
+              className="font-bold text-ink underline"
             >
               Create an account
             </button>

@@ -102,17 +102,17 @@ export default function BookLoanDialog({ book, onClose }) {
           />
         ) : (
           <>
-            <div className="rounded-2xl border border-slate-200 bg-[#F7F6FB] p-5">
+            <div className="rounded-2xl border border-slate-200 bg-page p-5">
               <div className="flex gap-4">
                 <BookCover
                   book={book}
                   className="h-28 w-20 shrink-0 border-slate-200 shadow-sm"
                 />
                 <div className="min-w-0">
-                  <span className="inline-flex max-w-full truncate rounded-full bg-[#F0EDFA] px-2.5 py-0.5 text-[11px] font-semibold text-[#3B4A86]">
+                  <span className="inline-flex max-w-full truncate rounded-full bg-tint px-2.5 py-0.5 text-[11px] font-semibold text-accent">
                     {book.format?.name || "Unspecified format"}
                   </span>
-                  <h3 className="mt-2 break-words font-serif text-lg font-bold leading-snug text-[#0B1330]">
+                  <h3 className="mt-2 break-words font-serif text-lg font-bold leading-snug text-ink">
                     {book.book_name}
                   </h3>
                   <p className="mt-1.5 text-sm text-slate-600">
@@ -127,10 +127,10 @@ export default function BookLoanDialog({ book, onClose }) {
             </div>
 
             <section>
-              <h4 className="flex items-center gap-2 text-sm font-semibold text-[#0B1330]">
+              <h4 className="flex items-center gap-2 text-sm font-semibold text-ink">
                 <span
                   aria-hidden="true"
-                  className="h-4 w-1 rounded-full bg-[#0B1330]"
+                  className="h-4 w-1 rounded-full bg-navy"
                 />
                 Copies (accession numbers)
               </h4>
@@ -159,7 +159,7 @@ export default function BookLoanDialog({ book, onClose }) {
                         className="flex flex-wrap items-center justify-between gap-3 py-3"
                       >
                         <div className="min-w-0">
-                          <p className="text-sm font-semibold text-[#0B1330]">
+                          <p className="text-sm font-semibold text-ink">
                             {copy.accession_number}
                           </p>
                           {open ? (
@@ -229,10 +229,10 @@ export default function BookLoanDialog({ book, onClose }) {
             </section>
 
             <section className="border-t border-slate-100 pt-5">
-              <h4 className="flex items-center gap-2 text-sm font-semibold text-[#0B1330]">
+              <h4 className="flex items-center gap-2 text-sm font-semibold text-ink">
                 <span
                   aria-hidden="true"
-                  className="h-4 w-1 rounded-full bg-[#0B1330]"
+                  className="h-4 w-1 rounded-full bg-navy"
                 />
                 Borrowing history
               </h4>
@@ -253,7 +253,7 @@ export default function BookLoanDialog({ book, onClose }) {
                       className="flex flex-wrap items-center justify-between gap-2 py-2.5 text-xs"
                     >
                       <div className="min-w-0">
-                        <p className="font-semibold text-[#0B1330]">
+                        <p className="font-semibold text-ink">
                           {loan.holder}{" "}
                           <span className="font-normal text-slate-500">
                             · {loan.library_id}

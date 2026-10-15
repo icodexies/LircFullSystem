@@ -87,10 +87,10 @@ export default function EditScanDialog({ entry, onSaved, onClose }) {
               type="button"
               aria-pressed={condition === item.value}
               onClick={() => setCondition(item.value)}
-              className={`rounded-xl px-4 py-2.5 text-xs font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3B4A86] ${
+              className={`rounded-xl px-4 py-2.5 text-xs font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-strong ${
                 condition === item.value
-                  ? "bg-[#0B1330] text-white"
-                  : "border border-slate-400 bg-slate-100 text-slate-700 hover:bg-slate-200 hover:text-[#0B1330]"
+                  ? "bg-navy text-white"
+                  : "border border-slate-400 bg-slate-100 text-slate-700 hover:bg-slate-200 hover:text-ink"
               }`}
             >
               {item.label}

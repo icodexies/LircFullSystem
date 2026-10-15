@@ -13,7 +13,7 @@ export default function SignInActivity() {
   const signIn = useSignInActivity({ scope: "own", pageSize: 10 });
 
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_1px_2px_rgba(11,19,48,0.05)] sm:p-6">
+    <section className="rounded-2xl border border-slate-200 bg-surface p-5 shadow-[0_1px_2px_rgba(11,19,48,0.05)] sm:p-6">
       <div className="mb-4">
         <h2 className={sectionHeadingClass}>
           <span aria-hidden="true" className={headingBarClass} />
@@ -48,7 +48,7 @@ export default function SignInActivity() {
                 className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 py-3"
               >
                 <div className="min-w-0">
-                  <p className="text-sm text-[#0B1330]">{row.action}</p>
+                  <p className="text-sm text-ink">{row.action}</p>
                   <p className="mt-0.5 truncate text-[11px] text-slate-500">
                     {displayTime(row.occurred_at)}
                     {row.detail ? ` · ${row.detail}` : ""}
@@ -79,7 +79,7 @@ export default function SignInActivity() {
               Next
             </button>
           </div>
-          <p className="mt-4 rounded-xl bg-[#F7F6FB] px-3.5 py-2.5 text-[11px] leading-relaxed text-slate-600">
+          <p className="mt-4 rounded-xl bg-page px-3.5 py-2.5 text-[11px] leading-relaxed text-slate-600">
             {signInSourceNote(signIn.data.source)}
             {signIn.data.coverage_first && signIn.data.coverage_last
               ? ` Coverage: ${displayTime(signIn.data.coverage_first)} → ${displayTime(signIn.data.coverage_last)}.`

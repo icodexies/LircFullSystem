@@ -38,7 +38,7 @@ export default function BookDrillModal({ root, onClose }) {
         {path.length > 1 && (
           <button
             type="button"
-            className="text-xs font-semibold text-[#3B4A86] hover:underline"
+            className="text-xs font-semibold text-accent hover:underline"
             onClick={() => setPath(path.slice(0, -1))}
           >
             ← Back to {path[path.length - 2].label}
@@ -46,10 +46,10 @@ export default function BookDrillModal({ root, onClose }) {
         )}
 
         <section>
-          <h3 className="flex items-center gap-2 text-sm font-semibold text-[#0B1330]">
+          <h3 className="flex items-center gap-2 text-sm font-semibold text-ink">
             <span
               aria-hidden="true"
-              className="h-4 w-1 rounded-full bg-[#0B1330]"
+              className="h-4 w-1 rounded-full bg-navy"
             />
             Most borrowed books
           </h3>
@@ -72,10 +72,10 @@ export default function BookDrillModal({ root, onClose }) {
 
         {current.children.length > 0 && (
           <section className="border-t border-slate-100 pt-5">
-            <h3 className="flex items-center gap-2 text-sm font-semibold text-[#0B1330]">
+            <h3 className="flex items-center gap-2 text-sm font-semibold text-ink">
               <span
                 aria-hidden="true"
-                className="h-4 w-1 rounded-full bg-[#0B1330]"
+                className="h-4 w-1 rounded-full bg-navy"
               />
               {current.childrenLabel}
             </h3>
@@ -87,11 +87,11 @@ export default function BookDrillModal({ root, onClose }) {
                 <li key={child.key}>
                   <button
                     type="button"
-                    className="flex w-full flex-wrap items-center justify-between gap-3 py-3 text-left transition-colors hover:bg-[#F7F6FB]/70"
+                    className="flex w-full flex-wrap items-center justify-between gap-3 py-3 text-left transition-colors hover:bg-page/70"
                     onClick={() => setPath([...path, child])}
                   >
                     <span className="min-w-0">
-                      <span className="block truncate text-sm font-medium text-[#0B1330]">
+                      <span className="block truncate text-sm font-medium text-ink">
                         {child.label}
                       </span>
                       {child.sub && (
@@ -101,10 +101,10 @@ export default function BookDrillModal({ root, onClose }) {
                       )}
                     </span>
                     <span className="flex items-center gap-3 text-xs">
-                      <span className="font-semibold text-[#0B1330] tabular-nums">
+                      <span className="font-semibold text-ink tabular-nums">
                         {number(child.count)}
                       </span>
-                      <span className="font-semibold text-[#3B4A86]">
+                      <span className="font-semibold text-accent">
                         Open →
                       </span>
                     </span>

@@ -36,7 +36,7 @@ function DashboardHero({ role }) {
 const fmt = (n) => Number(n ?? 0).toLocaleString("en-US");
 
 const chartPanelClass =
-  "rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_1px_2px_rgba(11,19,48,0.05)] sm:p-6";
+  "rounded-2xl border border-slate-200 bg-surface p-5 shadow-[0_1px_2px_rgba(11,19,48,0.05)] sm:p-6";
 
 export default function PersonnelDashboard({ role }) {
   const summary = useActivitySummary({ days: 30 });

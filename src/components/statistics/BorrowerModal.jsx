@@ -75,10 +75,10 @@ export default function BorrowerModal({ person, semesterId, semesterLabel, onClo
           />
 
           <section>
-            <h3 className="flex items-center gap-2 text-sm font-semibold text-[#0B1330]">
+            <h3 className="flex items-center gap-2 text-sm font-semibold text-ink">
               <span
                 aria-hidden="true"
-                className="h-4 w-1 rounded-full bg-[#0B1330]"
+                className="h-4 w-1 rounded-full bg-navy"
               />
               Books borrowed
             </h3>
@@ -100,10 +100,10 @@ export default function BorrowerModal({ person, semesterId, semesterLabel, onClo
 
           {(data.loans ?? []).length > 0 && (
             <section className="border-t border-slate-100 pt-5">
-              <h3 className="flex items-center gap-2 text-sm font-semibold text-[#0B1330]">
+              <h3 className="flex items-center gap-2 text-sm font-semibold text-ink">
                 <span
                   aria-hidden="true"
-                  className="h-4 w-1 rounded-full bg-[#0B1330]"
+                  className="h-4 w-1 rounded-full bg-navy"
                 />
                 Recent loans
               </h3>
@@ -114,7 +114,7 @@ export default function BorrowerModal({ person, semesterId, semesterLabel, onClo
                     className="flex flex-wrap items-center justify-between gap-2 py-2.5 text-xs"
                   >
                     <div className="min-w-0">
-                      <p className="truncate font-medium text-[#0B1330]">
+                      <p className="truncate font-medium text-ink">
                         {loan.book_name}
                       </p>
                       <p className="mt-0.5 text-slate-500">
@@ -140,7 +140,7 @@ export default function BorrowerModal({ person, semesterId, semesterLabel, onClo
           <div className="border-t border-slate-100 pt-4">
             <Link
               to={`/users?member=${person.id}`}
-              className="text-xs font-semibold text-[#3B4A86] hover:underline"
+              className="text-xs font-semibold text-accent hover:underline"
             >
               Open member record →
             </Link>

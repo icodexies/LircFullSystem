@@ -23,21 +23,21 @@ export const RATING_TONES = [
   {
     min: 90,
     key: "excellent",
-    chip: "bg-[#0F8A6B] text-white",
+    chip: "bg-jade text-white",
     pdfBg: [15, 138, 107],
     pdfFg: [255, 255, 255],
   },
   {
     min: 80,
     key: "very-good",
-    chip: "bg-[#E7F4EF] text-[#0B6B52]",
+    chip: "bg-jade-soft text-jade-deep",
     pdfBg: [231, 244, 239],
     pdfFg: [11, 107, 82],
   },
   {
     min: 70,
     key: "good",
-    chip: "bg-[#F0EDFA] text-[#3B4A86]",
+    chip: "bg-tint text-accent",
     pdfBg: [240, 237, 250],
     pdfFg: [59, 74, 134],
   },
@@ -72,10 +72,10 @@ export function ratingTone(score) {
 
 // How the month compares with the person's own previous months.
 export const TREND_TONES = {
-  Improved: { chip: "bg-[#E7F4EF] text-[#0B6B52]", arrow: "↑" },
+  Improved: { chip: "bg-jade-soft text-jade-deep", arrow: "↑" },
   Steady: { chip: "bg-slate-100 text-slate-700", arrow: "→" },
   Declined: { chip: "bg-amber-50 text-amber-900", arrow: "↓" },
-  "First month": { chip: "bg-[#F0EDFA] text-[#3B4A86]", arrow: "•" },
+  "First month": { chip: "bg-tint text-accent", arrow: "•" },
 };
 
 export function trendTone(trend) {

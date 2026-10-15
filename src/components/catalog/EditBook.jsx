@@ -41,7 +41,7 @@ const SECTIONS = [
   },
 ];
 const inputClass =
-  "mt-1.5 w-full rounded-xl border border-slate-400 bg-white px-3 py-2.5 text-sm text-[#0B1330] placeholder:text-slate-500 focus:border-[#3B4A86] focus:outline-none focus:ring-2 focus:ring-[#3B4A86]/15";
+  "mt-1.5 w-full rounded-xl border border-slate-400 bg-surface px-3 py-2.5 text-sm text-ink placeholder:text-slate-500 focus:border-accent-strong focus:outline-none focus:ring-2 focus:ring-accent-strong/15";
 const labelClass = "text-xs font-medium text-slate-600";
 
 export default function EditBook({ book, lookups, role, onClose, onSaved }) {
@@ -148,7 +148,7 @@ export default function EditBook({ book, lookups, role, onClose, onSaved }) {
       footer={
         <div className="flex flex-wrap items-center justify-between gap-3">
           <p className="hidden text-[11px] text-slate-500 sm:block">
-            <span className="text-[#3B4A86]">*</span> Required
+            <span className="text-accent">*</span> Required
           </p>
           <div className="ml-auto flex gap-3">
             <button
@@ -173,7 +173,7 @@ export default function EditBook({ book, lookups, role, onClose, onSaved }) {
     >
       <form id="edit-book-form" onSubmit={submit} className="p-6">
         {/* Context strip: shows the record as currently saved */}
-        <div className="rounded-2xl border border-slate-200 bg-[#F7F6FB] p-4 sm:p-5">
+        <div className="rounded-2xl border border-slate-200 bg-page p-4 sm:p-5">
           <div className="flex items-center gap-4">
             <BookCover
               book={book}
@@ -183,7 +183,7 @@ export default function EditBook({ book, lookups, role, onClose, onSaved }) {
               <p className="text-[11px] font-medium text-slate-500">
                 You're editing
               </p>
-              <p className="mt-0.5 line-clamp-2 break-words font-serif text-lg font-bold leading-snug text-[#0B1330]">
+              <p className="mt-0.5 line-clamp-2 break-words font-serif text-lg font-bold leading-snug text-ink">
                 {book.book_name}
               </p>
               <p className="mt-1.5 text-xs leading-relaxed text-slate-600">
@@ -200,10 +200,10 @@ export default function EditBook({ book, lookups, role, onClose, onSaved }) {
           <legend className="sr-only">Book information</legend>
           {SECTIONS.map((section) => (
             <section key={section.title}>
-              <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold text-[#0B1330]">
+              <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold text-ink">
                 <span
                   aria-hidden="true"
-                  className="h-4 w-1 rounded-full bg-[#0B1330]"
+                  className="h-4 w-1 rounded-full bg-navy"
                 />
                 {section.title}
               </h3>
@@ -218,7 +218,7 @@ export default function EditBook({ book, lookups, role, onClose, onSaved }) {
                       <span className={labelClass}>
                         {field.label}
                         {field.required && (
-                          <span className="text-[#3B4A86]"> *</span>
+                          <span className="text-accent"> *</span>
                         )}
                       </span>
                       <input

@@ -57,7 +57,7 @@ const ROLE_OPTIONS = [
 ];
 
 const selectClass =
-  "rounded-xl border border-slate-400 bg-white px-3 py-2 text-xs text-[#0B1330] focus:border-[#3B4A86] focus:outline-none focus:ring-2 focus:ring-[#3B4A86]/15";
+  "rounded-xl border border-slate-400 bg-surface px-3 py-2 text-xs text-ink focus:border-accent-strong focus:outline-none focus:ring-2 focus:ring-accent-strong/15";
 
 const GRID =
   "md:grid-cols-[210px_minmax(0,1fr)_150px_150px_150px]";
@@ -175,7 +175,7 @@ export default function LoanRecordsPanel({
 
   return (
     <div className="space-y-4">
-      <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-[0_1px_2px_rgba(11,19,48,0.05)] sm:p-5">
+      <section className="rounded-2xl border border-slate-200 bg-surface p-4 shadow-[0_1px_2px_rgba(11,19,48,0.05)] sm:p-5">
         <div className="flex flex-wrap items-center gap-2">
           <label className="text-xs text-slate-600">
             <span className="sr-only">Search a person by name or card</span>
@@ -258,7 +258,7 @@ export default function LoanRecordsPanel({
           {hasFilters && (
             <button
               type="button"
-              className="text-[11px] font-semibold text-[#3B4A86] hover:underline"
+              className="text-[11px] font-semibold text-accent hover:underline"
               onClick={() => {
                 setPersonInput("");
                 setPerson("");
@@ -311,7 +311,7 @@ export default function LoanRecordsPanel({
         )}
 
         <div
-          className={`hidden gap-x-4 border-y border-slate-200 bg-[#F7F6FB] px-5 py-2.5 text-[11px] font-semibold text-slate-600 md:grid ${GRID}`}
+          className={`hidden gap-x-4 border-y border-slate-200 bg-page px-5 py-2.5 text-[11px] font-semibold text-slate-600 md:grid ${GRID}`}
         >
           <span>Member</span>
           <span>Book</span>
@@ -337,7 +337,7 @@ export default function LoanRecordsPanel({
                 <span className="flex min-w-0 items-center gap-3">
                   <Avatar src={row.avatar_url} className="h-9 w-9" />
                   <span className="min-w-0">
-                    <span className="block truncate font-semibold text-[#0B1330]">
+                    <span className="block truncate font-semibold text-ink">
                       {row.member_name}
                     </span>
                     <span className="block truncate text-[11px] text-slate-500">
@@ -347,7 +347,7 @@ export default function LoanRecordsPanel({
                   </span>
                 </span>
                 <span className="min-w-0">
-                  <span className="block font-medium leading-snug text-[#0B1330]">
+                  <span className="block font-medium leading-snug text-ink">
                     {row.book_name}
                   </span>
                   <span className="block text-[11px] text-slate-500">

@@ -283,10 +283,10 @@ export default function Inventory() {
                 key={item.id}
                 type="button"
                 onClick={() => setTab(item.id)}
-                className={`inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#3B4A86] ${
+                className={`inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-strong ${
                   tab === item.id
-                    ? "bg-[#0B1330] text-white"
-                    : "border border-slate-400 bg-slate-100 text-slate-700 hover:bg-slate-200 hover:text-[#0B1330]"
+                    ? "bg-navy text-white"
+                    : "border border-slate-400 bg-slate-100 text-slate-700 hover:bg-slate-200 hover:text-ink"
                 }`}
               >
                 {item.label}
@@ -323,7 +323,7 @@ export default function Inventory() {
                       className="flex flex-wrap items-center justify-between gap-3 py-3"
                     >
                       <div className="min-w-0">
-                        <p className="text-sm font-semibold text-[#0B1330]">
+                        <p className="text-sm font-semibold text-ink">
                           {item.session.name} · {item.session.year}
                         </p>
                         <p className="mt-0.5 text-xs text-slate-500">
@@ -362,7 +362,7 @@ export default function Inventory() {
               {isAdmin ? (
                 <p className="max-w-xl text-xs leading-relaxed text-slate-500">
                   Press{" "}
-                  <strong className="font-semibold text-[#0B1330]">
+                  <strong className="font-semibold text-ink">
                     Start Inventory
                   </strong>{" "}
                   to name a new one — for example "Annual Inventory 2026." An

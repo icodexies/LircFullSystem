@@ -156,11 +156,11 @@ const fmt = (n) => n.toLocaleString("en-US");
 /* ------------------------------------------------------------------ */
 function Card({ title, subtitle, action, children, className = "" }) {
   return (
-    <section className={`rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_1px_2px_rgba(11,19,48,0.05)] sm:p-6 ${className}`}>
+    <section className={`rounded-2xl border border-slate-200 bg-surface p-5 shadow-[0_1px_2px_rgba(11,19,48,0.05)] sm:p-6 ${className}`}>
       {(title || action) && (
         <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h2 className="font-serif text-lg font-semibold tracking-tight text-[#0B1330]">{title}</h2>
+            <h2 className="font-serif text-lg font-semibold tracking-tight text-ink">{title}</h2>
             {subtitle && <p className="mt-0.5 text-xs text-slate-500">{subtitle}</p>}
           </div>
           {action}
@@ -262,7 +262,7 @@ function Donut({ segments, centerValue, centerLabel }) {
           ))}
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="font-serif text-3xl font-bold text-[#0B1330]">{centerValue}</span>
+          <span className="font-serif text-3xl font-bold text-ink">{centerValue}</span>
           <span className="text-xs text-slate-500">{centerLabel}</span>
         </div>
       </div>
@@ -273,7 +273,7 @@ function Donut({ segments, centerValue, centerLabel }) {
               <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: seg.color }} aria-hidden="true" />
               {seg.label}
             </span>
-            <span className="font-medium text-[#0B1330]">{fmt(seg.value)}</span>
+            <span className="font-medium text-ink">{fmt(seg.value)}</span>
           </li>
         ))}
       </ul>
@@ -283,7 +283,7 @@ function Donut({ segments, centerValue, centerLabel }) {
 
 function ProgressBar({ value, max, tone = "sky" }) {
   const pct = Math.min(100, Math.round((value / max) * 100));
-  const fill = tone === "rose" ? "bg-rose-400" : tone === "navy" ? "bg-[#0B1330]" : "bg-sky-400";
+  const fill = tone === "rose" ? "bg-rose-400" : tone === "navy" ? "bg-navy" : "bg-sky-400";
   return (
     <div className="h-2 w-full overflow-hidden rounded-full bg-slate-100" role="progressbar" aria-valuenow={value} aria-valuemin={0} aria-valuemax={max}>
       <div className={`h-full rounded-full ${fill}`} style={{ width: `${pct}%` }} />
@@ -311,8 +311,8 @@ function MemberDashboard({ role }) {
         {data.stats.map((s, i) => {
           const featured = i === 0;
           return (
-            <div key={s.id} className={`flex min-w-0 flex-col rounded-2xl border p-5 shadow-[0_1px_2px_rgba(11,19,48,0.05)] ${featured ? "border-[#0B1330] bg-[#0B1330] text-white" : "border-slate-200 bg-white text-[#0B1330]"}`}>
-              <span className={`flex h-9 w-9 items-center justify-center rounded-lg ${featured ? "bg-white/10 text-sky-300" : s.warn ? "bg-rose-50 text-rose-600" : "bg-[#F0EDFA] text-[#3B4A86]"}`}>
+            <div key={s.id} className={`flex min-w-0 flex-col rounded-2xl border p-5 shadow-[0_1px_2px_rgba(11,19,48,0.05)] ${featured ? "border-navy bg-navy text-white" : "border-slate-200 bg-surface text-ink"}`}>
+              <span className={`flex h-9 w-9 items-center justify-center rounded-lg ${featured ? "bg-white/10 text-sky-300" : s.warn ? "bg-rose-50 text-rose-600" : "bg-tint text-accent"}`}>
                 <Icon name={s.icon} className="h-[18px] w-[18px]" />
               </span>
               <p className={`mt-5 text-[13px] ${featured ? "text-slate-300" : "text-slate-500"}`}>{s.label}</p>
@@ -341,11 +341,11 @@ function MemberDashboard({ role }) {
               return (
                 <li key={b.title} className="flex flex-col gap-3 rounded-xl border border-slate-200 p-4 sm:flex-row sm:items-center sm:gap-5">
                   <div className="flex min-w-0 flex-1 items-center gap-4">
-                    <span className="flex h-14 w-10 shrink-0 items-center justify-center rounded-md bg-[#0B1330] text-sky-300" aria-hidden="true">
+                    <span className="flex h-14 w-10 shrink-0 items-center justify-center rounded-md bg-navy text-sky-300" aria-hidden="true">
                       <Icon name="book" className="h-5 w-5" />
                     </span>
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-semibold text-[#0B1330]">{b.title}</p>
+                      <p className="truncate text-sm font-semibold text-ink">{b.title}</p>
                       <p className="truncate text-xs text-slate-500">{b.author}</p>
                       <p className="mt-0.5 text-xs text-slate-400">Call number {b.call}</p>
                     </div>
@@ -367,11 +367,11 @@ function MemberDashboard({ role }) {
           <ul className="space-y-3">
             {data.reservations.map((r) => (
               <li key={r.title} className="flex items-start gap-3 rounded-xl bg-slate-50 p-4">
-                <span className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${r.ready ? "bg-sky-400 text-[#0B1330]" : "bg-slate-200 text-slate-600"}`}>
+                <span className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${r.ready ? "bg-sky-400 text-ink" : "bg-slate-200 text-slate-600"}`}>
                   <Icon name={r.ready ? "check" : "clock"} className="h-4 w-4" />
                 </span>
                 <div>
-                  <p className="text-sm font-semibold text-[#0B1330]">{r.title}</p>
+                  <p className="text-sm font-semibold text-ink">{r.title}</p>
                   <p className="text-xs text-slate-500">{r.note}</p>
                 </div>
               </li>
@@ -395,7 +395,7 @@ function MemberDashboard({ role }) {
             {data.activity.map((a) => (
               <li key={a.text} className="relative">
                 <span className="absolute -left-[29px] top-1 h-2.5 w-2.5 rounded-full bg-sky-400 ring-4 ring-white" aria-hidden="true" />
-                <p className="text-sm text-[#0B1330]">{a.text}</p>
+                <p className="text-sm text-ink">{a.text}</p>
                 <p className="text-xs text-slate-500">{a.time}</p>
               </li>
             ))}
@@ -408,11 +408,11 @@ function MemberDashboard({ role }) {
               const approved = r.status === "Approved";
               return (
                 <li key={r.name} className="flex items-center gap-3">
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#0B1330] text-sky-300">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-navy text-sky-300">
                     <Icon name="world" className="h-[18px] w-[18px]" />
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-semibold text-[#0B1330]">{r.name}</p>
+                    <p className="truncate text-sm font-semibold text-ink">{r.name}</p>
                     <p className="truncate text-xs text-slate-500">{r.note}</p>
                   </div>
                   <span className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-medium ${approved ? "bg-sky-50 text-sky-700" : "bg-amber-50 text-amber-700"}`}>{r.status}</span>

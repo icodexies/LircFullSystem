@@ -52,7 +52,7 @@ function InfoPanel({ source }) {
           title={!source.url ? "Access link is not available yet" : undefined}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-7 inline-flex w-fit rounded-full bg-white px-5 py-2 text-sm font-semibold text-[#0B1330] transition hover:bg-slate-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+          className="mt-7 inline-flex w-fit rounded-full bg-white px-5 py-2 text-sm font-semibold text-navy transition hover:bg-[#F0EDFA] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
         >
           Visit {source.name}
         </a>
@@ -66,7 +66,7 @@ function InfoPanel({ source }) {
 function AccessNotice() {
   return (
     <div className="flex max-w-md gap-4 rounded-2xl border border-white/15 bg-white/5 p-4 sm:p-5">
-      <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-white text-[#0B1330]">
+      <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-white text-navy">
         <Icon d={PATHS.info} className="h-5 w-5" />
       </span>
 
@@ -82,7 +82,7 @@ function AccessNotice() {
           title={!ACCESS_FORM_URL ? "The access request form is not available yet" : undefined}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-3 inline-flex rounded-full border border-white/40 px-4 py-1.5 text-sm font-semibold text-white transition hover:bg-white hover:text-[#0B1330] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+          className="mt-3 inline-flex rounded-full border border-white/40 px-4 py-1.5 text-sm font-semibold text-white transition hover:bg-white hover:text-navy focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
         >
           Fill up the Google Form
         </a>
@@ -116,7 +116,7 @@ function SourceImage({ source, compact = false }) {
 
   return (
     <span
-      className={`absolute inset-0 grid place-items-center text-center font-[Fraunces] font-semibold text-[#0B1330] ${
+      className={`absolute inset-0 grid place-items-center text-center font-[Fraunces] font-semibold text-ink ${
         compact ? "text-sm" : "text-2xl"
       }`}
     >
@@ -140,16 +140,16 @@ function SourcePicker({ sources, activeIndex, onSelect }) {
               onClick={() => onSelect(source.id)}
               aria-label={`Select ${source.name}`}
               aria-current={isActive}
-              className={`flex h-24 w-full flex-col rounded-xl bg-white p-2 text-left shadow-lg shadow-black/30 transition duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:h-28 ${
+              className={`flex h-24 w-full flex-col rounded-xl bg-surface p-2 text-left shadow-lg shadow-black/30 transition duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:h-28 ${
                 isActive
-                  ? "opacity-100 ring-2 ring-white ring-offset-2 ring-offset-[#0B1330]"
+                  ? "opacity-100 ring-2 ring-white ring-offset-2 ring-offset-navy"
                   : "opacity-60 hover:opacity-100"
               }`}
             >
               <div className="relative min-h-0 flex-1">
                 <SourceImage source={source} compact />
               </div>
-              <span className="mt-1 truncate border-t border-slate-200 pt-1 text-center text-[10px] font-semibold text-[#0B1330] sm:text-xs">
+              <span className="mt-1 truncate border-t border-slate-200 pt-1 text-center text-[10px] font-semibold text-ink sm:text-xs">
                 {source.name}
               </span>
             </button>
@@ -194,7 +194,7 @@ function SourceStack({ sources, activeIndex, onSelect }) {
               style={{
                 transform: `translateY(${offset * STEP}px) scale(${isActive ? 1 : 0.92})`,
               }}
-              className={`group flex h-60 w-full flex-col rounded-2xl bg-white py-6 pl-6 pr-[7.5rem] text-left shadow-[0_24px_50px_-12px_rgba(0,0,0,0.55)] transition-[transform,opacity,box-shadow] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white motion-reduce:transition-none sm:h-72 ${
+              className={`group flex h-60 w-full flex-col rounded-2xl bg-surface py-6 pl-6 pr-[7.5rem] text-left shadow-[0_24px_50px_-12px_rgba(0,0,0,0.55)] transition-[transform,opacity,box-shadow] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white motion-reduce:transition-none sm:h-72 ${
                 isActive
                   ? "cursor-default opacity-100"
                   : "cursor-pointer opacity-60 hover:opacity-100 hover:ring-2 hover:ring-white/70"
@@ -205,15 +205,15 @@ function SourceStack({ sources, activeIndex, onSelect }) {
               </div>
 
               <div className="mt-4 flex items-center justify-between border-t border-slate-200 pt-3">
-                <span className="font-[Fraunces] text-sm text-[#0B1330]">{source.name}</span>
+                <span className="font-[Fraunces] text-sm text-ink">{source.name}</span>
 
                 {isActive ? (
                   <span className="flex items-center gap-1.5 text-xs text-slate-500">
-                    <span className="h-1.5 w-1.5 rounded-full bg-[#0B1330]" />
+                    <span className="h-1.5 w-1.5 rounded-full bg-navy" />
                     Selected
                   </span>
                 ) : (
-                  <span className="grid h-7 w-7 place-items-center rounded-full border border-slate-300 text-[#0B1330] transition group-hover:border-[#0B1330] group-hover:bg-[#0B1330] group-hover:text-white">
+                  <span className="grid h-7 w-7 place-items-center rounded-full border border-slate-300 text-ink transition group-hover:border-navy group-hover:bg-navy group-hover:text-white">
                     <Icon d={offset < 0 ? PATHS.up : PATHS.down} />
                   </span>
                 )}
@@ -327,7 +327,7 @@ function DigitalSources() {
   return (
     <section
       aria-labelledby="digital-sources-title"
-      className="relative w-full overflow-hidden bg-[#0B1330] pb-32 pt-20 lg:py-36"
+      className="relative w-full overflow-hidden bg-navy pb-32 pt-20 lg:py-36"
     >
       <BackgroundArt />
 

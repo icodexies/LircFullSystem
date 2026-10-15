@@ -237,12 +237,12 @@ export default function AddBookDialog({ onClose, onSaved }) {
       )}
 
       {linkedBook ? (
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[#3B4A86]/20 bg-[#F0EDFA] p-4">
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-accent-strong/20 bg-tint p-4">
           <div className="min-w-0">
-            <p className="text-[10px] font-bold uppercase tracking-wide text-[#3B4A86]">
+            <p className="text-[10px] font-bold uppercase tracking-wide text-accent">
               Adding copies to an existing record
             </p>
-            <p className="mt-1 text-sm font-semibold text-[#0B1330]">
+            <p className="mt-1 text-sm font-semibold text-ink">
               {linkedBook.book_name}
             </p>
             <p className="mt-0.5 text-xs text-slate-500">
@@ -251,19 +251,19 @@ export default function AddBookDialog({ onClose, onSaved }) {
           </div>
           <button
             type="button"
-            className="text-xs font-semibold text-[#3B4A86] hover:underline"
+            className="text-xs font-semibold text-accent hover:underline"
             onClick={unlinkBook}
           >
             Create a new book instead
           </button>
         </div>
       ) : (
-        <section className="rounded-xl border border-[#3B4A86]/20 bg-[#F0EDFA]/50 p-4">
-          <p className="text-xs font-semibold text-[#0B1330]">
+        <section className="rounded-xl border border-accent-strong/20 bg-tint/50 p-4">
+          <p className="text-xs font-semibold text-ink">
             First, check if the book already has a record
           </p>
           <p className="mt-0.5 text-[11px] leading-relaxed text-slate-600">
-            <strong className="text-[#3B4A86]">Fill the ISBN first</strong> when
+            <strong className="text-accent">Fill the ISBN first</strong> when
             the book has one — scanning its barcode works too. Books without an
             ISBN can be searched by title.
           </p>
@@ -327,7 +327,7 @@ export default function AddBookDialog({ onClose, onSaved }) {
             </p>
           </div>
         ) : (
-          <p className="rounded-xl border border-[#BFE3D6] bg-[#E7F4EF] px-4 py-3 text-xs text-[#0B6B52]">
+          <p className="rounded-xl border border-jade-line bg-jade-soft px-4 py-3 text-xs text-jade-deep">
             No existing record found — fill the book information below to
             create a new one.
           </p>
@@ -335,7 +335,7 @@ export default function AddBookDialog({ onClose, onSaved }) {
       )}
 
       <section className="space-y-4">
-        <h3 className="text-sm font-semibold text-[#0B1330]">
+        <h3 className="text-sm font-semibold text-ink">
           {linkedBook ? "Existing record details" : "Book information"}
         </h3>
         <fieldset
@@ -412,12 +412,12 @@ export default function AddBookDialog({ onClose, onSaved }) {
 
       <section className="space-y-3 border-t border-slate-100 pt-5">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <h3 className="text-sm font-semibold text-[#0B1330]">
+          <h3 className="text-sm font-semibold text-ink">
             Accession numbers (physical copies)
           </h3>
           <p className="text-xs text-slate-500">
             Total copies:{" "}
-            <strong className="text-[#0B1330]">{total}</strong>
+            <strong className="text-ink">{total}</strong>
           </p>
         </div>
         <p className="text-xs text-slate-500">
@@ -470,7 +470,7 @@ export default function AddBookDialog({ onClose, onSaved }) {
                   </Field>
                   <button
                     type="button"
-                    className="pb-2.5 text-xs text-slate-500 underline hover:text-[#0B1330]"
+                    className="pb-2.5 text-xs text-slate-500 underline hover:text-ink"
                     onClick={() => removeRow(row.key)}
                   >
                     Remove
@@ -485,7 +485,7 @@ export default function AddBookDialog({ onClose, onSaved }) {
           </>
         )}
 
-        <div className="flex flex-wrap items-end gap-3 rounded-xl bg-[#F7F6FB] p-3">
+        <div className="flex flex-wrap items-end gap-3 rounded-xl bg-page p-3">
           <div className="min-w-44">
             <Field label="Apply to all rows — shelf">
               <select
@@ -508,7 +508,7 @@ export default function AddBookDialog({ onClose, onSaved }) {
         </div>
       </section>
 
-      <div className="sticky bottom-0 -mx-6 -mb-6 flex flex-wrap items-center justify-end gap-3 border-t border-slate-200 bg-gradient-to-r from-[#F7F6FB] to-white px-6 py-4">
+      <div className="sticky bottom-0 -mx-6 -mb-6 flex flex-wrap items-center justify-end gap-3 border-t border-slate-200 bg-gradient-to-r from-page to-surface px-6 py-4">
         <button
           type="button"
           disabled={saving}

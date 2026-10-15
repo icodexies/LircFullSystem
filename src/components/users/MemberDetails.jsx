@@ -14,11 +14,11 @@ import Avatar from "../ui/Avatar.jsx";
 
 function Fact({ label, value }) {
   return (
-    <div className="rounded-xl bg-[#F7F6FB] p-3">
+    <div className="rounded-xl bg-page p-3">
       <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">
         {label}
       </p>
-      <p className="mt-1 text-xs font-semibold text-[#0B1330]">{value}</p>
+      <p className="mt-1 text-xs font-semibold text-ink">{value}</p>
     </div>
   );
 }
@@ -55,7 +55,7 @@ export default function MemberDetails({ member, onBack, onEdit }) {
       <div className="flex flex-wrap items-center justify-between gap-2">
         <button
           type="button"
-          className="text-xs font-semibold text-[#3B4A86] hover:underline"
+          className="text-xs font-semibold text-accent hover:underline"
           onClick={onBack}
         >
           ← Back to results
@@ -78,7 +78,7 @@ export default function MemberDetails({ member, onBack, onEdit }) {
           <div className="flex items-center gap-4">
             <Avatar src={profile.avatar_url} className="h-14 w-14" />
             <div>
-              <p className="font-serif text-xl font-bold text-[#0B1330]">
+              <p className="font-serif text-xl font-bold text-ink">
                 {profile.full_name}
               </p>
               <p className="mt-0.5 text-xs text-slate-500">
@@ -104,7 +104,7 @@ export default function MemberDetails({ member, onBack, onEdit }) {
           </dl>
 
           <section className="border-t border-slate-100 pt-5">
-            <h4 className="text-sm font-semibold text-[#0B1330]">
+            <h4 className="text-sm font-semibold text-ink">
               Borrow history
             </h4>
             {loans === null ? (
@@ -121,7 +121,7 @@ export default function MemberDetails({ member, onBack, onEdit }) {
                     className="flex flex-wrap items-center justify-between gap-2 py-2.5 text-xs"
                   >
                     <div className="min-w-0">
-                      <p className="font-semibold text-[#0B1330]">
+                      <p className="font-semibold text-ink">
                         {loan.book_name}
                       </p>
                       <p className="mt-0.5 text-slate-500">
@@ -148,7 +148,7 @@ export default function MemberDetails({ member, onBack, onEdit }) {
           </section>
 
           <section className="border-t border-slate-100 pt-5">
-            <h4 className="text-sm font-semibold text-[#0B1330]">
+            <h4 className="text-sm font-semibold text-ink">
               Attendance history
             </h4>
             <p className="mt-1 text-xs text-slate-500">
@@ -168,7 +168,7 @@ export default function MemberDetails({ member, onBack, onEdit }) {
                     className="flex flex-wrap items-center justify-between gap-2 py-2.5 text-xs"
                   >
                     <div className="min-w-0">
-                      <p className="font-semibold text-[#0B1330]">
+                      <p className="font-semibold text-ink">
                         {displayTime(visit.time_in)} →{" "}
                         {visit.time_out ? displayTime(visit.time_out) : "still inside"}
                       </p>

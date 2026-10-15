@@ -48,10 +48,10 @@ function MemberWorkspace() {
   };
 
   return (
-    <div className="min-h-dvh bg-white text-[#0B1330]">
+    <div className="min-h-dvh bg-surface text-ink">
       <a
         href="#member-content"
-        className="sr-only fixed left-4 top-3 z-[60] rounded-xl bg-white px-4 py-3 text-sm font-semibold shadow-lg focus:not-sr-only focus:fixed"
+        className="sr-only fixed left-4 top-3 z-[60] rounded-xl bg-surface px-4 py-3 text-sm font-semibold shadow-lg focus:not-sr-only focus:fixed"
       >
         Skip to page content
       </a>
@@ -78,7 +78,7 @@ function MemberWorkspace() {
         <main
           id="member-content"
           tabIndex={-1}
-          className="min-w-0 flex-1 bg-[#F7F6FB] px-5 py-7 outline-none sm:px-8 sm:py-9 lg:px-10"
+          className="min-w-0 flex-1 bg-page px-5 py-7 outline-none sm:px-8 sm:py-9 lg:px-10"
         >
           <Suspense
             fallback={<LoadingBlock label="Loading page…" className="min-h-[50vh]" />}

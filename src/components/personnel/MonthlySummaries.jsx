@@ -155,7 +155,7 @@ export default function MonthlySummaries({ profileId, profileName }) {
                   className="flex flex-wrap items-center justify-between gap-3 py-3"
                 >
                   <div className="min-w-0">
-                    <p className="text-sm font-semibold text-[#0B1330]">
+                    <p className="text-sm font-semibold text-ink">
                       {monthLabel(report.period_month)}
                     </p>
                     {report.headline && (
@@ -250,7 +250,7 @@ function SummaryModal({ report, profileName, onClose }) {
             </span>
           )}
           {model.headline && (
-            <p className="text-sm font-semibold text-[#0B1330]">
+            <p className="text-sm font-semibold text-ink">
               {model.headline}
             </p>
           )}
@@ -262,7 +262,7 @@ function SummaryModal({ report, profileName, onClose }) {
         ))}
         {model.sections.map((section) => (
           <div key={section.title}>
-            <h3 className="text-xs font-semibold text-[#0B1330]">
+            <h3 className="text-xs font-semibold text-ink">
               {section.title}
             </h3>
             <ul className="mt-1.5 space-y-1.5">
@@ -278,13 +278,13 @@ function SummaryModal({ report, profileName, onClose }) {
           </div>
         ))}
         {model.stats.length > 0 && (
-          <dl className="grid gap-3 rounded-xl bg-[#F7F6FB] p-4 sm:grid-cols-2">
+          <dl className="grid gap-3 rounded-xl bg-page p-4 sm:grid-cols-2">
             {model.stats.map(([label, value]) => (
               <div key={label}>
                 <dt className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">
                   {label}
                 </dt>
-                <dd className="mt-0.5 text-sm font-semibold text-[#0B1330]">
+                <dd className="mt-0.5 text-sm font-semibold text-ink">
                   {value}
                 </dd>
               </div>

@@ -84,7 +84,7 @@ export default function AttendanceStats({ semesterId, semesterLabel }) {
         chip={monthsChip}
       >
         <div className="p-5 sm:p-6">
-          <div className="rounded-xl bg-[#F7F6FB] p-4">
+          <div className="rounded-xl bg-page p-4">
             <LineChart
               labels={labels}
               series={[
@@ -118,7 +118,7 @@ export default function AttendanceStats({ semesterId, semesterLabel }) {
         chip="6 AM – 9 PM"
       >
         <div className="p-5 sm:p-6">
-          <div className="rounded-xl bg-[#F7F6FB] p-4">
+          <div className="rounded-xl bg-page p-4">
             <BarChart
               items={(data.by_hour ?? []).map((row) => ({
                 label: hourLabel(row.hour),
