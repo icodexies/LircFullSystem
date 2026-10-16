@@ -40,6 +40,18 @@
   --chart-share-5: #a9afd8;
   --chart-share-6: #c7c3e6;
   --chart-share-7: #ddd9f2;
+  --chart-dash-1: #0b1330;
+  --chart-dash-2: #38bdf8;
+  --chart-dash-3: #bae6fd;
+  --chart-dash-4: #cbd5e1;
+  --chart-work-1: #0b1330;
+  --chart-work-2: #0f8a6b;
+  --chart-work-3: #3b4a86;
+  --chart-work-4: #12a47e;
+  --chart-work-5: #5bba9e;
+  --chart-work-6: #94a3b8;
+  --chart-work-7: #cbd5e1;
+  --chart-work-8: #0b6b52;
 }
 
 /* ---- Dark theme ----------------------------------------------------------
@@ -107,17 +119,30 @@
   --color-blue-600: #93c5fd;
   --color-blue-700: #bfdbfe;
 
-  /* Chart ink, brightened for the dark surfaces. */
-  --chart-1: #97a5ec;
-  --chart-2: #6d7ed8;
-  --chart-3: #c2bbf0;
-  --chart-share-1: #d8d4f2;
-  --chart-share-2: #bbb5e6;
-  --chart-share-3: #9c9ad6;
-  --chart-share-4: #7f85c4;
-  --chart-share-5: #646dae;
-  --chart-share-6: #4d5896;
-  --chart-share-7: #3a447e;
+  /* Chart ink: clearly separated hues so lines, bars and segments read
+     apart at a glance on the dark surfaces. */
+  --chart-1: #7dd3fc; /* sky — borrowed / visits */
+  --chart-2: #6ee7b7; /* emerald — returned / unique visitors */
+  --chart-3: #f87171; /* red — overdue */
+  --chart-share-1: #eef2ff;
+  --chart-share-2: #818cf8;
+  --chart-share-3: #c7d2fe;
+  --chart-share-4: #6366f1;
+  --chart-share-5: #a5b4fc;
+  --chart-share-6: #4f46e5;
+  --chart-share-7: #e0e7ff;
+  --chart-dash-1: #7dd3fc;
+  --chart-dash-2: #fbbf24;
+  --chart-dash-3: #c4b5fd;
+  --chart-dash-4: #94a3b8;
+  --chart-work-1: #7dd3fc;
+  --chart-work-2: #34d399;
+  --chart-work-3: #c4b5fd;
+  --chart-work-4: #fbbf24;
+  --chart-work-5: #fda4af;
+  --chart-work-6: #94a3b8;
+  --chart-work-7: #e2e8f0;
+  --chart-work-8: #fb923c;
 }
 
 /* The page behind everything (public pages have no wrapper colour of their
@@ -128,10 +153,11 @@ html.dark {
 
 /* Public pages (home, register, forgot/reset password) keep their designed
    look in both themes — dark mode is not appropriate there. This scope
-   re-applies the light values inside the dark document. */
+   re-applies the light values inside the dark document. It deliberately sets
+   no background of its own: each page keeps its own (the register shell is
+   navy with the blurred sphere backdrop; the home layout paints white). */
 .theme-light {
   color-scheme: light;
-  background-color: #ffffff;
 
   --color-navy: #0b1330;
   --color-navy-deep: #17214a;
@@ -201,6 +227,18 @@ html.dark {
   --chart-share-5: #a9afd8;
   --chart-share-6: #c7c3e6;
   --chart-share-7: #ddd9f2;
+  --chart-dash-1: #0b1330;
+  --chart-dash-2: #38bdf8;
+  --chart-dash-3: #bae6fd;
+  --chart-dash-4: #cbd5e1;
+  --chart-work-1: #0b1330;
+  --chart-work-2: #0f8a6b;
+  --chart-work-3: #3b4a86;
+  --chart-work-4: #12a47e;
+  --chart-work-5: #5bba9e;
+  --chart-work-6: #94a3b8;
+  --chart-work-7: #cbd5e1;
+  --chart-work-8: #0b6b52;
 }
 
 * {

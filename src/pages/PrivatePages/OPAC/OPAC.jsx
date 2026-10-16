@@ -32,7 +32,7 @@ export default function OPAC() {
   const busy = catalog.loading || catalog.searching;
   const start = (catalog.query.page - 1) * catalog.query.pageSize + 1;
 
-  // Deep link from the statistics: /opac?book=<id> opens that book's window.
+  // Deep link support: /opac?book=<id> opens that book's window.
   useEffect(() => {
     if (!deepBook || !/^\d+$/.test(deepBook)) return;
     const timer = window.setTimeout(
@@ -385,7 +385,7 @@ export default function OPAC() {
                 <button
                   type="button"
                   onClick={() => setSelection({ id: book.id })}
-                  className="mt-4 flex items-center justify-between rounded-xl border border-navy/15 px-3 py-2.5 text-xs font-semibold text-ink hover:border-navy hover:bg-navy hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-strong"
+                  className="mt-4 flex items-center justify-between rounded-xl border border-slate-400 bg-slate-100 px-3 py-2.5 text-xs font-semibold text-slate-700 hover:border-navy hover:bg-navy hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-strong"
                 >
                   <span>
                     View details

@@ -6,6 +6,7 @@ import { displayTime, manilaDate } from "../attendance/attendanceRules.js";
 export const CONDITIONS = [
   { value: "Good", label: "Good Condition" },
   { value: "Damaged", label: "Damaged" },
+  { value: "Lost", label: "Lost" },
 ];
 export const DEFAULT_CONDITION = "Good";
 export const RECENT_LIMIT = 20;
@@ -13,6 +14,7 @@ export const RECENT_LIMIT = 20;
 export function conditionLabel(value) {
   if (value === "Good") return "Good Condition";
   if (value === "Damaged") return "Damaged";
+  if (value === "Lost") return "Lost";
   if (value === "Missing") return "Missing";
   return "Not yet checked";
 }
@@ -20,6 +22,7 @@ export function conditionLabel(value) {
 export function conditionTone(value) {
   if (value === "Good") return "success";
   if (value === "Damaged") return "warning";
+  if (value === "Lost") return "danger";
   if (value === "Missing") return "danger";
   return "muted";
 }

@@ -194,7 +194,9 @@ export default function BookDetails({ id, canEdit, onEdit, onClose }) {
             )}
           </div>
           <p className="mt-1 text-xs text-slate-500">
-            Each accession number identifies one physical copy.
+            Each accession number identifies one physical copy. Copies marked
+            damaged, missing or lost are kept in Inventory and are not shown
+            here.
           </p>
           {loadingCopies ? (
             <div role="status" className="mt-4 flex items-center gap-2 text-sm text-slate-500">

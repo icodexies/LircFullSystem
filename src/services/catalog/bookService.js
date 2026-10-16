@@ -173,6 +173,11 @@ export async function saveBookCopies(bookId, { updates, newRows, deleteIds }) {
   return data;
 }
 
+// The copies shown in circulation (the OPAC window and the Copies & loans
+// dialog): only copies in good condition — status "Available". Damaged,
+// missing and lost copies are archived here and stay visible in Inventory.
+// Copies on loan keep "Available" (loans do not change the copy status), so
+// returns always find their copy.
 export async function getBookCopies(bookId, page, signal) {
   const supabase = await getSupabase();
   const { from, to } = getPageRange(page, COPY_PAGE_SIZE);
@@ -180,6 +185,7 @@ export async function getBookCopies(bookId, page, signal) {
     .from("book_accession_numbers")
     .select("id,accession_number,status")
     .eq("book_id", bookId)
+    .eq("status", "Available")
     .order("accession_number")
     .order("id")
     .range(from, to)

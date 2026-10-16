@@ -72,8 +72,6 @@ export default function EnrollmentForm({
     };
   }, [profile.id, toast]);
 
-  // Books still out past their due date block the validation; the librarian
-  // then requests admin permission through the same request workflow.
   useEffect(() => {
     let active = true;
     getMemberLoans(profile.id)

@@ -130,7 +130,7 @@ export default function Users() {
     return () => window.clearTimeout(timer);
   }, [deepLinkId, requests, isAdmin]);
 
-  // Deep link from the statistics: /users?member=<id> opens that record.
+  // Deep link support: /users?member=<id> opens that record.
   useEffect(() => {
     if (!deepLinkMember || !/^\d+$/.test(deepLinkMember)) return;
     const timer = window.setTimeout(() => {

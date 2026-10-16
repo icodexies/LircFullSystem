@@ -29,6 +29,9 @@ const ProfilePage = lazy(
   () => import("./pages/PrivatePages/Profile/Profile.jsx"),
 );
 const Unauthorized = lazy(() => import("./pages/Unauthorized.jsx"));
+const SettingsPage = lazy(
+  () => import("./pages/PrivatePages/Settings/Settings.jsx"),
+);
 
 const memberScreens = {
   dashboard: lazy(() => import("./pages/PrivatePages/Dashboard/Dashboard.jsx")),
@@ -102,6 +105,9 @@ export default function App() {
                       element={<NotificationsPage />}
                     />
                     <Route path="/profile" element={<ProfilePage />} />
+                    <Route element={<PrivateRoute allowedRoles={ACCESS.books} />}>
+                      <Route path="/settings" element={<SettingsPage />} />
+                    </Route>
                     {MEMBER_PAGES.map((page) => {
                       const Screen = memberScreens[page.id];
                       return (

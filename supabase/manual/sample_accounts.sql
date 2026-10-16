@@ -106,4 +106,49 @@ select 'setup', 'usersData',
 from public."usersData"
 where library_id in ('FAC-0001', '26-00001');
 
+-- 7) Sample admin account (for settings like fines) -------------------------
+--    admin@ccc.edu.ph / Admin#2026  -> card ADM-0001 — Alex R. Mendoza
+insert into public."usersData"
+  (library_id, first_name, middle_initial, surname, role, provenance)
+select 'ADM-0001', 'Alex', 'R', 'Mendoza', 'admin', 'setup'
+where not exists (
+  select 1 from public."usersData" where library_id = 'ADM-0001');
+
+insert into auth.users
+  (instance_id, id, aud, role, email, encrypted_password, email_confirmed_at,
+   raw_app_meta_data, raw_user_meta_data, created_at, updated_at,
+   confirmation_token, recovery_token, email_change_token_new, email_change)
+select '00000000-0000-0000-0000-000000000000', gen_random_uuid(),
+       'authenticated', 'authenticated', 'admin@ccc.edu.ph',
+       crypt('Admin#2026', gen_salt('bf')), now(),
+       '{"provider": "email", "providers": ["email"]}'::jsonb,
+       jsonb_build_object('library_id', 'ADM-0001', 'first_name', 'Alex',
+                          'surname', 'Mendoza', 'email_verified', true),
+       now(), now(), '', '', '', ''
+where not exists (
+  select 1 from auth.users u where u.email = 'admin@ccc.edu.ph');
+
+insert into auth.identities (user_id, provider_id, identity_data, provider, created_at, updated_at)
+select u.id, u.id::text,
+       jsonb_build_object('sub', u.id::text, 'email', u.email,
+                          'email_verified', true, 'phone_verified', false),
+       'email', now(), now()
+from auth.users u
+where u.email = 'admin@ccc.edu.ph'
+  and not exists (
+    select 1 from auth.identities i
+    where i.user_id = u.id and i.provider = 'email');
+
+update public."usersData" p
+   set user_id = (select u.id from auth.users u where u.email = 'admin@ccc.edu.ph')
+ where p.library_id = 'ADM-0001' and p.user_id is null;
+
+insert into public.provenance_batches (label, table_name, criteria, row_count, actor, note)
+select 'setup', 'usersData',
+       'Sample admin account created on request (ADM-0001 Alex R. Mendoza) with a linked auth account',
+       count(*), 'setup',
+       'Passwords are shared with the requester only.'
+from public."usersData"
+where library_id = 'ADM-0001';
+
 commit;

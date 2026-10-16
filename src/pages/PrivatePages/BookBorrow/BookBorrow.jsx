@@ -15,12 +15,14 @@ import BookCover from "../../../components/catalog/BookCover.jsx";
 import { LoadingBlock } from "../../../components/ui/Loading.jsx";
 import BookLoanDialog from "../../../components/borrow/BookLoanDialog.jsx";
 import LoanRecordsPanel from "../../../components/borrow/LoanRecordsPanel.jsx";
+import BorrowReportPanel from "../../../components/borrow/BorrowReportPanel.jsx";
 
 const TABS = [
   { id: "action", label: "Borrow & return" },
   { id: "borrowed", label: "Borrowed" },
   { id: "overdue", label: "Overdue" },
   { id: "returned", label: "Returned" },
+  { id: "report", label: "Report" },
 ];
 
 export default function BookBorrow() {
@@ -202,6 +204,8 @@ export default function BookBorrow() {
             </div>
           </nav>
         </WorkspacePanel>
+      ) : tab === "report" ? (
+        <BorrowReportPanel revision={recordsRevision} />
       ) : (
         <LoanRecordsPanel
           scope={tab}

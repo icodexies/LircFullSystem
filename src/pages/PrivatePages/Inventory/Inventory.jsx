@@ -119,7 +119,7 @@ export default function Inventory() {
     const go = await dialog.confirm({
       title: "Finish this inventory?",
       variant: "warning",
-      message: `${counts.found.toLocaleString()} checked (${counts.found_good} Good Condition, ${counts.found_damaged} Damaged) · ${counts.missing} marked missing · ${(counts.not_checked + counts.borrowed).toLocaleString()} not yet checked. After finishing, the records are locked and appear in the history.`,
+      message: `${counts.found.toLocaleString()} checked (${counts.found_good} Good Condition, ${counts.found_damaged} Damaged, ${counts.found_lost} Lost) · ${counts.missing} marked missing · ${(counts.not_checked + counts.borrowed).toLocaleString()} not yet checked. After finishing, the records are locked and appear in the history.`,
       confirmLabel: "Finish inventory",
       cancelLabel: "Keep scanning",
     });
@@ -185,6 +185,12 @@ export default function Inventory() {
           label: "Damaged",
           value: counts.found_damaged.toLocaleString(),
           help: "saved as Damaged",
+          tone: "warning",
+        },
+        {
+          label: "Lost",
+          value: counts.found_lost.toLocaleString(),
+          help: "archived from circulation",
           tone: "warning",
         },
         {

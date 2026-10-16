@@ -8,6 +8,8 @@ import {
   borrowPreview,
   borrowBook,
 } from "../../services/borrow/borrowService.js";
+import { getMemberFines } from "../../services/fines/finesService.js";
+import { peso } from "../../services/fines/fineRules.js";
 import {
   manilaInputValue,
   manilaInputToIso,
@@ -23,6 +25,7 @@ export default function BorrowAction({ copy, onDone, onCancel }) {
   const toast = useToast();
   const [card, setCard] = useState("");
   const [preview, setPreview] = useState(null);
+  const [fines, setFines] = useState(null);
   const [start, setStart] = useState(() => manilaInputValue());
   const [due, setDue] = useState(() => addDaysInput(manilaInputValue(), 7));
   const [returnedFlag, setReturnedFlag] = useState(false);
@@ -41,8 +44,15 @@ export default function BorrowAction({ copy, onDone, onCancel }) {
       const data = await borrowPreview(normalized);
       setPreview(data);
       setCard(normalized);
+      // Outstanding fines follow the same lookup (null when not available).
+      try {
+        setFines(await getMemberFines(data.profile.id));
+      } catch {
+        setFines(null);
+      }
     } catch (error) {
       setPreview(null);
+      setFines(null);
       toast.error(error.message, "Card not loaded");
     } finally {
       lock.current = false;
@@ -62,6 +72,14 @@ export default function BorrowAction({ copy, onDone, onCancel }) {
 
   async function submit() {
     if (lock.current || !preview) return;
+    // Unpaid fines are a hard stop while the setting is on.
+    if (fines?.enabled && Number(fines.unpaid_total) > 0) {
+      toast.error(
+        `${preview.profile.full_name} has ${peso(fines.unpaid_total)} in unpaid fines. Settle them before lending again.`,
+        "Fines not settled",
+      );
+      return;
+    }
     const returned = returnedFlag ? returnedAt : "";
     const dateError = loanDateError({ start, due, returned });
     if (dateError) {
@@ -131,6 +149,7 @@ export default function BorrowAction({ copy, onDone, onCancel }) {
             onChange={(event) => {
               setCard(event.target.value);
               setPreview(null);
+              setFines(null);
             }}
             onKeyDown={(event) => {
               if (event.key === "Enter") {
@@ -173,6 +192,12 @@ export default function BorrowAction({ copy, onDone, onCancel }) {
             <p className="text-[11px] leading-relaxed text-slate-500">
               Historical records (start date outside the current school year)
               skip this check.
+            </p>
+          )}
+          {fines?.enabled && Number(fines.unpaid_total) > 0 && (
+            <p className="rounded-lg bg-red-50 p-3 text-xs font-semibold text-red-700">
+              Unpaid fines: {peso(fines.unpaid_total)} — settle them before
+              lending again. New borrows are blocked until then.
             </p>
           )}
           {preview.overdue_loans > 0 && (

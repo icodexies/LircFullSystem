@@ -11,14 +11,14 @@ export function signInSourceNote(source) {
 // Chart helpers (pure). Palette only uses the LIRC colors.
 // ---------------------------------------------------------------------------
 export const CHART_COLORS = [
-  "#0B1330",
-  "#0F8A6B",
-  "#3B4A86",
-  "#12A47E",
-  "#5BBA9E",
-  "#94A3B8",
-  "#CBD5E1",
-  "#0B6B52",
+  "var(--chart-work-1)",
+  "var(--chart-work-2)",
+  "var(--chart-work-3)",
+  "var(--chart-work-4)",
+  "var(--chart-work-5)",
+  "var(--chart-work-6)",
+  "var(--chart-work-7)",
+  "var(--chart-work-8)",
 ];
 
 export const GROUP_LABELS = {

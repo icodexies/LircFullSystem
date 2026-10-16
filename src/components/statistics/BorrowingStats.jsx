@@ -32,6 +32,7 @@ import StatStrip from "./StatStrip.jsx";
 import DrillTable from "./DrillTable.jsx";
 import BookDrillModal from "./BookDrillModal.jsx";
 import BorrowerModal from "./BorrowerModal.jsx";
+import BookDetails from "../catalog/BookDetails.jsx";
 import { LoadingBlock, Spinner } from "../ui/Loading.jsx";
 
 const number = (value) => Number(value ?? 0).toLocaleString("en-US");
@@ -43,6 +44,7 @@ export default function BorrowingStats({ semesterId, semesterLabel }) {
   );
   const [drill, setDrill] = useState(null);
   const [borrower, setBorrower] = useState(null);
+  const [bookId, setBookId] = useState(null);
 
   if (loading && !data)
     return <LoadingBlock label="Loading borrowing statistics…" className="min-h-[16rem]" />;
@@ -194,7 +196,7 @@ export default function BorrowingStats({ semesterId, semesterLabel }) {
               label: book.name,
               sub: book.author || "Author not recorded",
               count: book.count,
-              to: book.id ? `/opac?book=${book.id}` : undefined,
+              onClick: book.id ? () => setBookId(book.id) : undefined,
               actionLabel: "View details",
             }))}
           />
@@ -209,6 +211,9 @@ export default function BorrowingStats({ semesterId, semesterLabel }) {
           semesterLabel={semesterLabel}
           onClose={() => setBorrower(null)}
         />
+      )}
+      {bookId && (
+        <BookDetails id={bookId} canEdit={false} onClose={() => setBookId(null)} />
       )}
     </div>
   );

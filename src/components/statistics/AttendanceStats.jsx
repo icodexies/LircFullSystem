@@ -38,6 +38,7 @@ import ShareDonut from "./ShareDonut.jsx";
 import StatStrip from "./StatStrip.jsx";
 import DrillTable from "./DrillTable.jsx";
 import VisitDrillModal from "./VisitDrillModal.jsx";
+import MemberRecordModal from "../users/MemberRecordModal.jsx";
 import { LoadingBlock, Spinner } from "../ui/Loading.jsx";
 
 const number = (value) => Number(value ?? 0).toLocaleString("en-US");
@@ -48,6 +49,7 @@ export default function AttendanceStats({ semesterId, semesterLabel }) {
     semesterId,
   );
   const [drill, setDrill] = useState(null);
+  const [memberId, setMemberId] = useState(null);
 
   if (loading && !data)
     return <LoadingBlock label="Loading attendance statistics…" className="min-h-[16rem]" />;
@@ -222,7 +224,7 @@ export default function AttendanceStats({ semesterId, semesterLabel }) {
               label: person.name,
               sub: `${person.library_id} · ${ROLE_LABELS[person.role] ?? person.role}`,
               count: person.count,
-              to: `/users?member=${person.id}`,
+              onClick: person.id ? () => setMemberId(person.id) : undefined,
               actionLabel: "View record",
             }))}
           />
@@ -230,6 +232,9 @@ export default function AttendanceStats({ semesterId, semesterLabel }) {
       </StatsPanel>
 
       {drill && <VisitDrillModal root={drill} onClose={() => setDrill(null)} />}
+      {memberId && (
+        <MemberRecordModal memberId={memberId} onClose={() => setMemberId(null)} />
+      )}
     </div>
   );
 }

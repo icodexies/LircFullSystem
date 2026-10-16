@@ -44,7 +44,7 @@ export default function BarChart({ items, labelEvery = 2, unit = "", unitLabel =
             onFocus={() => setHover(index)}
             onBlur={() => setHover(null)}
             className={`min-w-0 flex-1 rounded-t-sm transition-opacity duration-150 hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-strong ${
-              item.count === 0 ? "bg-slate-200" : "bg-navy/75"
+              item.count === 0 ? "bg-slate-200" : "bg-[var(--chart-1)]"
             }`}
             style={{ height: item.count > 0 ? `${(item.count / max) * 100}%` : "3px" }}
           />

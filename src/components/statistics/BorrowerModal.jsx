@@ -2,11 +2,12 @@
 // frequency this semester, the books they borrowed (with counts, opening the
 // book's OPAC window), and their recent loans.
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import Modal from "../ui/Modal.jsx";
 import RankList from "./RankList.jsx";
 import StatStrip from "./StatStrip.jsx";
 import { UsersIcon } from "./statsIcons.jsx";
+import BookDetails from "../catalog/BookDetails.jsx";
+import MemberRecordModal from "../users/MemberRecordModal.jsx";
 import { getBorrowerStatistics } from "../../services/statistics/statisticsService.js";
 import { displayTime } from "../../services/attendance/attendanceRules.js";
 import { ROLE_LABELS } from "../../routes/roles.js";
@@ -18,6 +19,8 @@ const number = (value) => Number(value ?? 0).toLocaleString("en-US");
 export default function BorrowerModal({ person, semesterId, semesterLabel, onClose }) {
   const [data, setData] = useState(null);
   const [error, setError] = useState("");
+  const [bookId, setBookId] = useState(null);
+  const [memberOpen, setMemberOpen] = useState(false);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -45,13 +48,14 @@ export default function BorrowerModal({ person, semesterId, semesterLabel, onClo
       : "—";
 
   return (
-    <Modal
-      title={person.name}
-      description={`${person.library_id} · ${ROLE_LABELS[person.role] ?? person.role} · ${semesterLabel ?? "this semester"}`}
-      icon={<UsersIcon />}
-      size="lg"
-      onClose={onClose}
-    >
+    <>
+      <Modal
+        title={person.name}
+        description={`${person.library_id} · ${ROLE_LABELS[person.role] ?? person.role} · ${semesterLabel ?? "this semester"}`}
+        icon={<UsersIcon />}
+        size="lg"
+        onClose={onClose}
+      >
       {error ? (
         <div className="p-5 sm:p-6">
           <WorkspaceNotice error>{error}</WorkspaceNotice>
@@ -90,7 +94,7 @@ export default function BorrowerModal({ person, semesterId, semesterLabel, onClo
                 items={(data.books ?? []).map((book) => ({
                   label: book.name,
                   count: book.count,
-                  to: book.id ? `/opac?book=${book.id}` : undefined,
+                  onClick: book.id ? () => setBookId(book.id) : undefined,
                   actionLabel: "View details",
                 }))}
                 empty="No loans recorded for this member this semester."
@@ -138,15 +142,26 @@ export default function BorrowerModal({ person, semesterId, semesterLabel, onClo
           )}
 
           <div className="border-t border-slate-100 pt-4">
-            <Link
-              to={`/users?member=${person.id}`}
+            <button
+              type="button"
+              onClick={() => setMemberOpen(true)}
               className="text-xs font-semibold text-accent hover:underline"
             >
               Open member record →
-            </Link>
+            </button>
           </div>
         </div>
       )}
     </Modal>
+      {bookId && (
+        <BookDetails id={bookId} canEdit={false} onClose={() => setBookId(null)} />
+      )}
+      {memberOpen && (
+        <MemberRecordModal
+          memberId={person.id}
+          onClose={() => setMemberOpen(false)}
+        />
+      )}
+    </>
   );
 }

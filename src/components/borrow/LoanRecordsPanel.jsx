@@ -10,6 +10,8 @@ import {
   manilaBoundary,
 } from "../../services/attendance/attendanceRules.js";
 import { daysLabel } from "../../services/borrow/loanRules.js";
+import { getSettings } from "../../services/fines/finesService.js";
+import { peso } from "../../services/fines/fineRules.js";
 import { periodLabel } from "../../services/periods/periodRules.js";
 import { ROLES, ROLE_LABELS } from "../../routes/roles.js";
 import { inputClass, tableButton } from "../attendance/StaffUi.jsx";
@@ -80,6 +82,22 @@ export default function LoanRecordsPanel({
   const [fromDay, setFromDay] = useState("");
   const [toDay, setToDay] = useState("");
   const [page, setPage] = useState(1);
+  const [finesConfig, setFinesConfig] = useState(null);
+
+  // The fines setting drives the "accruing" amounts on overdue rows.
+  useEffect(() => {
+    let active = true;
+    getSettings()
+      .then((settings) => {
+        if (active) setFinesConfig(settings.fines ?? null);
+      })
+      .catch(() => {
+        if (active) setFinesConfig(null);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   // A different list starts at page one.
   const [pageScope, setPageScope] = useState(scope);
@@ -162,12 +180,24 @@ export default function LoanRecordsPanel({
       );
     }
     if (row.is_overdue) {
+      const rate = Number(finesConfig?.rate_per_day ?? 0);
+      const accruing =
+        finesConfig?.enabled && rate > 0 && Number(row.days_overdue) > 0
+          ? Number(row.days_overdue) * rate
+          : 0;
       return (
-        <StatusBadge tone="danger">
-          {Number(row.days_overdue) > 0
-            ? `Overdue by ${daysLabel(row.days_overdue)}`
-            : "Overdue"}
-        </StatusBadge>
+        <>
+          <StatusBadge tone="danger">
+            {Number(row.days_overdue) > 0
+              ? `Overdue by ${daysLabel(row.days_overdue)}`
+              : "Overdue"}
+          </StatusBadge>
+          {accruing > 0 && (
+            <p className="mt-2 text-[11px] font-semibold text-red-700">
+              {peso(accruing)} accruing
+            </p>
+          )}
+        </>
       );
     }
     return <StatusBadge tone="success">On loan</StatusBadge>;

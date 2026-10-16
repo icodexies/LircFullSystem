@@ -4,16 +4,19 @@
 import { useState } from "react";
 import Modal from "../ui/Modal.jsx";
 import RankList from "./RankList.jsx";
+import BookDetails from "../catalog/BookDetails.jsx";
 
 const number = (value) => Number(value ?? 0).toLocaleString("en-US");
 
 export default function BookDrillModal({ root, onClose }) {
   const [path, setPath] = useState([root]);
+  const [bookId, setBookId] = useState(null);
   const current = path[path.length - 1];
   const trail = path.slice(0, -1).map((node) => node.label);
 
   return (
-    <Modal
+    <>
+      <Modal
       title={current.label}
       description={trail.length > 0 ? trail.join(" → ") : "Most borrowed books"}
       icon={
@@ -62,7 +65,7 @@ export default function BookDrillModal({ root, onClose }) {
               items={(current.books ?? []).map((book) => ({
                 label: book.name,
                 count: book.count,
-                to: book.id ? `/opac?book=${book.id}` : undefined,
+                onClick: book.id ? () => setBookId(book.id) : undefined,
                 actionLabel: "View details",
               }))}
               empty="No loans recorded for this group yet."
@@ -116,5 +119,9 @@ export default function BookDrillModal({ root, onClose }) {
         )}
       </div>
     </Modal>
+      {bookId && (
+        <BookDetails id={bookId} canEdit={false} onClose={() => setBookId(null)} />
+      )}
+    </>
   );
 }

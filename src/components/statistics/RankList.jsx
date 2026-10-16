@@ -1,6 +1,7 @@
 // RankList — ranked rows: a lavender rank number, the label (and optional
-// small second line), the count, and an optional shortcut button that opens
-// the actual record (OPAC book window / Users member record).
+// small second line), the count, and an optional shortcut that opens the
+// actual record in place — a book window or a member record modal — without
+// leaving the page.
 import { Link } from "react-router-dom";
 
 export default function RankList({ items, empty = "Nothing to show yet." }) {
@@ -38,7 +39,7 @@ export default function RankList({ items, empty = "Nothing to show yet." }) {
                 {item.to && (
                   <Link
                     to={item.to}
-                    className="mt-1 inline-flex items-center rounded-lg border border-navy/15 px-2 py-1 text-[10px] font-semibold text-ink transition-colors hover:bg-navy hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-strong"
+                    className="mt-1 inline-flex items-center rounded-lg border border-slate-400 bg-slate-100 px-2 py-1 text-[10px] font-semibold text-slate-700 transition-colors hover:border-navy hover:bg-navy hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-strong"
                   >
                     {item.actionLabel ?? "View details"}
                     <span className="sr-only"> for {item.label}</span>
@@ -48,7 +49,7 @@ export default function RankList({ items, empty = "Nothing to show yet." }) {
                   <button
                     type="button"
                     onClick={item.onClick}
-                    className="mt-1 inline-flex items-center rounded-lg border border-navy/15 px-2 py-1 text-[10px] font-semibold text-ink transition-colors hover:bg-navy hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-strong"
+                    className="mt-1 inline-flex items-center rounded-lg border border-slate-400 bg-slate-100 px-2 py-1 text-[10px] font-semibold text-slate-700 transition-colors hover:border-navy hover:bg-navy hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-strong"
                   >
                     {item.actionLabel ?? "View details"}
                     <span className="sr-only"> for {item.label}</span>

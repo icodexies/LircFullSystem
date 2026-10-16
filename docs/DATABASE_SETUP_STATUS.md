@@ -116,6 +116,14 @@ transaction; migration history synced):
 | `20261018410000_statistics_borrowers` | The Borrowers category: `lirc_statistics_borrowers` (how many borrowed, repeat/first-time, average per borrower, top twenty borrowers, who is overdue right now, borrowers by role and department) + the overview gains the matching `borrowers` summary for the sixth card; stale no-argument statistics overloads dropped |
 | `20261018420000_validation_overdue_permission` | Overdue books block library validation: the enrollment guard rejects a validating save while the student has books past due, and the request workflow accepts a **current-year** request for those students (the admin notification says why); approving it saves the validation. Appears in the page's existing request tabs |
 | `20261018430000_overdue_reminders` | Daily overdue reminders: `notifications.dedupe_key` (one reminder per loan per day), `lirc_private.send_overdue_reminders()` (a reminder on the due date, then daily while overdue, up to 30 days past due), and the pg_cron job `lirc-overdue-reminders` running at 08:00 Philippine time. The bell needs the member to have a login account |
+| `20261018440000_path_finder` | Path Finder: curriculum reference tables (`curriculum_programs`, `curriculum_subjects`, `curriculum_entries`) and `subject_recommendations` (books attached to the **course code**, so shared subjects share one list; librarian adds are approved at once, faculty suggestions start as pending). RPCs: `lirc_path_finder_programs` / `_curriculum` / `_suggestions` (reads, member-visible) and `_add_recommendation` / `_suggest` / `_review` / `_remove` / `_withdraw` (role-guarded); librarians get a bell alert on every suggestion, faculty on every decision |
+| `20261018450000_path_finder_curriculum` | The registrar's prospectus loaded once: **12 programs** (each linked to its library program, e.g. BSEd-MATH - BSE-M), **364 subjects**, **647 placements** (program × year × semester); identity sequences set past the explicit ids and the counts checked (12/364/647) |
+| `20261018460000_path_finder_personal` | The programs list flags the caller's own program (`mine`) - their exact program, or their department's first for faculty - so the page opens the member's curriculum first |
+| `20261018470000_fines_and_settings` | Fines and charges + the settings store: `app_settings` (first setting `fines` = enabled + rate, **off by default**), `library_fines` (overdue charges assessed automatically when a late loan is returned - days late × rate, a started day counts; lost-copy charges when a librarian marks a copy lost), unpaid fines block new borrows, staff settle as paid/waived. RPCs: `lirc_settings_get` / `lirc_settings_set_fines` (**admin only**), `lirc_member_fines`, `lirc_my_fines`, `lirc_flag_copy_lost`, `lirc_fine_settle`. Lost copies stop counting as available in Path Finder |
+| `20261018480000_inventory_lost_archive` | Inventory gains the **Lost** condition (scan + edit dialogs, counts and history chips). The copy's **status now follows its latest live scan**: Good - Available (the only copies circulation shows), Damaged/Missing/Lost - archived (hidden from the copies windows and the OPAC copy lists, never borrowable; the borrow RPC already rejects non-available copies). Marking a copy lost from the fines flow sets the condition too, so both paths agree; scanning a lost copy as Good again returns it to circulation. `found_lost` joins the inventory counts |
+| `20261018490000_borrow_report` | The **Book Borrow report** (Report tab): `lirc_borrow_report` (one page of loans + totals + summary) and `lirc_borrow_report_export` (every matching loan for the Excel job), both built on `lirc_private.borrow_report_rows` with filters for borrowed / due / returned date ranges, status (open / overdue / returned / late), role, search (member or book), sort and direction. The Excel report (background job, like attendance) has a Report sheet (applied filters, summary, loans by role, loans by month, most borrowed books) and a Loans sheet with every row |
+| `20261018500000_subject_ai_findings` | **AI book recommendations per subject** (librarian/admin only): `subject_ai_findings` caches one AI research run per course code (picks from the catalog published within the last 5 years - the CHED rule - plus acquisition suggestions with sources), so re-opening a subject is a plain read and tokens are only spent on "Search again". The `subject-recommendations` edge function (Gemini; web-grounded when the key allows) writes the rows. **Acquisition list**: `acquisition_suggestions` (ai / faculty / librarian sources) with `lirc_acquisition_suggest` (faculty + staff), `lirc_acquisition_add_from_ai`, `lirc_acquisition_list` / `_review` / `_withdraw` (operators review; suggesters are notified), shown in the Path Finder **Acquisitions** tab |
+| `20261018510000_path_finder_visibility` | Path Finder visibility hardening: students and faculty only ever see recommendations a librarian **approved** (faculty suggestions stay invisible until then; faculty see only their own pending note). The programs list no longer sends the pending-suggestion count to non-operators (it was displayed operator-only but shipped to everyone) |
 
 The official **library card holder workbooks** corrected the student programs
 in two passes. First: `LIBRARY CARD HOLDERS UPDATED 2025.xlsx` — 860 records
@@ -153,6 +161,26 @@ Return Books / THESIS / OJT / EXIT CLEARANCE rows keep their true purpose
 
 The goal system is **removed** (14 October 2026). The personnel dashboard and
 the admin **User logs** page read the activity log directly.
+
+**Path Finder** (16 October 2026): the registrar's prospectus
+(`curriculum.sql`) lives in the three `curriculum_*` tables; book
+recommendations attach to the **course code**, so shared subjects (for
+example MATH101 in every program) share one list. Librarians add books
+directly (approved at once); faculty suggest books and librarians approve or
+reject them - both sides get a bell alert. Students see their program's
+approved lists and open any book in the OPAC. Every table is RPC-only (no
+client policies), matching the member-change-request pattern.
+
+**Fines and charges** (16 October 2026): switched by the `fines` setting in
+**Settings** (gear beside the dark-mode button; only admins change it).
+When ON: a late return is charged ₱5/day (a started day counts) the moment
+the return is recorded, a copy marked lost (Copies & loans window) closes
+its loan and charges the borrower the replacement amount, and members with
+unpaid fines cannot borrow until staff settle them (paid/waived) from the
+member's record. When OFF nothing is assessed, shown, or enforced - existing
+ledger rows are kept for when it is switched back on. The sample admin
+account `admin@ccc.edu.ph / Admin#2026` (ADM-0001 Alex R. Mendoza) was
+added for testing the settings.
 
 
 Details and metric definitions: [PERSONNEL_DASHBOARD.md](PERSONNEL_DASHBOARD.md).

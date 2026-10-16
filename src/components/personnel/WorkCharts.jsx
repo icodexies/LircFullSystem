@@ -64,7 +64,7 @@ export function DailyBars({ daily }) {
                   ? "bg-slate-200"
                   : bar.day === today
                     ? "bg-jade"
-                    : "bg-navy/75"
+                    : "bg-[var(--chart-work-1)]"
               }`}
               style={{ height: bar.count > 0 ? `${bar.pct}%` : "3px" }}
             />
@@ -108,7 +108,7 @@ export function WorkDonut({ groups }) {
             cy="21"
             r="15.9155"
             fill="none"
-            stroke="#F1F5F9"
+            className="stroke-slate-100"
             strokeWidth="5"
           />
           {arcs.map((arc) => (
@@ -118,7 +118,7 @@ export function WorkDonut({ groups }) {
               cy="21"
               r="15.9155"
               fill="none"
-              stroke={arc.color}
+              style={{ stroke: arc.color }}
               strokeWidth="5"
               strokeDasharray={`${Math.max(arc.pct - 0.8, 0)} ${100 - arc.pct + 0.8}`}
               strokeDashoffset={-arc.offset}

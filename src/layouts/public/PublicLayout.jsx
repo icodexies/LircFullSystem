@@ -9,7 +9,7 @@ const Footer = lazy(() => import("../../components/layout/public/Footer.jsx"));
 
 function PublicLayout() {
   return (
-    <div className="theme-light min-h-screen">
+    <div className="theme-light min-h-screen bg-white">
 
         <NavBar />
 

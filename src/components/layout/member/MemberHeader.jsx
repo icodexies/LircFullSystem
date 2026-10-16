@@ -5,7 +5,7 @@ import SidebarIcon from "./SidebarIcon.jsx";
 import NotificationBell from "./NotificationBell.jsx";
 import ThemeToggle from "../../ui/ThemeToggle.jsx";
 import Avatar from "../../ui/Avatar.jsx";
-import { ROLE_LABELS } from "../../../routes/roles.js";
+import { ROLE_LABELS, ROLES } from "../../../routes/roles.js";
 
 export default function MemberHeader({
   pageTitle,
@@ -67,6 +67,29 @@ export default function MemberHeader({
         </div>
 
         <div className="flex shrink-0 items-center gap-3 sm:gap-5">
+          {(role === ROLES.LIBRARIAN || role === ROLES.ADMIN) && (
+            <button
+              type="button"
+              onClick={() => navigate("/settings")}
+              aria-label="Settings"
+              title="Settings"
+              className="grid shrink-0 place-items-center rounded-xl border border-slate-400 bg-slate-100 p-2.5 text-ink transition-colors hover:bg-slate-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-strong"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                className="h-4 w-4"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="3.2" />
+                <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1.03 1.56V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1.11-1.56 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.56-1.03H3a2 2 0 1 1 0-4h.09A1.7 1.7 0 0 0 4.65 8.85a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34H9a1.7 1.7 0 0 0 1.03-1.56V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1.03 1.56 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87V9c.22.64.8 1.09 1.48 1.12H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1.03Z" />
+              </svg>
+            </button>
+          )}
           <ThemeToggle />
           <NotificationBell />
           <div className="relative" ref={menuRef}>

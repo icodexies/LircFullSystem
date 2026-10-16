@@ -1,9 +1,13 @@
 // Return flow for one on-loan copy: scan the BORROWER'S OWN card, set the
 // return date+time, and record. The database checks the card against the
 // loan record — any other card is rejected ("only the borrower can return").
-import { useRef, useState } from "react";
+// A late return is charged automatically (when fines are on) and the amount
+// is reported in the confirmation.
+import { useEffect, useRef, useState } from "react";
 import { useToast } from "../../hooks/shared/useToast.js";
 import { returnLoan } from "../../services/borrow/borrowService.js";
+import { getSettings } from "../../services/fines/finesService.js";
+import { daysLabel, daysLateBetween, peso } from "../../services/fines/fineRules.js";
 import {
   manilaInputValue,
   manilaInputToIso,
@@ -20,8 +24,24 @@ export default function ReturnAction({ loan, onDone, onCancel }) {
   const toast = useToast();
   const [card, setCard] = useState("");
   const [returnedAt, setReturnedAt] = useState(() => manilaInputValue());
+  const [finesConfig, setFinesConfig] = useState(null);
   const [busy, setBusy] = useState(false);
   const lock = useRef(false);
+
+  // The fines setting decides whether a late return reports a charge.
+  useEffect(() => {
+    let active = true;
+    getSettings()
+      .then((settings) => {
+        if (active) setFinesConfig(settings.fines ?? null);
+      })
+      .catch(() => {
+        if (active) setFinesConfig(null);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   async function submit() {
     if (lock.current) return;
@@ -34,8 +54,18 @@ export default function ReturnAction({ loan, onDone, onCancel }) {
         returned: returnedAt,
       });
       if (dateError) throw new Error(dateError);
-      await returnLoan(loan.id, normalized, manilaInputToIso(returnedAt));
-      toast.success("Copy returned.");
+      const returnedIso = manilaInputToIso(returnedAt);
+      await returnLoan(loan.id, normalized, returnedIso);
+      const rate = Number(finesConfig?.rate_per_day ?? 0);
+      const lateDays =
+        finesConfig?.enabled && rate > 0
+          ? daysLateBetween(loan.due_at, returnedIso ?? new Date())
+          : 0;
+      toast.success(
+        lateDays > 0
+          ? `Copy returned. ${peso(lateDays * rate)} fine assessed (${daysLabel(lateDays)}).`
+          : "Copy returned.",
+      );
       onDone();
     } catch (error) {
       toast.error(error.message, "Not returned");

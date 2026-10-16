@@ -1,4 +1,6 @@
-import { useId, useState } from "react";
+import { useEffect, useId, useState } from "react";
+import { getMyFines } from "../../../services/fines/finesService.js";
+import { peso } from "../../../services/fines/fineRules.js";
 import { useAuth } from "../../../hooks/auth/useAuth.js";
 import { ACCESS, ROLE_LABELS } from "../../../routes/roles.js";
 import { WorkspaceHeader } from "../../../components/attendance/WorkspaceUi.jsx";
@@ -65,10 +67,10 @@ const MEMBER_DATA = {
     ],
     visits: [1, 2, 3, 2, 1, 3, 2, 1, 2, 1],
     genres: [
-      { label: "Computer Science", value: 9, color: NAVY },
-      { label: "Mathematics", value: 4, color: SKY },
-      { label: "General Education", value: 3, color: "#BAE6FD" },
-      { label: "Fiction", value: 2, color: "#CBD5E1" },
+      { label: "Computer Science", value: 9, color: "var(--chart-dash-1)" },
+      { label: "Mathematics", value: 4, color: "var(--chart-dash-2)" },
+      { label: "General Education", value: 3, color: "var(--chart-dash-3)" },
+      { label: "Fiction", value: 2, color: "var(--chart-dash-4)" },
     ],
     reservations: [
       { title: "Software Engineering", note: "Ready for pickup until Oct 9", ready: true },
@@ -99,10 +101,10 @@ const MEMBER_DATA = {
     ],
     visits: [3, 4, 3, 4, 2, 4, 3, 3, 3, 2],
     genres: [
-      { label: "Computer Science", value: 7, color: NAVY },
-      { label: "Education", value: 5, color: SKY },
-      { label: "Statistics", value: 3, color: "#BAE6FD" },
-      { label: "Journals", value: 2, color: "#CBD5E1" },
+      { label: "Computer Science", value: 7, color: "var(--chart-dash-1)" },
+      { label: "Education", value: 5, color: "var(--chart-dash-2)" },
+      { label: "Statistics", value: 3, color: "var(--chart-dash-3)" },
+      { label: "Journals", value: 2, color: "var(--chart-dash-4)" },
     ],
     reservations: [{ title: "Educational Research", note: "Ready for pickup until Oct 10", ready: true }],
     activity: [
@@ -221,18 +223,18 @@ function AreaChart({ labels, data, unit }) {
         const v = (top / 4) * i;
         return (
           <g key={i}>
-            <line x1={pl} x2={W - pr} y1={y(v)} y2={y(v)} stroke="#E2E8F0" strokeDasharray={i === 0 ? "0" : "4 4"} />
-            <text x={pl - 8} y={y(v) + 4} textAnchor="end" fontSize="11" fill="#94A3B8">{fmt(Math.round(v))}</text>
+            <line x1={pl} x2={W - pr} y1={y(v)} y2={y(v)} className="stroke-slate-200" strokeDasharray={i === 0 ? "0" : "4 4"} />
+            <text x={pl - 8} y={y(v) + 4} textAnchor="end" fontSize="11" className="fill-slate-400">{fmt(Math.round(v))}</text>
           </g>
         );
       })}
       <path d={area} fill={`url(#${gid})`} />
-      <path d={line} fill="none" stroke={NAVY} strokeWidth="2.5" strokeLinecap="round" />
+      <path d={line} fill="none" style={{ stroke: "var(--chart-1)" }} strokeWidth="2.5" strokeLinecap="round" />
       {labels.map((l, i) => (
-        <text key={l} x={x(i)} y={H - 8} textAnchor="middle" fontSize="11" fill={i === active ? NAVY : "#94A3B8"} fontWeight={i === active ? 600 : 400}>{l}</text>
+        <text key={l} x={x(i)} y={H - 8} textAnchor="middle" fontSize="11" className="fill-slate-400" style={i === active ? { fill: "var(--chart-1)" } : undefined} fontWeight={i === active ? 600 : 400}>{l}</text>
       ))}
       <line x1={x(active)} x2={x(active)} y1={y(data[active])} y2={H - pb} stroke={SKY} strokeWidth="1.5" strokeDasharray="3 3" />
-      <circle cx={x(active)} cy={y(data[active])} r="6" fill="white" stroke={NAVY} strokeWidth="3" />
+      <circle cx={x(active)} cy={y(data[active])} r="6" style={{ fill: "var(--color-surface)", stroke: "var(--chart-1)" }} strokeWidth="3" />
       <g transform={`translate(${tx},${ty})`}>
         <rect width={tw} height="44" rx="10" fill={NAVY} />
         <text x={tw / 2} y="19" textAnchor="middle" fontSize="14" fontWeight="700" fill="white">{fmt(data[active])} {unit}</text>
@@ -256,9 +258,9 @@ function Donut({ segments, centerValue, centerLabel }) {
     <div className="flex flex-col items-center gap-6 sm:flex-row xl:flex-col">
       <div className="relative h-44 w-44 shrink-0">
         <svg viewBox="0 0 42 42" className="h-full w-full -rotate-90" role="img" aria-label={centerLabel}>
-          <circle cx="21" cy="21" r="15.9155" fill="none" stroke="#F1F5F9" strokeWidth="5" />
+          <circle cx="21" cy="21" r="15.9155" fill="none" className="stroke-slate-100" strokeWidth="5" />
           {arcs.map((arc) => (
-            <circle key={arc.label} cx="21" cy="21" r="15.9155" fill="none" stroke={arc.color} strokeWidth="5" strokeDasharray={`${Math.max(arc.percent - 0.8, 0)} ${100 - arc.percent + 0.8}`} strokeDashoffset={-arc.offset} />
+            <circle key={arc.label} cx="21" cy="21" r="15.9155" fill="none" style={{ stroke: arc.color }} strokeWidth="5" strokeDasharray={`${Math.max(arc.percent - 0.8, 0)} ${100 - arc.percent + 0.8}`} strokeDashoffset={-arc.offset} />
           ))}
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
@@ -283,7 +285,7 @@ function Donut({ segments, centerValue, centerLabel }) {
 
 function ProgressBar({ value, max, tone = "sky" }) {
   const pct = Math.min(100, Math.round((value / max) * 100));
-  const fill = tone === "rose" ? "bg-rose-400" : tone === "navy" ? "bg-navy" : "bg-sky-400";
+  const fill = tone === "rose" ? "bg-rose-400" : tone === "navy" ? "bg-navy dark:bg-accent-strong" : "bg-sky-400";
   return (
     <div className="h-2 w-full overflow-hidden rounded-full bg-slate-100" role="progressbar" aria-valuenow={value} aria-valuemin={0} aria-valuemax={max}>
       <div className={`h-full rounded-full ${fill}`} style={{ width: `${pct}%` }} />
@@ -303,29 +305,57 @@ function dueChip(daysLeft) {
 function MemberDashboard({ role }) {
   const data = MEMBER_DATA[role];
   const visitsTotal = data.visits.reduce((a, b) => a + b, 0);
+  const [myFines, setMyFines] = useState(null);
+
+  // The fines card follows the real balance (and the setting).
+  useEffect(() => {
+    let active = true;
+    getMyFines()
+      .then((result) => {
+        if (active) setMyFines(result);
+      })
+      .catch(() => {
+        if (active) setMyFines(null);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   return (
     <div className="space-y-6">
       <DashboardHero role={role} />
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {data.stats.map((s, i) => {
+          const stat =
+            s.id === "fines" && myFines?.enabled
+              ? {
+                  ...s,
+                  value: peso(myFines.unpaid_total),
+                  hint:
+                    Number(myFines.unpaid_total) > 0
+                      ? "Please settle at the library counter"
+                      : "You are all settled",
+                  warn: Number(myFines.unpaid_total) > 0,
+                }
+              : s;
           const featured = i === 0;
           return (
-            <div key={s.id} className={`flex min-w-0 flex-col rounded-2xl border p-5 shadow-[0_1px_2px_rgba(11,19,48,0.05)] ${featured ? "border-navy bg-navy text-white" : "border-slate-200 bg-surface text-ink"}`}>
-              <span className={`flex h-9 w-9 items-center justify-center rounded-lg ${featured ? "bg-white/10 text-sky-300" : s.warn ? "bg-rose-50 text-rose-600" : "bg-tint text-accent"}`}>
-                <Icon name={s.icon} className="h-[18px] w-[18px]" />
+            <div key={stat.id} className={`flex min-w-0 flex-col rounded-2xl border p-5 shadow-[0_1px_2px_rgba(11,19,48,0.05)] ${featured ? "border-navy bg-navy text-white" : "border-slate-200 bg-surface text-ink"}`}>
+              <span className={`flex h-9 w-9 items-center justify-center rounded-lg ${featured ? "bg-white/10 text-sky-300" : stat.warn ? "bg-rose-50 text-rose-600" : "bg-tint text-accent"}`}>
+                <Icon name={stat.icon} className="h-[18px] w-[18px]" />
               </span>
-              <p className={`mt-5 text-[13px] ${featured ? "text-slate-300" : "text-slate-500"}`}>{s.label}</p>
-              <p className="mt-1 font-serif text-3xl font-bold tracking-tight">{s.value}</p>
-              {s.of ? (
+              <p className={`mt-5 text-[13px] ${featured ? "text-slate-300" : "text-slate-500"}`}>{stat.label}</p>
+              <p className="mt-1 font-serif text-3xl font-bold tracking-tight">{stat.value}</p>
+              {stat.of ? (
                 <div className="mt-3">
                   <div className="mb-2 h-2 w-full overflow-hidden rounded-full bg-white/15">
-                    <div className="h-full rounded-full bg-sky-300" style={{ width: `${(Number(s.value) / s.of) * 100}%` }} />
+                    <div className="h-full rounded-full bg-sky-300" style={{ width: `${(Number(stat.value) / stat.of) * 100}%` }} />
                   </div>
-                  <p className="text-xs text-slate-400">{s.hint}</p>
+                  <p className="text-xs text-slate-400">{stat.hint}</p>
                 </div>
               ) : (
-                <p className={`mt-2 text-xs ${s.warn ? "text-rose-600" : "text-slate-500"}`}>{s.hint}</p>
+                <p className={`mt-2 text-xs ${stat.warn ? "text-rose-600" : "text-slate-500"}`}>{stat.hint}</p>
               )}
             </div>
           );

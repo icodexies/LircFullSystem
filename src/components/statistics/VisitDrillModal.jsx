@@ -9,16 +9,19 @@ import StatStrip from "./StatStrip.jsx";
 import { ClockIcon } from "./statsIcons.jsx";
 import { stayLabel } from "../../services/statistics/statFormat.js";
 import { ROLE_LABELS } from "../../routes/roles.js";
+import MemberRecordModal from "../users/MemberRecordModal.jsx";
 
 const number = (value) => Number(value ?? 0).toLocaleString("en-US");
 
 export default function VisitDrillModal({ root, onClose }) {
   const [path, setPath] = useState([root]);
+  const [memberId, setMemberId] = useState(null);
   const current = path[path.length - 1];
   const trail = path.slice(0, -1).map((node) => node.label);
 
   return (
-    <Modal
+    <>
+      <Modal
       title={current.label}
       description={trail.length > 0 ? trail.join(" → ") : "Visits"}
       icon={<ClockIcon />}
@@ -65,7 +68,7 @@ export default function VisitDrillModal({ root, onClose }) {
                 label: person.name,
                 sub: `${person.library_id} · ${ROLE_LABELS[person.role] ?? person.role}`,
                 count: person.count,
-                to: person.id ? `/users?member=${person.id}` : undefined,
+                onClick: person.id ? () => setMemberId(person.id) : undefined,
                 actionLabel: "View record",
               }))}
               empty="No visits recorded for this group yet."
@@ -119,5 +122,9 @@ export default function VisitDrillModal({ root, onClose }) {
         )}
       </div>
     </Modal>
+      {memberId && (
+        <MemberRecordModal memberId={memberId} onClose={() => setMemberId(null)} />
+      )}
+    </>
   );
 }

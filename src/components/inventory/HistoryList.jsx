@@ -25,6 +25,7 @@ function SummaryChips({ summary }) {
     `Found ${summary.found}`,
     `Good ${summary.found_good}`,
     `Damaged ${summary.found_damaged}`,
+    `Lost ${summary.found_lost}`,
     `Missing ${summary.missing}`,
     `Not yet checked ${summary.not_checked}`,
     `On loan ${summary.borrowed}`,
