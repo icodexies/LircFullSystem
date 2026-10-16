@@ -1,5 +1,6 @@
 import Reveal from "../ui/Reveal.jsx";
 import { useBookCollection } from "../../hooks/home/useBookCollection.js";
+import { useLogin } from "../../hooks/auth/useLogin.js";
 import { BOOK_TABS } from "../../data/home/bookCollection.js";
 
 const GLASS =
@@ -191,6 +192,7 @@ function GenrePanel({ title, genres, genre, setGenre, books, selectedId, onSelec
 
 function HighlightPanel({ book, tab }) {
   const isPhysical = tab === "physical";
+  const { openLogin } = useLogin();
 
   return (
     <div className={GLASS}>
@@ -217,9 +219,13 @@ function HighlightPanel({ book, tab }) {
             <p className="mt-3 text-xs text-slate-500">{book.info}</p>
 
             {isPhysical ? (
-              <p className="mt-5 w-fit rounded-full border border-navy/25 bg-surface px-4 py-2 text-xs text-slate-600">
-                Borrow it at the circulation desk — bring your library card.
-              </p>
+              <button
+                type="button"
+                onClick={openLogin}
+                className="mt-5 w-fit rounded-full bg-navy px-5 py-2 text-sm font-semibold text-white transition hover:bg-[#16224d] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-navy"
+              >
+                See more details
+              </button>
             ) : (
               <>
                 <button
