@@ -63,6 +63,14 @@ export const MEMBER_PAGES = [
     group: "Members",
     allowedRoles: ACCESS.admin,
   },
+  {
+    id: "announcements",
+    label: "Announcements",
+    path: "/announcements",
+    icon: "announcement",
+    group: "Members",
+    allowedRoles: ACCESS.admin,
+  },
   // --- Attendance and validation (operators only) -------------------------
   {
     id: "attendance",

@@ -9,6 +9,7 @@ import {
 } from "../../components/layout/member/sidebarStorage.js";
 import MemberHeader from "../../components/layout/member/MemberHeader.jsx";
 import MemberFooter from "../../components/layout/member/MemberFooter.jsx";
+import AnnouncementPopup from "../../components/announcements/AnnouncementPopup.jsx";
 import { LoadingBlock } from "../../components/ui/Loading.jsx";
 import { useToast } from "../../hooks/shared/useToast.js";
 
@@ -88,6 +89,7 @@ function MemberWorkspace() {
         </main>
         <MemberFooter />
       </div>
+      <AnnouncementPopup role={role} memberKey={profile?.library_id} />
     </div>
   );
 }
