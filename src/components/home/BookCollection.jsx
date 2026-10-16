@@ -1,3 +1,4 @@
+import { useMemo, useState } from "react";
 import Reveal from "../ui/Reveal.jsx";
 import { useBookCollection } from "../../hooks/home/useBookCollection.js";
 import { BOOK_TABS } from "../../data/home/bookCollection.js";
@@ -9,6 +10,16 @@ const GLASS =
 // so `h-full` alone no longer stretches the panel. `[&>div]:h-full`
 // passes the full height down to that inner wrapper.
 const REVEAL_FULL = "h-full [&>div]:h-full";
+
+const OPEN_LIBRARY_COVERS = "https://covers.openlibrary.org/b";
+
+function normalizeIsbn(isbn) {
+  if (!isbn) return null;
+  const clean = String(isbn)
+    .replace(/[^0-9Xx]/g, "")
+    .toUpperCase();
+  return clean.length === 10 || clean.length === 13 ? clean : null;
+}
 
 /* -------------------------------------------------------------------------- */
 /*                                Small pieces                                */
@@ -29,11 +40,46 @@ function Stars({ rating }) {
   );
 }
 
+// Covers resolve like the OPAC: the library's own upload first, then the
+// Open Library API by ISBN (which answers a 1x1 blank for misses), then the
+// gradient placeholder.
 function Cover({ book, className = "" }) {
   const base = `aspect-[2/3] rounded-md shadow-lg shadow-slate-900/25 ${className}`;
+  const sources = useMemo(() => {
+    const list = [];
+    if (book.cover) list.push(book.cover);
+    const isbn = normalizeIsbn(book.isbn);
+    if (isbn) list.push(`${OPEN_LIBRARY_COVERS}/isbn/${isbn}-L.jpg`);
+    return list;
+  }, [book.cover, book.isbn]);
+  const [failed, setFailed] = useState([]);
+  const src = sources.find((source) => !failed.includes(source));
 
-  if (book.cover) {
-    return <img src={book.cover} width="600" height="900" alt={`${book.title} cover`} loading="lazy" decoding="async" className={`${base} object-cover`} />;
+  function markFailed(failedSrc) {
+    setFailed((previous) =>
+      previous.includes(failedSrc) ? previous : [...previous, failedSrc],
+    );
+  }
+
+  if (src) {
+    return (
+      <img
+        key={src}
+        src={src}
+        width="600"
+        height="900"
+        alt={`${book.title} cover`}
+        loading="lazy"
+        decoding="async"
+        referrerPolicy="no-referrer"
+        onLoad={(event) => {
+          // A 1x1 image means the API has no cover for this ISBN.
+          if (event.currentTarget.naturalWidth <= 1) markFailed(src);
+        }}
+        onError={() => markFailed(src)}
+        className={`${base} object-cover`}
+      />
+    );
   }
 
   return (
@@ -124,10 +170,10 @@ function Carousel({ books, activeIndex, onSelect, onStep }) {
 /*                           Left: collection by genre                        */
 /* -------------------------------------------------------------------------- */
 
-function GenrePanel({ genres, genre, setGenre, books, selectedId, onSelect }) {
+function GenrePanel({ title, genres, genre, setGenre, books, selectedId, onSelect }) {
   return (
     <div className={GLASS}>
-      <h3 className="font-[Fraunces] text-xl text-ink">Browse by genre</h3>
+      <h3 className="font-[Fraunces] text-xl text-ink">{title}</h3>
 
       <div className="mt-4 flex flex-wrap gap-2">
         {genres.map((g) => (
@@ -194,25 +240,35 @@ function HighlightPanel({ book, tab }) {
             <h3 className="mt-3 font-[Fraunces] text-2xl leading-tight text-ink">{book.title}</h3>
             <p className="mt-1 text-sm text-slate-500">{book.author}</p>
 
-            <div className="mt-3">
-              <Stars rating={book.rating} />
-            </div>
+            {book.rating != null && (
+              <div className="mt-3">
+                <Stars rating={book.rating} />
+              </div>
+            )}
 
             <p className="mt-4 text-sm leading-relaxed text-slate-600">{book.description}</p>
             <p className="mt-3 text-xs text-slate-500">{book.info}</p>
 
-            <button
-              type="button"
-              className="mt-5 w-fit rounded-full bg-navy px-5 py-2 text-sm font-semibold text-white transition hover:bg-[#16224d] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-navy"
-              disabled
-              aria-describedby={`book-action-${book.id}`}
-              title={isPhysical ? "Reservations are not available yet" : "Online reading is not available yet"}
-            >
-              {isPhysical ? "Reserve this book" : "Read online"}
-            </button>
-            <p id={`book-action-${book.id}`} className="mt-2 text-xs text-slate-500" role="status">
-              {isPhysical ? "Reservations are not available yet." : "Online reading is not available yet."}
-            </p>
+            {isPhysical ? (
+              <p className="mt-5 w-fit rounded-full border border-navy/25 bg-surface px-4 py-2 text-xs text-slate-600">
+                Borrow it at the circulation desk — bring your library card.
+              </p>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  className="mt-5 w-fit rounded-full bg-navy px-5 py-2 text-sm font-semibold text-white transition hover:bg-[#16224d] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-navy"
+                  disabled
+                  aria-describedby={`book-action-${book.id}`}
+                  title="Online reading is not available yet"
+                >
+                  Read online
+                </button>
+                <p id={`book-action-${book.id}`} className="mt-2 text-xs text-slate-500" role="status">
+                  Online reading is not available yet.
+                </p>
+              </>
+            )}
           </div>
         </div>
       </Reveal>
@@ -260,35 +316,48 @@ function BookCollection() {
         </Reveal>
 
         {/* Carousel (key remounts it when the tab changes) */}
-        <Reveal key={c.tab} direction="zoomUp" delay={100} duration={800} className="mt-4 sm:mt-8">
-          <Carousel books={c.books} activeIndex={c.activeIndex} onSelect={c.select} onStep={c.step} />
-        </Reveal>
+        {c.loading ? (
+          <p role="status" className={`${GLASS} mt-4 text-sm text-slate-500 sm:mt-8`}>
+            Loading the collection…
+          </p>
+        ) : c.error ? (
+          <p role="alert" className={`${GLASS} mt-4 text-sm text-slate-500 sm:mt-8`}>
+            {c.error}
+          </p>
+        ) : (
+          <>
+            <Reveal key={c.tab} direction="zoomUp" delay={100} duration={800} className="mt-4 sm:mt-8">
+              <Carousel books={c.books} activeIndex={c.activeIndex} onSelect={c.select} onStep={c.step} />
+            </Reveal>
 
-        {/* Left: genre collection (hidden below lg), right: highlight */}
-        <div className="mt-4 grid gap-6 sm:mt-8 lg:grid-cols-2">
-          <Reveal
-            direction="right"
-            distance={48}
-            delay={100}
-            threshold={0.1}
-            className={`${REVEAL_FULL} hidden lg:block`}
-          >
-            <GenrePanel
-              genres={c.genres}
-              genre={c.genre}
-              setGenre={c.setGenre}
-              books={c.genreBooks}
-              selectedId={c.selected?.id}
-              onSelect={c.select}
-            />
-          </Reveal>
+            {/* Left: collection by section (hidden below lg), right: highlight */}
+            <div className="mt-4 grid gap-6 sm:mt-8 lg:grid-cols-2">
+              <Reveal
+                direction="right"
+                distance={48}
+                delay={100}
+                threshold={0.1}
+                className={`${REVEAL_FULL} hidden lg:block`}
+              >
+                <GenrePanel
+                  title={c.browseLabel}
+                  genres={c.genres}
+                  genre={c.genre}
+                  setGenre={c.setGenre}
+                  books={c.genreBooks}
+                  selectedId={c.selected?.id}
+                  onSelect={c.select}
+                />
+              </Reveal>
 
-          <Reveal direction="left" distance={48} delay={200} threshold={0.1} className={REVEAL_FULL}>
-            {c.selected ? <HighlightPanel book={c.selected} tab={c.tab} /> : (
-              <p className={GLASS} role="status">No books are available in this collection yet.</p>
-            )}
-          </Reveal>
-        </div>
+              <Reveal direction="left" distance={48} delay={200} threshold={0.1} className={REVEAL_FULL}>
+                {c.selected ? <HighlightPanel book={c.selected} tab={c.tab} /> : (
+                  <p className={GLASS} role="status">No books are available in this collection yet.</p>
+                )}
+              </Reveal>
+            </div>
+          </>
+        )}
       </div>
     </section>
   );

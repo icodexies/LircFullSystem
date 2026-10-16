@@ -1,5 +1,8 @@
-// Collections use arrays of objects with a stable id.
-// Keep the same book fields when replacing these samples with database rows.
+// Collection tabs and the e-book samples. The physical tab now reads the
+// real catalog through lirc_home_collection (see useBookCollection); e-books
+// stay samples until an e-book collection exists in the database.
+//
+// Keep the same book fields when replacing samples with database rows:
 // cover is optional; colors provide the placeholder gradient.
 
 export const BOOK_TABS = [
@@ -14,111 +17,6 @@ export const BOOK_TABS = [
 ];
 
 export const BOOKS = [
-  {
-    id: "p1",
-    format: "physical",
-    title: "Pride and Prejudice",
-    author: "Jane Austen",
-    genre: "Romance",
-    colors: [
-      "#9d3d5c",
-      "#33152b"
-    ],
-    rating: 4.8,
-    description: "Elizabeth Bennet navigates family pressure, first impressions, and a proud suitor who may not be what he seems.",
-    info: "3 of 4 copies available, shelf A2",
-    cover: null
-  },
-  {
-    id: "p2",
-    format: "physical",
-    title: "Frankenstein",
-    author: "Mary Shelley",
-    genre: "Gothic",
-    colors: [
-      "#2f6f6a",
-      "#0f1f2e"
-    ],
-    rating: 4.4,
-    description: "A young scientist brings life to a creature he cannot bring himself to care for, and both pay the price.",
-    info: "2 of 3 copies available, shelf B1",
-    cover: null
-  },
-  {
-    id: "p3",
-    format: "physical",
-    title: "The Time Machine",
-    author: "H. G. Wells",
-    genre: "Sci-Fi",
-    colors: [
-      "#3a5bd9",
-      "#1b0f4a"
-    ],
-    rating: 4.3,
-    description: "An inventor travels to the year 802,701 and finds a future far stranger than he planned for.",
-    info: "1 of 2 copies available, shelf C3",
-    cover: null
-  },
-  {
-    id: "p4",
-    format: "physical",
-    title: "The Adventures of Sherlock Holmes",
-    author: "Arthur Conan Doyle",
-    genre: "Mystery",
-    colors: [
-      "#b8873a",
-      "#3b2410"
-    ],
-    rating: 4.7,
-    description: "Twelve short cases where Holmes and Watson solve puzzles with observation and sharp deduction.",
-    info: "4 of 5 copies available, shelf D2",
-    cover: null
-  },
-  {
-    id: "p5",
-    format: "physical",
-    title: "Alice's Adventures in Wonderland",
-    author: "Lewis Carroll",
-    genre: "Fantasy",
-    colors: [
-      "#d65a8f",
-      "#4b2a7a"
-    ],
-    rating: 4.5,
-    description: "Alice follows a white rabbit down a hole and lands in a world where logic keeps changing the rules.",
-    info: "2 of 2 copies available, shelf E1",
-    cover: null
-  },
-  {
-    id: "p6",
-    format: "physical",
-    title: "Dracula",
-    author: "Bram Stoker",
-    genre: "Gothic",
-    colors: [
-      "#a4262c",
-      "#1a0a0d"
-    ],
-    rating: 4.4,
-    description: "Told through letters and diary entries, a group of friends tries to stop a count who has come to England.",
-    info: "0 of 2 copies available, shelf B2",
-    cover: null
-  },
-  {
-    id: "p7",
-    format: "physical",
-    title: "Treasure Island",
-    author: "Robert Louis Stevenson",
-    genre: "Adventure",
-    colors: [
-      "#e08a2e",
-      "#12455a"
-    ],
-    rating: 4.5,
-    description: "Young Jim Hawkins finds a treasure map and sails out with pirates he cannot fully trust.",
-    info: "3 of 3 copies available, shelf F1",
-    cover: null
-  },
   {
     id: "e1",
     format: "ebook",

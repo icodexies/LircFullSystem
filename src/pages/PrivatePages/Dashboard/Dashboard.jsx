@@ -27,7 +27,6 @@ const ICONS = {
   exchange: ["M7 10h14l-4 -4", "M17 14h-14l4 4"],
   alert: ["M12 9v4", "M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636 -2.87l-8.106 -13.536a1.914 1.914 0 0 0 -3.274 0z", "M12 16h.01"],
   coin: ["M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0", "M14.8 9a2 2 0 0 0 -1.8 -1h-2a2 2 0 1 0 0 4h2a2 2 0 1 1 0 4h-2a2 2 0 0 1 -1.8 -1", "M12 6v2m0 8v2"],
-  bookmark: ["M18 7v14l-6 -4l-6 4v-14a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4z"],
   clock: ["M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0", "M12 7v5l3 3"],
   up: ["M3 17l6 -6l4 4l8 -8", "M14 7l7 0l0 7"],
   down: ["M3 7l6 6l4 -4l8 8", "M21 10l0 7l-7 0"],
@@ -57,7 +56,6 @@ const MEMBER_DATA = {
       { id: "dueSoon", icon: "clock", label: "Due within 3 days", value: "1", hint: "Database System Concepts" },
       { id: "overdue", icon: "alert", label: "Overdue", value: "1", hint: "Return it to stop fines", warn: true },
       { id: "fines", icon: "coin", label: "Outstanding fines", value: "₱30.00", hint: "Pay at the circulation desk" },
-      { id: "reservations", icon: "bookmark", label: "Reservations", value: "2", hint: "1 ready for pickup" },
       { id: "visits", icon: "door", label: "Library visits", value: "18", hint: "This semester" },
     ],
     borrowed: [
@@ -72,12 +70,7 @@ const MEMBER_DATA = {
       { label: "General Education", value: 3, color: "var(--chart-dash-3)" },
       { label: "Fiction", value: 2, color: "var(--chart-dash-4)" },
     ],
-    reservations: [
-      { title: "Software Engineering", note: "Ready for pickup until Oct 9", ready: true },
-      { title: "Operating System Concepts", note: "Queue position 2", ready: false },
-    ],
     activity: [
-      { text: "Reservation ready: Software Engineering", time: "Today, 8:30 AM" },
       { text: "Checked in at the library entrance", time: "Today, 7:52 AM" },
       { text: "Renewed Database System Concepts", time: "Oct 2" },
       { text: "Borrowed Clean Code", time: "Oct 7" },
@@ -90,7 +83,6 @@ const MEMBER_DATA = {
       { id: "dueSoon", icon: "clock", label: "Due within 3 days", value: "1", hint: "Research Methods in Computing" },
       { id: "overdue", icon: "alert", label: "Overdue", value: "0", hint: "Nothing to return right now" },
       { id: "fines", icon: "coin", label: "Outstanding fines", value: "₱0.00", hint: "You are all settled" },
-      { id: "reservations", icon: "bookmark", label: "Reservations", value: "1", hint: "Ready for pickup" },
       { id: "visits", icon: "door", label: "Library visits", value: "31", hint: "This semester" },
     ],
     borrowed: [
@@ -106,9 +98,7 @@ const MEMBER_DATA = {
       { label: "Statistics", value: 3, color: "var(--chart-dash-3)" },
       { label: "Journals", value: 2, color: "var(--chart-dash-4)" },
     ],
-    reservations: [{ title: "Educational Research", note: "Ready for pickup until Oct 10", ready: true }],
     activity: [
-      { text: "Reservation ready: Educational Research", time: "Today, 9:05 AM" },
       { text: "Checked in at the library entrance", time: "Today, 7:40 AM" },
       { text: "Borrowed Applied Statistics for IT", time: "Oct 7" },
       { text: "Renewed Teaching Programming", time: "Oct 1" },
@@ -362,8 +352,7 @@ function MemberDashboard({ role }) {
         })}
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-3">
-        <Card className="xl:col-span-2" title="Books you have borrowed" subtitle="Return or renew before the due date to avoid fines">
+      <Card title="Books you have borrowed" subtitle="Return or renew before the due date to avoid fines">
           <ul className="space-y-3">
             {data.borrowed.map((b) => {
               const chip = dueChip(b.daysLeft);
@@ -392,23 +381,6 @@ function MemberDashboard({ role }) {
             })}
           </ul>
         </Card>
-
-        <Card title="Your reservations" subtitle="Books on hold for you">
-          <ul className="space-y-3">
-            {data.reservations.map((r) => (
-              <li key={r.title} className="flex items-start gap-3 rounded-xl bg-slate-50 p-4">
-                <span className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${r.ready ? "bg-sky-400 text-ink" : "bg-slate-200 text-slate-600"}`}>
-                  <Icon name={r.ready ? "check" : "clock"} className="h-4 w-4" />
-                </span>
-                <div>
-                  <p className="text-sm font-semibold text-ink">{r.title}</p>
-                  <p className="text-xs text-slate-500">{r.note}</p>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </Card>
-      </div>
 
       <div className="grid gap-6 xl:grid-cols-3">
         <Card className="xl:col-span-2" title="Your library visits" subtitle={`${visitsTotal} visits over the last 10 weeks`}>
