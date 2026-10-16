@@ -134,6 +134,14 @@ transaction; migration history synced):
 | `20261018590000_home_collection` | **Home page collection**: `lirc_home_collection` (granted to anonymous visitors too — the home page is public) returns physical ("Books" format) catalog titles with their section, ISBN, publisher/year, call number and live availability counts; covers first. The home carousel now shows real catalog books instead of hardcoded samples, resolves covers like the OPAC (library upload → Open Library API by ISBN → gradient placeholder), and the physical panel browses by section |
 | `20261018600000_home_collection_spread` | Home collection candidates now spread deterministically across the whole catalog (stable hash order, uploaded covers first) so the carousel surfaces titles the Open Library covers API actually covers — the newest local imprints rarely have API covers |
 
+**Home collection covers stored**: the covers the home carousel shows were
+downloaded once from the Open Library covers API (by ISBN), converted to WebP
+and uploaded into the library's own `book-covers` storage, with `books.book_image`
+set for **14 titles** (plus the one uploaded earlier) — across Accountancy,
+IT/CS, Education, Psychology, Filipiniana and General Circulation. The home
+page now loads them straight from storage (~0.6 s section load, no external
+image calls), and the OPAC shows the same covers.
+
 The official **library card holder workbooks** corrected the student programs
 in two passes. First: `LIBRARY CARD HOLDERS UPDATED 2025.xlsx` — 860 records
 realigned to its rosters (mostly **BSP → BSPSY**, plus BSA/BSAIS crossings).

@@ -1,4 +1,3 @@
-import { useMemo, useState } from "react";
 import Reveal from "../ui/Reveal.jsx";
 import { useBookCollection } from "../../hooks/home/useBookCollection.js";
 import { BOOK_TABS } from "../../data/home/bookCollection.js";
@@ -10,16 +9,6 @@ const GLASS =
 // so `h-full` alone no longer stretches the panel. `[&>div]:h-full`
 // passes the full height down to that inner wrapper.
 const REVEAL_FULL = "h-full [&>div]:h-full";
-
-const OPEN_LIBRARY_COVERS = "https://covers.openlibrary.org/b";
-
-function normalizeIsbn(isbn) {
-  if (!isbn) return null;
-  const clean = String(isbn)
-    .replace(/[^0-9Xx]/g, "")
-    .toUpperCase();
-  return clean.length === 10 || clean.length === 13 ? clean : null;
-}
 
 /* -------------------------------------------------------------------------- */
 /*                                Small pieces                                */
@@ -40,43 +29,21 @@ function Stars({ rating }) {
   );
 }
 
-// Covers resolve like the OPAC: the library's own upload first, then the
-// Open Library API by ISBN (which answers a 1x1 blank for misses), then the
-// gradient placeholder.
+// Covers are stored in the library's own cover storage (uploaded once), so
+// they load straight from there; books without one keep the gradient
+// placeholder.
 function Cover({ book, className = "" }) {
   const base = `aspect-[2/3] rounded-md shadow-lg shadow-slate-900/25 ${className}`;
-  const sources = useMemo(() => {
-    const list = [];
-    if (book.cover) list.push(book.cover);
-    const isbn = normalizeIsbn(book.isbn);
-    if (isbn) list.push(`${OPEN_LIBRARY_COVERS}/isbn/${isbn}-L.jpg`);
-    return list;
-  }, [book.cover, book.isbn]);
-  const [failed, setFailed] = useState([]);
-  const src = sources.find((source) => !failed.includes(source));
 
-  function markFailed(failedSrc) {
-    setFailed((previous) =>
-      previous.includes(failedSrc) ? previous : [...previous, failedSrc],
-    );
-  }
-
-  if (src) {
+  if (book.cover) {
     return (
       <img
-        key={src}
-        src={src}
+        src={book.cover}
         width="600"
         height="900"
         alt={`${book.title} cover`}
         loading="lazy"
         decoding="async"
-        referrerPolicy="no-referrer"
-        onLoad={(event) => {
-          // A 1x1 image means the API has no cover for this ISBN.
-          if (event.currentTarget.naturalWidth <= 1) markFailed(src);
-        }}
-        onError={() => markFailed(src)}
         className={`${base} object-cover`}
       />
     );

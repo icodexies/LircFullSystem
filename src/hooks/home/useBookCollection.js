@@ -3,9 +3,6 @@ import { BOOKS, BOOK_TABS } from "../../data/home/bookCollection.js";
 import { getHomeCollection } from "../../services/home/homeCollectionService.js";
 import { useCarousel } from "../shared/useCarousel.js";
 
-const SHOWN = 12;
-const OPEN_LIBRARY_COVERS = "https://covers.openlibrary.org/b";
-
 // Gradient pairs for books the catalog has no image for (same look as the
 // old samples). Assigned in order so neighbours differ.
 const PLACEHOLDER_COLORS = [
@@ -16,62 +13,6 @@ const PLACEHOLDER_COLORS = [
   ["#6b4a8f", "#1b1233"],
   ["#2ea77f", "#6a2b86"],
 ];
-
-function normalizeIsbn(isbn) {
-  if (!isbn) return null;
-  const clean = String(isbn).replace(/[^0-9Xx]/g, "").toUpperCase();
-  return clean.length === 10 || clean.length === 13 ? clean : null;
-}
-
-// Ask the Open Library covers API whether this ISBN has a cover. The answer
-// is the image itself (43 bytes = the 1x1 blank it returns for a miss), and
-// the browser keeps it cached for the real <img> that follows. Each probe is
-// bounded so one slow answer never holds the section back.
-async function probeCover(row, signal) {
-  if (row.cover) return true;
-  const isbn = normalizeIsbn(row.isbn);
-  if (!isbn) return false;
-  const controller = new AbortController();
-  const timer = window.setTimeout(() => controller.abort(), 2000);
-  const onAbort = () => controller.abort();
-  signal?.addEventListener?.("abort", onAbort);
-  try {
-    const response = await fetch(
-      `${OPEN_LIBRARY_COVERS}/isbn/${isbn}-L.jpg`,
-      { signal: controller.signal },
-    );
-    const blob = await response.blob();
-    return blob.size > 1000;
-  } catch {
-    return false;
-  } finally {
-    window.clearTimeout(timer);
-    signal?.removeEventListener?.("abort", onAbort);
-  }
-}
-
-// Probe in small batches so a slow API never floods the page; after the
-// budget runs out the remaining candidates simply fall back to the gradient
-// placeholder covers.
-async function orderByCover(rows, signal) {
-  const withCover = [];
-  const without = [];
-  const deadline = Date.now() + 4000;
-  for (let index = 0; index < rows.length; index += 4) {
-    const batch = rows.slice(index, index + 4);
-    if (Date.now() > deadline) {
-      without.push(...batch);
-      continue;
-    }
-    const results = await Promise.all(
-      batch.map((row) => probeCover(row, signal)),
-    );
-    batch.forEach((row, offset) => {
-      (results[offset] ? withCover : without).push(row);
-    });
-  }
-  return [...withCover, ...without].slice(0, SHOWN);
-}
 
 function describe(row) {
   const published = [
@@ -109,7 +50,6 @@ function mapRow(row, index) {
     colors: PLACEHOLDER_COLORS[index % PLACEHOLDER_COLORS.length],
     rating: null,
     cover: row.cover || null,
-    isbn: row.isbn || null,
     description: describe(row),
     info: availability(row),
   };
@@ -124,11 +64,12 @@ export function useBookCollection() {
     books: [],
   });
 
+  // The covers live in the library's own storage (uploaded once), so this is
+  // a single fast read — no external image checks on the home page.
   useEffect(() => {
     const controller = new AbortController();
     let active = true;
     getHomeCollection(controller.signal)
-      .then((rows) => orderByCover(rows, controller.signal))
       .then((rows) => {
         if (active)
           setCatalog({
