@@ -1,7 +1,8 @@
 // Statistics for members (students, faculty, staff): their own borrowing and
-// attendance records, plus what is useful to a reader — the most borrowed
-// titles and the library's monthly visits/loans trend. The full operational
-// page stays with librarians and admins (Statistics.jsx routes by role).
+// attendance records, plus what is popular in their own department — the
+// same most-borrowed grouping the borrowing statistics use, never another
+// department's records. The full operational page stays with librarians and
+// admins (Statistics.jsx routes by role).
 //
 // One RPC call (lirc_my_statistics) loads everything; the payload never
 // includes another member's data.
@@ -41,17 +42,19 @@ const percent = (part, total) =>
 const VIEW_TITLES = {
   borrowing: "My borrowing",
   attendance: "My attendance",
-  popular: "Most borrowed books",
-  trends: "Library trends",
+  popular: "Most borrowed in your department",
 };
 
 function buildCards(data) {
   const borrowing = data?.borrowing?.totals ?? {};
   const attendance = data?.attendance?.totals ?? {};
-  const library = data?.library?.totals ?? {};
-  const top = (data?.library?.popular ?? [])[0] ?? null;
+  const department = data?.department ?? {};
+  const top = (department.popular ?? [])[0] ?? null;
   const semester = data?.semester?.id != null;
   const returns = Number(borrowing.on_time ?? 0) + Number(borrowing.late ?? 0);
+  const departmentCode = department.name
+    ? String(department.name).split(" - ")[0]
+    : null;
 
   return [
     {
@@ -90,20 +93,13 @@ function buildCards(data) {
       label: "Most borrowed",
       value: top ? number(top.count) : "—",
       description: top
-        ? `“${top.name}” — this semester's most borrowed title. Open the top 10.`
+        ? `“${top.name}” — ${
+            department.name ? `${department.name}'s` : "the library's"
+          } most borrowed title this semester.`
         : "No loans have been recorded this semester yet.",
       icon: <StarIcon />,
       gradient: "from-navy-deep to-navy",
-    },
-    {
-      key: "trends",
-      label: "Library trends",
-      value: semester ? number(library.visits) : "—",
-      description: semester
-        ? `Visits and loans per month — ${number(library.loans)} loans this semester.`
-        : "No active semester is set in Academic periods.",
-      icon: <TrendIcon />,
-      gradient: "from-navy-deep to-accent-strong",
+      badge: departmentCode,
     },
   ];
 }
@@ -282,14 +278,19 @@ function MyAttendanceView({ data }) {
 
 function PopularBooksView({ data }) {
   const [bookId, setBookId] = useState(null);
-  const popular = data.library?.popular ?? [];
+  const department = data.department ?? {};
+  const popular = department.popular ?? [];
 
   return (
     <div className="space-y-6">
       <StatsPanel
         icon={<StarIcon />}
-        title="Most borrowed books"
-        description="The ten titles borrowed the most this semester — open one to see its details and availability."
+        title="Most borrowed in your department"
+        description={
+          department.name
+            ? `The ten titles borrowed the most by ${department.name} members this semester — open one to see its details and availability.`
+            : "The ten titles borrowed the most this semester — open one to see its details and availability."
+        }
         chip="Top 10"
       >
         <div className="px-5 py-4 sm:px-6">
@@ -309,56 +310,6 @@ function PopularBooksView({ data }) {
       {bookId && (
         <BookDetails id={bookId} canEdit={false} onClose={() => setBookId(null)} />
       )}
-    </div>
-  );
-}
-
-function LibraryTrendsView({ data }) {
-  const months = data.library?.months ?? [];
-  const totals = data.library?.totals ?? {};
-  const labels = months.map((month) => shortMonth(month.month));
-  const monthsChip = labels.length
-    ? `${labels[0]} – ${labels[labels.length - 1]}`
-    : null;
-
-  return (
-    <div className="space-y-6">
-      <StatsPanel
-        icon={<TrendIcon />}
-        title="Visits and loans per month"
-        description="How busy the library was, month by month — visits recorded and loans that started."
-        chip={monthsChip}
-      >
-        <div className="p-5 sm:p-6">
-          <div className="rounded-xl bg-page p-4">
-            <LineChart
-              labels={labels}
-              series={[
-                {
-                  key: "visits",
-                  label: "Visits",
-                  color: INK.navy,
-                  values: months.map((month) => Number(month.visits)),
-                },
-                {
-                  key: "loans",
-                  label: "Loans",
-                  color: INK.indigo,
-                  values: months.map((month) => Number(month.loans)),
-                },
-              ]}
-              unit="Hover a month to see its exact numbers."
-            />
-          </div>
-        </div>
-      </StatsPanel>
-
-      <StatStrip
-        items={[
-          { label: "Visits this semester", value: number(totals.visits) },
-          { label: "Loans this semester", value: number(totals.loans) },
-        ]}
-      />
     </div>
   );
 }
@@ -401,7 +352,7 @@ export default function MemberStatistics() {
     <div className="space-y-6">
       <WorkspaceHeader
         title="Statistics"
-        description="Your own library record — borrowing and attendance — plus what's popular across the library."
+        description="Your own library record — borrowing and attendance — plus what's popular in your department."
         actions={
           <button
             type="button"
@@ -457,7 +408,6 @@ export default function MemberStatistics() {
           {view === "borrowing" && <MyBorrowingView data={data} />}
           {view === "attendance" && <MyAttendanceView data={data} />}
           {view === "popular" && <PopularBooksView data={data} />}
-          {view === "trends" && <LibraryTrendsView data={data} />}
         </div>
       ) : loading && !data ? (
         <div className="space-y-6">
@@ -467,14 +417,14 @@ export default function MemberStatistics() {
           >
             <Spinner size="sm" /> Loading your numbers…
           </div>
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {Array.from({ length: 4 }, (_, index) => (
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 3 }, (_, index) => (
               <CardSkeleton key={index} />
             ))}
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {cards.map(({ key: cardKey, ...card }, index) => (
             <StatCard
               key={cardKey}
