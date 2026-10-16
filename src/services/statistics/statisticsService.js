@@ -53,6 +53,24 @@ export async function getBorrowerStatistics(profileId, semesterId, signal) {
   return data;
 }
 
+// The member view of the Statistics page: the caller's own borrowing and
+// attendance records, plus the most borrowed titles (counts only) and the
+// library's monthly visits/loans trend. No other member's data is included.
+export async function getMyStatistics(semesterId, signal) {
+  const client = await getSupabase();
+  const { data, error } = await client
+    .rpc("lirc_my_statistics", { p_semester_id: semesterId ?? null })
+    .abortSignal(signal);
+  if (error) {
+    if (["42883", "PGRST202", "42703", "42P01"].includes(error?.code))
+      throw new Error(
+        "Statistics needs its database setup first. Apply the statistics migration.",
+      );
+    throw new Error(error?.message || "Your statistics could not be loaded.");
+  }
+  return data;
+}
+
 // The borrower category: how many people borrowed, the top borrowers, who is
 // overdue right now, and the borrowers by role and department.
 export async function getBorrowersStatistics(semesterId, signal) {

@@ -3,12 +3,33 @@
 // actions — librarians add books, faculty suggest them.
 //
 // The book list starts collapsed (first three) so a subject with a long
-// reading list stays compact; "View all" expands it in place. "View book"
-// opens the book's window in place (no navigation, no lost scroll).
+// reading list stays compact; "View all" opens the full list in a window.
+// "View book" opens the book's window in place (no navigation, no lost
+// scroll).
 import { useState } from "react";
 import BookCover from "../catalog/BookCover.jsx";
+import Modal from "../ui/Modal.jsx";
+import { secondaryButton } from "../attendance/WorkspaceUi.jsx";
 
 const COLLAPSED_BOOKS = 3;
+
+function BooksIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className="h-5 w-5"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.7"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+    </svg>
+  );
+}
 
 const primarySmall =
   "inline-flex items-center justify-center rounded-lg bg-navy px-3 py-1.5 text-[11px] font-semibold text-white transition-colors hover:bg-accent-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-strong disabled:opacity-40";
@@ -82,6 +103,46 @@ function BookRow({ book, canCurate, onRemove, onOpenBook }) {
   );
 }
 
+// The full reading list for one subject, in a window: every recommended
+// book with its availability, so long lists never stretch the curriculum.
+function SubjectBooksModal({
+  subject,
+  books,
+  canCurate,
+  onRemove,
+  onOpenBook,
+  onClose,
+}) {
+  return (
+    <Modal
+      title="Recommended books"
+      description={`${subject.course_code} · ${subject.course_title} — all ${books.length} books on this subject's list.`}
+      icon={<BooksIcon />}
+      size="lg"
+      onClose={onClose}
+      footer={
+        <div className="flex justify-end">
+          <button type="button" className={secondaryButton} onClick={onClose}>
+            Close
+          </button>
+        </div>
+      }
+    >
+      <ul className="m-5 divide-y divide-slate-100 overflow-hidden rounded-xl border border-slate-200 bg-surface">
+        {books.map((book) => (
+          <BookRow
+            key={book.recommendation_id}
+            book={book}
+            canCurate={canCurate}
+            onRemove={(picked) => onRemove(subject, picked)}
+            onOpenBook={onOpenBook}
+          />
+        ))}
+      </ul>
+    </Modal>
+  );
+}
+
 export default function SubjectCard({
   subject,
   canCurate,
@@ -92,11 +153,11 @@ export default function SubjectCard({
   onOpenBook,
   onAiPicks,
 }) {
-  const [showAll, setShowAll] = useState(false);
+  const [listOpen, setListOpen] = useState(false);
   const books = subject.books ?? [];
   const pending = Number(subject.pending_count ?? 0);
   const myPending = subject.my_pending ?? null;
-  const visibleBooks = showAll ? books : books.slice(0, COLLAPSED_BOOKS);
+  const visibleBooks = books.slice(0, COLLAPSED_BOOKS);
 
   return (
     <div className="rounded-2xl border border-slate-200 bg-surface p-4 shadow-[0_1px_2px_rgba(11,19,48,0.05)]">
@@ -174,13 +235,10 @@ export default function SubjectCard({
             <li>
               <button
                 type="button"
-                onClick={() => setShowAll((value) => !value)}
-                aria-expanded={showAll}
+                onClick={() => setListOpen(true)}
                 className="w-full bg-page/60 px-3 py-2.5 text-[11px] font-semibold text-accent transition-colors hover:bg-tint/60"
               >
-                {showAll
-                  ? "Show fewer books"
-                  : `View all ${books.length} books`}
+                View all {books.length} books
               </button>
             </li>
           )}
@@ -194,6 +252,17 @@ export default function SubjectCard({
               ? " — add books from the catalog."
               : "."}
         </p>
+      )}
+
+      {listOpen && (
+        <SubjectBooksModal
+          subject={subject}
+          books={books}
+          canCurate={canCurate}
+          onRemove={onRemove}
+          onOpenBook={onOpenBook}
+          onClose={() => setListOpen(false)}
+        />
       )}
     </div>
   );

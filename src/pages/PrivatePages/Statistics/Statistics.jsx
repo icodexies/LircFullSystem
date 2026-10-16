@@ -1,23 +1,30 @@
 // Statistics — one clickable card per category (borrowing, attendance,
 // catalog, members, validation). Opening a card shows that category's full
 // statistics: monthly line graphs, rankings and breakdowns.
+//
+// The page routes by role: librarians and admins get the full operational
+// view; students, faculty and staff get MemberStatistics — their own
+// borrowing and attendance records plus reader-useful library trends.
 import { useEffect, useState } from "react";
 import { getStatisticsOverview } from "../../../services/statistics/statisticsService.js";
 import { useSemester } from "../../../hooks/periods/useSemester.js";
 import { periodLabel } from "../../../services/periods/periodRules.js";
+import { useAuth } from "../../../hooks/auth/useAuth.js";
+import { ROLES } from "../../../routes/roles.js";
 import {
   WorkspaceHeader,
   WorkspaceNotice,
   secondaryButton,
 } from "../../../components/attendance/WorkspaceUi.jsx";
 import StatCard from "../../../components/statistics/StatCard.jsx";
+import CardSkeleton from "../../../components/statistics/CardSkeleton.jsx";
+import MemberStatistics from "../../../components/statistics/MemberStatistics.jsx";
 import BorrowingStats from "../../../components/statistics/BorrowingStats.jsx";
 import AttendanceStats from "../../../components/statistics/AttendanceStats.jsx";
 import CatalogStats from "../../../components/statistics/CatalogStats.jsx";
 import MembersStats from "../../../components/statistics/MembersStats.jsx";
 import ValidationStats from "../../../components/statistics/ValidationStats.jsx";
 import BorrowersStats from "../../../components/statistics/BorrowersStats.jsx";
-import { Skeleton } from "../../../components/ui/Skeleton.jsx";
 import { Spinner } from "../../../components/ui/Loading.jsx";
 
 const number = (value) => Number(value ?? 0).toLocaleString("en-US");
@@ -157,24 +164,7 @@ function buildCards(data) {
   ];
 }
 
-function CardSkeleton() {
-  return (
-    <div className="flex flex-col">
-      <div className="relative pt-[34px]">
-        <div className="absolute inset-x-[7%] top-0 h-[80px] rounded-t-[20px] bg-slate-200 ring-2 ring-slate-300" />
-        <div className="relative flex flex-col items-center rounded-b-[20px] bg-slate-200/80 px-4 pb-5 pt-[70px]">
-          <Skeleton className="h-5 w-5 rounded-md" />
-          <Skeleton className="mt-2 h-6 w-16" />
-          <Skeleton className="mt-1.5 h-3 w-14" />
-          <Skeleton className="mt-2 h-3 w-28" />
-        </div>
-        <Skeleton className="absolute left-1/2 top-[10px] h-[56px] w-[56px] -translate-x-1/2 rounded-full" />
-      </div>
-    </div>
-  );
-}
-
-export default function Statistics() {
+function OperatorStatistics() {
   const periods = useSemester();
   const semesterId = periods.selectedSemesterId;
   const semesterLabel = periodLabel(periods.selectedSemester);
@@ -317,4 +307,12 @@ export default function Statistics() {
       )}
     </div>
   );
+}
+
+// The full operational page stays with the people who run the library;
+// members get their own records and reader-useful trends.
+export default function Statistics() {
+  const { role } = useAuth();
+  const isOperator = role === ROLES.LIBRARIAN || role === ROLES.ADMIN;
+  return isOperator ? <OperatorStatistics /> : <MemberStatistics />;
 }
