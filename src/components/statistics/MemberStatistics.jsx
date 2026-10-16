@@ -1,8 +1,9 @@
-// Statistics for members (students, faculty, staff): their own borrowing and
-// attendance records, plus what is popular in their own department — the
-// same most-borrowed grouping the borrowing statistics use, never another
-// department's records. The full operational page stays with librarians and
-// admins (Statistics.jsx routes by role).
+// Statistics for members (students, faculty, staff): their own attendance
+// record, plus what is popular in their own department — the most borrowed
+// titles overall and broken down by program (the same grouping the borrowing
+// statistics use, never another department's records). Personal borrowing
+// lives on the My Borrowing page. The full operational page stays with
+// librarians and admins (Statistics.jsx routes by role).
 //
 // One RPC call (lirc_my_statistics) loads everything; the payload never
 // includes another member's data.
@@ -30,48 +31,31 @@ import RankList from "./RankList.jsx";
 import LineChart from "./LineChart.jsx";
 import CardSkeleton from "./CardSkeleton.jsx";
 import BookDetails from "../catalog/BookDetails.jsx";
-import { BookIcon, ClockIcon, StarIcon, TrendIcon } from "./statsIcons.jsx";
+import {
+  ClockIcon,
+  LayersIcon,
+  StarIcon,
+  TrendIcon,
+} from "./statsIcons.jsx";
 import { Spinner } from "../ui/Loading.jsx";
 
 const number = (value) => Number(value ?? 0).toLocaleString("en-US");
-const percent = (part, total) =>
-  Number(total) > 0
-    ? `${Math.round((100 * Number(part ?? 0)) / Number(total))}%`
-    : null;
 
 const VIEW_TITLES = {
-  borrowing: "My borrowing",
   attendance: "My attendance",
   popular: "Most borrowed in your department",
 };
 
 function buildCards(data) {
-  const borrowing = data?.borrowing?.totals ?? {};
   const attendance = data?.attendance?.totals ?? {};
   const department = data?.department ?? {};
   const top = (department.popular ?? [])[0] ?? null;
   const semester = data?.semester?.id != null;
-  const returns = Number(borrowing.on_time ?? 0) + Number(borrowing.late ?? 0);
   const departmentCode = department.name
     ? String(department.name).split(" - ")[0]
     : null;
 
   return [
-    {
-      key: "borrowing",
-      label: "My borrowing",
-      value: semester ? number(borrowing.open) : "—",
-      description: semester
-        ? `${number(borrowing.loans)} loans this semester — ${number(borrowing.returned)} returned${
-            Number(borrowing.overdue)
-              ? `, ${number(borrowing.overdue)} overdue`
-              : ""
-          }.`
-        : "No active semester is set in Academic periods.",
-      icon: <BookIcon />,
-      gradient: "from-navy to-accent-strong",
-      badge: percent(borrowing.on_time, returns),
-    },
     {
       key: "attendance",
       label: "My attendance",
@@ -102,93 +86,6 @@ function buildCards(data) {
       badge: departmentCode,
     },
   ];
-}
-
-// One loan row: the book, its dates, and its state.
-function LoanRow({ loan }) {
-  return (
-    <li className="flex flex-wrap items-center justify-between gap-2 py-2.5 text-xs">
-      <div className="min-w-0">
-        <p className="truncate font-medium text-ink">{loan.book_name}</p>
-        <p className="mt-0.5 text-slate-500">
-          {loan.accession_number} · {displayTime(loan.borrowed_at)} →{" "}
-          {loan.returned_at
-            ? displayTime(loan.returned_at)
-            : `due ${displayTime(loan.due_at)}`}
-        </p>
-      </div>
-      {loan.returned_at ? (
-        <StatusBadge tone="muted">Returned</StatusBadge>
-      ) : loan.is_overdue ? (
-        <StatusBadge tone="warning">Overdue</StatusBadge>
-      ) : (
-        <StatusBadge tone="success">Still out</StatusBadge>
-      )}
-    </li>
-  );
-}
-
-function MyBorrowingView({ data }) {
-  const [bookId, setBookId] = useState(null);
-  const totals = data.borrowing?.totals ?? {};
-  const books = data.borrowing?.books ?? [];
-  const loans = data.borrowing?.loans ?? [];
-  const returns = Number(totals.on_time ?? 0) + Number(totals.late ?? 0);
-
-  return (
-    <div className="space-y-6">
-      <StatStrip
-        items={[
-          { label: "Loans this semester", value: number(totals.loans) },
-          { label: "Still out", value: number(totals.open) },
-          { label: "Overdue", value: number(totals.overdue) },
-          { label: "Returned", value: number(totals.returned) },
-          {
-            label: "Returned on time",
-            value: percent(totals.on_time, returns) ?? "—",
-            help: `${number(totals.on_time)} on time · ${number(totals.late)} late`,
-          },
-        ]}
-      />
-
-      <StatsPanel
-        icon={<BookIcon />}
-        title="Books you borrowed"
-        description="How often you borrowed each title, this semester."
-        chip="Top 10"
-      >
-        <div className="px-5 py-4 sm:px-6">
-          <RankList
-            items={books.map((book) => ({
-              label: book.name,
-              count: book.count,
-              onClick: book.id ? () => setBookId(book.id) : undefined,
-              actionLabel: "View details",
-            }))}
-            empty="No loans recorded for you this semester."
-          />
-        </div>
-      </StatsPanel>
-
-      {loans.length > 0 && (
-        <StatsPanel
-          icon={<ClockIcon />}
-          title="Recent loans"
-          description="Your latest loans with their due dates and returns."
-        >
-          <ul className="divide-y divide-slate-100 px-5 py-2 sm:px-6">
-            {loans.map((loan) => (
-              <LoanRow key={loan.id} loan={loan} />
-            ))}
-          </ul>
-        </StatsPanel>
-      )}
-
-      {bookId && (
-        <BookDetails id={bookId} canEdit={false} onClose={() => setBookId(null)} />
-      )}
-    </div>
-  );
 }
 
 function MyAttendanceView({ data }) {
@@ -280,6 +177,7 @@ function PopularBooksView({ data }) {
   const [bookId, setBookId] = useState(null);
   const department = data.department ?? {};
   const popular = department.popular ?? [];
+  const programs = department.programs ?? [];
 
   return (
     <div className="space-y-6">
@@ -306,6 +204,46 @@ function PopularBooksView({ data }) {
           />
         </div>
       </StatsPanel>
+
+      {programs.length > 0 && (
+        <StatsPanel
+          icon={<LayersIcon />}
+          title="By program"
+          description={
+            department.name
+              ? `How each program in ${department.name} borrowed this semester — the most borrowed titles per program.`
+              : "How each program borrowed this semester — the most borrowed titles per program."
+          }
+          chip={`${programs.length} ${programs.length === 1 ? "program" : "programs"}`}
+        >
+          <div className="divide-y divide-slate-100 px-5 py-2 sm:px-6">
+            {programs.map((program) => (
+              <section key={program.id ?? program.name} className="py-4">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <h3 className="text-sm font-semibold text-ink">
+                    {program.name}
+                  </h3>
+                  <span className="rounded-full bg-tint px-2.5 py-1 text-[10px] font-semibold text-accent">
+                    {number(program.count)}{" "}
+                    {Number(program.count) === 1 ? "loan" : "loans"}
+                  </span>
+                </div>
+                <div className="mt-2">
+                  <RankList
+                    items={(program.books ?? []).map((book) => ({
+                      label: book.name,
+                      count: book.count,
+                      onClick: book.id ? () => setBookId(book.id) : undefined,
+                      actionLabel: "View details",
+                    }))}
+                    empty="No loans recorded for this program this semester."
+                  />
+                </div>
+              </section>
+            ))}
+          </div>
+        </StatsPanel>
+      )}
 
       {bookId && (
         <BookDetails id={bookId} canEdit={false} onClose={() => setBookId(null)} />
@@ -352,7 +290,7 @@ export default function MemberStatistics() {
     <div className="space-y-6">
       <WorkspaceHeader
         title="Statistics"
-        description="Your own library record — borrowing and attendance — plus what's popular in your department."
+        description="Your attendance record and what's popular in your department — most borrowed titles, overall and by program."
         actions={
           <button
             type="button"
@@ -405,7 +343,6 @@ export default function MemberStatistics() {
             )}
           </div>
 
-          {view === "borrowing" && <MyBorrowingView data={data} />}
           {view === "attendance" && <MyAttendanceView data={data} />}
           {view === "popular" && <PopularBooksView data={data} />}
         </div>
@@ -418,7 +355,7 @@ export default function MemberStatistics() {
             <Spinner size="sm" /> Loading your numbers…
           </div>
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {Array.from({ length: 3 }, (_, index) => (
+            {Array.from({ length: 2 }, (_, index) => (
               <CardSkeleton key={index} />
             ))}
           </div>
