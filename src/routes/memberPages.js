@@ -21,6 +21,14 @@ export const MEMBER_PAGES = [
     group: "Overview",
     allowedRoles: ACCESS.member,
   },
+  {
+    id: "my-borrowing",
+    label: "My Borrowing",
+    path: "/my-borrowing",
+    icon: "borrow",
+    group: "Overview",
+    allowedRoles: ACCESS.borrowers,
+  },
   // --- Catalog ------------------------------------------------------------
   {
     id: "opac",

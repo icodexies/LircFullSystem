@@ -4,14 +4,21 @@ import { MEMBER_PAGES, canAccessPage } from "../../src/routes/memberPages.js";
 
 // Expected access is written independently of the page definitions.
 const expectedPages = {
-  student: ["dashboard", "opac", "path-finder", "statistics"],
-  faculty: ["dashboard", "opac", "path-finder", "statistics"],
-  non_teaching_personnel: ["dashboard", "opac", "path-finder", "statistics"],
+  student: ["dashboard", "opac", "path-finder", "statistics", "my-borrowing"],
+  faculty: ["dashboard", "opac", "path-finder", "statistics", "my-borrowing"],
+  non_teaching_personnel: [
+    "dashboard",
+    "opac",
+    "path-finder",
+    "statistics",
+    "my-borrowing",
+  ],
   staff: [
     "dashboard",
     "opac",
     "path-finder",
     "statistics",
+    "my-borrowing",
     "users",
     "attendance",
     "barcode-generator",
@@ -70,8 +77,8 @@ test("missing and unknown roles cannot access any member page", () => {
   }
 });
 
-test("all fifteen pages have unique route paths and IDs", () => {
-  assert.equal(MEMBER_PAGES.length, 15);
-  assert.equal(new Set(MEMBER_PAGES.map((page) => page.id)).size, 15);
-  assert.equal(new Set(MEMBER_PAGES.map((page) => page.path)).size, 15);
+test("all sixteen pages have unique route paths and IDs", () => {
+  assert.equal(MEMBER_PAGES.length, 16);
+  assert.equal(new Set(MEMBER_PAGES.map((page) => page.id)).size, 16);
+  assert.equal(new Set(MEMBER_PAGES.map((page) => page.path)).size, 16);
 });

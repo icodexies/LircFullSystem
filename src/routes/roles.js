@@ -24,6 +24,14 @@ export const ACCESS = {
   ],
   staff: [ROLES.STAFF, ROLES.LIBRARIAN, ROLES.ADMIN],
   books: [ROLES.LIBRARIAN, ROLES.ADMIN],
+  // The people who borrow books as library users (My Borrowing). The
+  // circulation desk (Book Borrow) stays with staff/librarian/admin.
+  borrowers: [
+    ROLES.STUDENT,
+    ROLES.FACULTY,
+    ROLES.NON_TEACHING_PERSONNEL,
+    ROLES.STAFF,
+  ],
   // The attendance desk is open to staff too; validation stays librarian/admin.
   attendance: [ROLES.STAFF, ROLES.LIBRARIAN, ROLES.ADMIN],
   validation: [ROLES.LIBRARIAN, ROLES.ADMIN],

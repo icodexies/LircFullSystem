@@ -78,6 +78,29 @@ export async function getMemberLoans(profileId, signal) {
   return data?.loans ?? [];
 }
 
+// The caller's own circulation records (My Borrowing): one page of their
+// loans — still out, overdue or returned — with a status filter, search and
+// all-time totals. The server only ever returns the caller's own rows.
+export async function getMyLoans({
+  status = "all",
+  search = "",
+  page = 1,
+  pageSize = 20,
+  signal,
+} = {}) {
+  const client = await getSupabase();
+  const { data, error } = await client
+    .rpc("lirc_my_loans", {
+      p_status: status,
+      p_search: search,
+      p_limit: pageSize,
+      p_offset: (page - 1) * pageSize,
+    })
+    .abortSignal(signal);
+  if (error) throw borrowError(error);
+  return data;
+}
+
 // Find members by name or library card.
 export async function findMembers(search, signal) {
   const client = await getSupabase();

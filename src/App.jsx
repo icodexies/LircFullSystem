@@ -51,6 +51,9 @@ const memberScreens = {
   statistics: lazy(
     () => import("./pages/PrivatePages/Statistics/Statistics.jsx"),
   ),
+  "my-borrowing": lazy(
+    () => import("./pages/PrivatePages/MyBorrowing/MyBorrowing.jsx"),
+  ),
   enrollments: lazy(
     () => import("./pages/PrivatePages/Enrollments/Enrollments.jsx"),
   ),
