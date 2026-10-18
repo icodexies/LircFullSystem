@@ -1,8 +1,10 @@
-// Announcements (admins): write and manage the announcements that pop up in
-// a carousel for members when they open the system after signing in. Drafts
-// stay hidden; publishing shows it to the chosen audience until "Show until"
-// passes or it is unpublished.
+// Announcements — one page, two views by role: admins write and manage the
+// announcements (they pop up for members when they sign in); students,
+// faculty and staff read the active ones here (the same feed the popup
+// shows, so a closed popup never loses a notice).
 import { useEffect, useState } from "react";
+import { useAuth } from "../../../hooks/auth/useAuth.js";
+import { ROLES } from "../../../routes/roles.js";
 import Modal from "../../../components/ui/Modal.jsx";
 import { SkeletonRows } from "../../../components/ui/Skeleton.jsx";
 import { Spinner } from "../../../components/ui/Loading.jsx";
@@ -15,6 +17,7 @@ import {
 } from "../../../components/attendance/WorkspaceUi.jsx";
 import { buttonClass, inputClass, tableButton } from "../../../components/attendance/StaffUi.jsx";
 import EmptyState from "../../../components/personnel/EmptyState.jsx";
+import AnnouncementFeed from "../../../components/announcements/AnnouncementFeed.jsx";
 import { useToast } from "../../../hooks/shared/useToast.js";
 import { useDialog } from "../../../hooks/shared/useDialog.js";
 import {
@@ -357,7 +360,7 @@ function AnnouncementForm({ item, onClose, onDone }) {
   );
 }
 
-export default function Announcements() {
+function AnnouncementMaker() {
   const toast = useToast();
   const dialog = useDialog();
   const [state, setState] = useState({ key: "", loading: true, error: "", rows: [] });
@@ -503,4 +506,10 @@ export default function Announcements() {
       )}
     </div>
   );
+}
+
+// Admins write the announcements; everyone else reads them.
+export default function Announcements() {
+  const { role } = useAuth();
+  return role === ROLES.ADMIN ? <AnnouncementMaker /> : <AnnouncementFeed />;
 }

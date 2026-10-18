@@ -4,14 +4,29 @@ import { MEMBER_PAGES, canAccessPage } from "../../src/routes/memberPages.js";
 
 // Expected access is written independently of the page definitions.
 const expectedPages = {
-  student: ["dashboard", "opac", "path-finder", "statistics", "my-borrowing"],
-  faculty: ["dashboard", "opac", "path-finder", "statistics", "my-borrowing"],
+  student: [
+    "dashboard",
+    "opac",
+    "path-finder",
+    "statistics",
+    "my-borrowing",
+    "announcements",
+  ],
+  faculty: [
+    "dashboard",
+    "opac",
+    "path-finder",
+    "statistics",
+    "my-borrowing",
+    "announcements",
+  ],
   non_teaching_personnel: [
     "dashboard",
     "opac",
     "path-finder",
     "statistics",
     "my-borrowing",
+    "announcements",
   ],
   staff: [
     "dashboard",
@@ -19,6 +34,7 @@ const expectedPages = {
     "path-finder",
     "statistics",
     "my-borrowing",
+    "announcements",
     "users",
     "attendance",
     "barcode-generator",
@@ -30,6 +46,7 @@ const expectedPages = {
     "opac",
     "path-finder",
     "statistics",
+    "announcements",
     "users",
     "attendance",
     "enrollments",

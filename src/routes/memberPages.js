@@ -29,6 +29,14 @@ export const MEMBER_PAGES = [
     group: "Overview",
     allowedRoles: ACCESS.borrowers,
   },
+  {
+    id: "announcements",
+    label: "Announcements",
+    path: "/announcements",
+    icon: "announcement",
+    group: "Overview",
+    allowedRoles: ACCESS.member,
+  },
   // --- Catalog ------------------------------------------------------------
   {
     id: "opac",
@@ -68,14 +76,6 @@ export const MEMBER_PAGES = [
     label: "User performance",
     path: "/user-performance",
     icon: "performance",
-    group: "Members",
-    allowedRoles: ACCESS.admin,
-  },
-  {
-    id: "announcements",
-    label: "Announcements",
-    path: "/announcements",
-    icon: "announcement",
     group: "Members",
     allowedRoles: ACCESS.admin,
   },

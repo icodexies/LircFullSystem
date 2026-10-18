@@ -3,6 +3,7 @@
 // when a member opens the system after signing in.
 import { useEffect, useState } from "react";
 import Modal from "../ui/Modal.jsx";
+import Reveal from "../ui/Reveal.jsx";
 import { secondaryButton } from "../attendance/WorkspaceUi.jsx";
 
 function MegaphoneIcon() {
@@ -90,37 +91,40 @@ export default function AnnouncementCarousel({ items, onClose }) {
         </div>
       }
     >
-      <div className="px-5 py-5 sm:px-6">
-        <article className="overflow-hidden rounded-2xl border border-slate-200 bg-surface">
-          {item.image_url && (
-            <img
-              src={item.image_url}
-              alt=""
-              loading="lazy"
-              decoding="async"
-              className="h-52 w-full object-cover"
-            />
-          )}
-          <div className="space-y-2 p-5">
-            <div className="flex flex-wrap items-center gap-2">
-              {item.pinned && (
-                <span className="rounded-full bg-amber-50 px-2.5 py-0.5 text-[10px] font-semibold text-amber-800">
-                  Pinned
-                </span>
+      <Reveal direction="zoomUp" distance={26} duration={550} threshold={0} once>
+        <div className="px-5 py-5 sm:px-6">
+          <Reveal key={item.id} direction="blur" duration={350} threshold={0} once>
+            <article className="overflow-hidden rounded-2xl border border-slate-200 bg-surface">
+              {item.image_url && (
+                <img
+                  src={item.image_url}
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                  className="h-52 w-full object-cover"
+                />
               )}
-              <span className="text-[10px] text-slate-400">
-                {formatDate(item.starts_at)}
-                {item.ends_at ? ` · shown until ${formatDate(item.ends_at)}` : ""}
-              </span>
-            </div>
-            <h3 className="font-serif text-xl font-bold leading-snug text-ink">
-              {item.title}
-            </h3>
-            <p className="whitespace-pre-line text-sm leading-relaxed text-slate-600">
-              {item.body}
-            </p>
-          </div>
-        </article>
+              <div className="space-y-2 p-5">
+                <div className="flex flex-wrap items-center gap-2">
+                  {item.pinned && (
+                    <span className="rounded-full bg-amber-50 px-2.5 py-0.5 text-[10px] font-semibold text-amber-800">
+                      Pinned
+                    </span>
+                  )}
+                  <span className="text-[10px] text-slate-400">
+                    {formatDate(item.starts_at)}
+                    {item.ends_at ? ` · shown until ${formatDate(item.ends_at)}` : ""}
+                  </span>
+                </div>
+                <h3 className="font-serif text-xl font-bold leading-snug text-ink">
+                  {item.title}
+                </h3>
+                <p className="whitespace-pre-line text-sm leading-relaxed text-slate-600">
+                  {item.body}
+                </p>
+              </div>
+            </article>
+          </Reveal>
 
         {total > 1 && (
           <div className="mt-4 flex items-center justify-center gap-4">
@@ -158,7 +162,8 @@ export default function AnnouncementCarousel({ items, onClose }) {
             </button>
           </div>
         )}
-      </div>
+        </div>
+      </Reveal>
     </Modal>
   );
 }
