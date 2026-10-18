@@ -213,11 +213,11 @@ export default function AiRecommendModal({ subject, onClose, onOpenBook }) {
                   acquisition list below.
                 </p>
               ) : (
-                <ul className="mt-2 divide-y divide-slate-100">
+                <ul className="mt-3 space-y-2.5">
                   {picks.map((pick) => (
                     <li
                       key={pick.book_id}
-                      className="flex flex-wrap items-start justify-between gap-3 py-2.5 text-xs"
+                      className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-2 rounded-xl border border-slate-200 bg-surface px-4 py-3 text-xs"
                     >
                       <div className="min-w-0">
                         <p className="font-semibold text-ink">
@@ -239,7 +239,7 @@ export default function AiRecommendModal({ subject, onClose, onOpenBook }) {
                       </div>
                       <button
                         type="button"
-                        className={secondaryButton}
+                        className={`${secondaryButton} justify-self-end`}
                         onClick={() => onOpenBook(pick.book_id)}
                       >
                         View book
@@ -264,45 +264,46 @@ export default function AiRecommendModal({ subject, onClose, onOpenBook }) {
                   No acquisition suggestions for this subject.
                 </p>
               ) : (
-                <ul className="mt-2 divide-y divide-slate-100">
+                <ul className="mt-3 space-y-2.5">
                   {acquisitions.map((item) => (
-                    <li key={item.title} className="py-3 text-xs">
-                      <div className="flex flex-wrap items-start justify-between gap-3">
-                        <div className="min-w-0">
-                          <p className="font-semibold text-ink">{item.title}</p>
-                          <p className="mt-0.5 text-slate-500">
-                            {[item.author, item.publisher, item.year]
-                              .filter(Boolean)
-                              .join(" · ")}
+                    <li
+                      key={item.title}
+                      className="grid grid-cols-1 gap-2 rounded-xl border border-slate-200 bg-surface px-4 py-3 text-xs sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:gap-x-4"
+                    >
+                      <div className="min-w-0">
+                        <p className="font-semibold text-ink">{item.title}</p>
+                        <p className="mt-0.5 text-slate-500">
+                          {[item.author, item.publisher, item.year]
+                            .filter(Boolean)
+                            .join(" · ")}
+                        </p>
+                        {item.reason && (
+                          <p className="mt-1 leading-relaxed text-slate-500">
+                            {item.reason}
                           </p>
-                          {item.reason && (
-                            <p className="mt-1 leading-relaxed text-slate-500">
-                              {item.reason}
-                            </p>
-                          )}
-                          {item.source && finding.web && (
-                            <a
-                              href={item.source}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="mt-1 inline-block font-semibold text-accent hover:underline"
-                            >
-                              Source ↗
-                            </a>
-                          )}
-                        </div>
-                        <button
-                          type="button"
-                          className={secondaryButton}
-                          disabled={added.has(item.title) || adding === item.title}
-                          onClick={() => addToAcquisition(item)}
-                        >
-                          {adding === item.title && <Spinner size="sm" />}
-                          {added.has(item.title)
-                            ? "On the list ✓"
-                            : "Add to acquisition list"}
-                        </button>
+                        )}
+                        {item.source && finding.web && (
+                          <a
+                            href={item.source}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="mt-1 inline-block font-semibold text-accent hover:underline"
+                          >
+                            Source ↗
+                          </a>
+                        )}
                       </div>
+                      <button
+                        type="button"
+                        className={`${secondaryButton} justify-self-end`}
+                        disabled={added.has(item.title) || adding === item.title}
+                        onClick={() => addToAcquisition(item)}
+                      >
+                        {adding === item.title && <Spinner size="sm" />}
+                        {added.has(item.title)
+                          ? "On the list ✓"
+                          : "Add to acquisition list"}
+                      </button>
                     </li>
                   ))}
                 </ul>
