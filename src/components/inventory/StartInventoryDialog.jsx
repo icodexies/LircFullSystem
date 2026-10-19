@@ -92,7 +92,7 @@ export default function StartInventoryDialog({ onCreated, onClose }) {
             {error}
           </p>
         )}
-        <div className="sticky bottom-0 -mx-5 -mb-5 flex flex-wrap items-center justify-end gap-3 border-t border-slate-200 bg-gradient-to-r from-page to-surface px-5 py-4 sm:-mx-6 sm:-mb-6 sm:px-6">
+        <div className="sticky bottom-0 -mx-5 -mb-5 flex flex-wrap items-center justify-end gap-3 border-t border-slate-200 bg-gradient-to-r from-page to-surface dark:border-white/10 dark:from-navy dark:to-navy-deep px-5 py-4 sm:-mx-6 sm:-mb-6 sm:px-6">
           <button
             type="button"
             className={secondaryButton}

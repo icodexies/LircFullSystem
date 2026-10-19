@@ -405,7 +405,7 @@ export default function EnrollmentForm({
         Saving validation does not record a visit. The server records validator
         and validation time.
       </p>
-      <div className="sticky bottom-0 -mx-6 -mb-6 flex flex-wrap items-center justify-end gap-3 border-t border-slate-200 bg-gradient-to-r from-page to-surface px-6 py-4">
+      <div className="sticky bottom-0 -mx-6 -mb-6 flex flex-wrap items-center justify-end gap-3 border-t border-slate-200 bg-gradient-to-r from-page to-surface dark:border-white/10 dark:from-navy dark:to-navy-deep px-6 py-4">
         {onCancel && (
           <button
             type="button"
