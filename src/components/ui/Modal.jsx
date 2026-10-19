@@ -37,6 +37,7 @@ export default function Modal({
   dismissOnBackdrop = true,
   closeOnEscape = true,
   iconClassName,
+  mobileFull = false,
 }) {
   const dialog = useRef(null);
   const titleId = useId();
@@ -46,6 +47,11 @@ export default function Modal({
     dialog.current.querySelector('[data-modal-autofocus="true"]')?.focus();
   }, []);
   const badgeClass = iconClassName ?? "bg-white/10 text-white";
+  // On phones: a bottom sheet by default; full screen when the window is a
+  // desk tool (the scanner) so nothing is cut off by the browser's own bars.
+  const mobileLayout = mobileFull
+    ? "max-sm:inset-x-0 max-sm:top-0 max-sm:m-0 max-sm:h-dvh max-sm:max-h-dvh max-sm:w-full max-sm:rounded-none"
+    : "max-sm:inset-x-0 max-sm:bottom-0 max-sm:top-auto max-sm:m-0 max-sm:max-h-[85dvh] max-sm:w-full max-sm:rounded-b-none max-sm:rounded-t-3xl";
   return (
     <dialog
       ref={dialog}
@@ -67,7 +73,7 @@ export default function Modal({
             onClose();
         }
       }}
-      className={`m-auto open:flex max-h-[90dvh] w-[calc(100%_-_2rem)] flex-col overflow-hidden rounded-2xl border-0 bg-surface p-0 text-ink shadow-[0_8px_32px_rgba(11,19,48,0.2)] backdrop:bg-navy/60 max-sm:inset-x-0 max-sm:bottom-0 max-sm:top-auto max-sm:m-0 max-sm:max-h-[85dvh] max-sm:w-full max-sm:rounded-b-none max-sm:rounded-t-3xl ${SIZES[size] ?? SIZES.md}`}
+      className={`m-auto open:flex max-h-[90dvh] w-[calc(100%_-_2rem)] flex-col overflow-hidden rounded-2xl border-0 bg-surface p-0 text-ink shadow-[0_8px_32px_rgba(11,19,48,0.2)] backdrop:bg-navy/60 max-sm:max-w-none ${mobileLayout} ${SIZES[size] ?? SIZES.md}`}
     >
       <header className="relative shrink-0 overflow-hidden bg-gradient-to-br from-navy via-navy-deep to-accent-strong px-5 py-5 sm:px-6">
         <div
@@ -119,7 +125,7 @@ export default function Modal({
       </div>
 
       {footer && (
-        <div className="shrink-0 border-t border-slate-200 bg-gradient-to-r from-page to-surface px-5 py-4 sm:px-6">
+        <div className="shrink-0 border-t border-slate-200 bg-gradient-to-r from-page to-surface px-5 py-4 max-sm:pb-[max(1rem,env(safe-area-inset-bottom))] sm:px-6">
           {footer}
         </div>
       )}

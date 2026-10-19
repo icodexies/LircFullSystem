@@ -43,6 +43,7 @@ export default function ScannerProvider({ children }) {
       {open && canScan && (
         <Modal
           title="Scan a library card"
+          mobileFull
           icon={
             <svg
               viewBox="0 0 24 24"
