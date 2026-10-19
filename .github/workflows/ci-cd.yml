@@ -1,0 +1,50 @@
+# The CI/CD pipeline: verify every push, then publish to Netlify.
+#
+#   Verify  — installs, lints, runs the tests and builds (every push and PR).
+#   Deploy  — on main only: builds again and uploads the site to Netlify
+#             through the Netlify API (scripts/deploy-netlify.mjs).
+#
+# The deploy step needs two repository secrets (Settings → Secrets and
+# variables → Actions):
+#   NETLIFY_AUTH_TOKEN  — a Netlify personal access token
+#   NETLIFY_SITE_ID     — the site's API ID (Site configuration → Site ID)
+name: CI/CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  verify:
+    name: Verify (lint, tests, build)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build
+
+  deploy:
+    name: Deploy to Netlify
+    needs: verify
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Publish the built site
+        run: node scripts/deploy-netlify.mjs
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}

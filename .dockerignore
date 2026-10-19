@@ -1,0 +1,10 @@
+# What the Docker build does NOT need to copy into the image.
+node_modules
+dist
+.git
+.github
+docs
+supabase
+tests
+*.md
+.env

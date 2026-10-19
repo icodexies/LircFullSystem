@@ -1,0 +1,8 @@
+# One command:  docker compose up --build   →   http://localhost:8080
+services:
+  lirc:
+    build: .
+    image: lirc-library-system
+    ports:
+      - "8080:80"
+    restart: unless-stopped

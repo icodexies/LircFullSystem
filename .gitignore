@@ -29,3 +29,5 @@ dist/
 .env
 .env.*
 !.env.example
+# The production build values (public anon key — safe to ship, see the file).
+!.env.production
