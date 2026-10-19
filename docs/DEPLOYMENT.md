@@ -1,5 +1,8 @@
 # Publishing the LIRC Library System
 
+**The live site: https://ccc-lirc.netlify.app** (Netlify site name `ccc-lirc`,
+site ID `4c9e825c-d3ca-40d1-a171-cffe93bd267f`).
+
 Three ways to put the system online or on a computer. The recommended setup
 uses GitHub + Netlify (automatic publishing) — Docker is for running it on a
 computer of your own (or any device with Docker).
@@ -15,16 +18,18 @@ Nobody has to build or upload anything by hand.
 ### One-time setup
 
 1. **Netlify** — open https://app.netlify.com and sign in.
-2. Create a **personal access token**:
+2. Create a **personal access token** (if the old one expired):
    *User settings → Applications → Personal access tokens → New access token.*
    Copy the token (it is shown only once).
 3. **GitHub** — open the repository → *Settings → Secrets and variables →
    Actions → New repository secret*. Add two secrets:
-   * `NETLIFY_AUTH_TOKEN` — the token from step 2.
-   * `NETLIFY_SITE_ID` — the site's ID (Netlify: *Site configuration →
-     Site information → Site ID*).
+   * `NETLIFY_AUTH_TOKEN` — a Netlify personal access token.
+   * `NETLIFY_SITE_ID` — `4c9e825c-d3ca-40d1-a171-cffe93bd267f`.
 4. Done. From now on, every push to `main` publishes the site by itself.
    The progress is visible under the repository's **Actions** tab.
+
+If the token ever expires: the site keeps running; only the automatic publish
+stops. Create a new token and update the `NETLIFY_AUTH_TOKEN` secret — done.
 
 ### Publishing by hand (once)
 
