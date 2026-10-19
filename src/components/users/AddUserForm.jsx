@@ -159,7 +159,7 @@ export default function AddUserForm({ onClose, onSaved }) {
   }
 
   return (
-    <form onSubmit={submit} className="space-y-5">
+    <form onSubmit={submit}>
       <fieldset disabled={busy} className="grid gap-4 sm:grid-cols-2">
         <Field label="Library ID *">
           <input
@@ -268,7 +268,7 @@ export default function AddUserForm({ onClose, onSaved }) {
       </fieldset>
 
       {student && (
-        <section className="rounded-2xl border border-slate-200 bg-page/60 p-4 sm:p-5">
+        <section className="mt-5 rounded-2xl border border-slate-200 bg-page/60 p-4 sm:p-5">
           <h3 className="flex items-center gap-2 text-sm font-semibold text-ink">
             <span
               aria-hidden="true"
@@ -352,13 +352,13 @@ export default function AddUserForm({ onClose, onSaved }) {
       {error && (
         <p
           role="alert"
-          className="rounded-xl bg-red-50 p-3 text-xs leading-relaxed text-red-700"
+          className="mt-5 rounded-xl bg-red-50 p-3 text-xs leading-relaxed text-red-700"
         >
           {error}
         </p>
       )}
 
-      <div className="sticky bottom-0 -mx-5 -mb-5 flex flex-wrap items-center justify-end gap-3 border-t border-slate-200 bg-gradient-to-r from-page to-surface dark:border-white/10 dark:from-navy dark:to-navy-deep px-5 py-4 sm:-mx-6 sm:-mb-6 sm:px-6">
+      <div className="sticky bottom-0 -mx-5 -mb-5 flex flex-wrap items-center justify-end gap-3 bg-surface dark:bg-navy px-5 py-4 sm:-mx-6 sm:-mb-6 sm:px-6">
         <button
           type="button"
           className={secondaryButton}
