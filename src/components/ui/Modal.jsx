@@ -73,9 +73,9 @@ export default function Modal({
             onClose();
         }
       }}
-      className={`m-auto open:flex max-h-[90dvh] w-[calc(100%_-_2rem)] flex-col overflow-hidden rounded-2xl border-0 bg-sheet p-0 text-ink shadow-[0_8px_32px_rgba(11,19,48,0.2)] backdrop:bg-navy/60 dark:shadow-[0_28px_72px_-20px_rgba(0,0,0,0.9)] dark:ring-1 dark:ring-white/10 dark:backdrop:bg-[#04060d]/75 dark:backdrop:backdrop-blur-[3px] max-sm:max-w-none ${mobileLayout} ${SIZES[size] ?? SIZES.md}`}
+      className={`m-auto open:flex max-h-[90dvh] w-[calc(100%_-_2rem)] flex-col overflow-hidden rounded-2xl border-0 bg-surface p-0 text-ink shadow-[0_8px_32px_rgba(11,19,48,0.2)] backdrop:bg-navy/60 max-sm:max-w-none ${mobileLayout} ${SIZES[size] ?? SIZES.md}`}
     >
-      <header className="relative shrink-0 overflow-hidden bg-gradient-to-br from-navy via-navy-deep to-accent-strong px-5 py-5 dark:border-b dark:border-white/10 dark:from-[#2b3448] dark:via-[#364160] dark:to-[#4e5b96] sm:px-6">
+      <header className="relative shrink-0 overflow-hidden bg-gradient-to-br from-navy via-navy-deep to-accent-strong px-5 py-5 sm:px-6">
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 opacity-[0.16]"
@@ -120,16 +120,14 @@ export default function Modal({
         </div>
       </header>
 
-      {/* In dark mode the window is a calm slate-indigo sheet — lighter than
-          the cards and the page, but far less saturated than the brand navy,
-          so it stands apart without shouting. The soft fade at its top keeps
-          the header band reading as one piece. */}
-      <div className="min-h-0 flex-1 overflow-y-auto bg-[linear-gradient(to_bottom,var(--color-page),var(--color-surface)_140px)] dark:bg-[linear-gradient(to_bottom,var(--color-sheet-lift),var(--color-sheet)_96px)]">
+      {/* The window follows the app's standard page palette in both themes:
+          the same surface, page fade and brand gradient every page uses. */}
+      <div className="min-h-0 flex-1 overflow-y-auto bg-[linear-gradient(to_bottom,var(--color-page),var(--color-surface)_140px)]">
         {children}
       </div>
 
       {footer && (
-        <div className="shrink-0 border-t border-slate-200 bg-gradient-to-r from-page to-surface px-5 py-4 max-sm:pb-[max(1rem,env(safe-area-inset-bottom))] dark:border-white/10 dark:from-sheet dark:to-sheet-lift sm:px-6">
+        <div className="shrink-0 border-t border-slate-200 bg-gradient-to-r from-page to-surface px-5 py-4 max-sm:pb-[max(1rem,env(safe-area-inset-bottom))] sm:px-6">
           {footer}
         </div>
       )}

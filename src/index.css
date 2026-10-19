@@ -20,8 +20,6 @@
   --color-page: #f7f6fb; /* page background */
   --color-tint: #f0edfa; /* lavender chips, tiles, skeletons */
   --color-surface: #ffffff; /* cards, panels, inputs, dialogs */
-  --color-sheet: #ffffff; /* modal windows (light mode: same as surface) */
-  --color-sheet-lift: #f7f6fb; /* the modal fade/band companion (light) */
   /* Success (jade) */
   --color-jade: #0f8a6b;
   --color-jade-deep: #0b6b52;
@@ -69,11 +67,6 @@
   --color-page: #0a0f21;
   --color-tint: #1e2749;
   --color-surface: #141b33;
-  /* Modal windows: a soft slate-indigo — lighter than the cards and the page
-     but far less saturated than the brand navy, so a window reads calm and
-     easy on the eye while still standing clearly apart from the page. */
-  --color-sheet: #232b3d;
-  --color-sheet-lift: #2d3749; /* the gentle lift for the fade and the band */
   --color-jade: #3bcb9d;
   --color-jade-deep: #8fe2c4;
   --color-jade-soft: #113227;
@@ -174,8 +167,6 @@ html.dark {
   --color-page: #f7f6fb;
   --color-tint: #f0edfa;
   --color-surface: #ffffff;
-  --color-sheet: #ffffff;
-  --color-sheet-lift: #f7f6fb;
   --color-jade: #0f8a6b;
   --color-jade-deep: #0b6b52;
   --color-jade-soft: #e7f4ef;
