@@ -45,6 +45,7 @@ badge expires, supabase-js quietly uses the refresh badge to get a new one.
 | Files via `/storage/v1/...` | Badge + policies | Covers are viewable by all; only librarians/admins can upload |
 | `register-user` function | Everyone (public) | Students register before they have an account. It never returns other people's data |
 | `request-password-reset` function | Everyone (public) | Signed-out visitors ask for reset emails. Same generic reply for all, rate-limited, no data returned |
+| `provision-accounts` function | Admins only | Creates personnel accounts end-to-end — a generated `LIB-####`, a generated password, the auth user + profile — and emails the credentials from the library Gmail. The function checks the caller's role itself |
 | Any future function | **Badge required by default** (`verify_jwt = true`) | Unless you explicitly make it public like the two above |
 
 ## Template: a private, staff-only function

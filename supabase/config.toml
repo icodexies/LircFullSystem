@@ -434,3 +434,12 @@ enabled = true
 verify_jwt = false
 import_map = "./functions/request-password-reset/deno.json"
 entrypoint = "./functions/request-password-reset/index.ts"
+
+[functions.provision-accounts]
+enabled = true
+# Admin-only endpoint: creates personnel accounts (generated LIB-#### and
+# password) and emails the credentials. The function also checks the
+# caller's role itself.
+verify_jwt = true
+import_map = "./functions/provision-accounts/deno.json"
+entrypoint = "./functions/provision-accounts/index.ts"
