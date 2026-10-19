@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
 import Reveal from "../../ui/Reveal.jsx";
 import BrandMark from "../../ui/BrandMark.jsx";
@@ -110,15 +109,6 @@ function ColumnHeading({ children }) {
 
 export default function Footer() {
   const { openLogin } = useLogin();
-  const [email, setEmail] = useState("");
-  const [done, setDone] = useState(false);
-
-  const onSubmit = (e) => {
-    e.preventDefault();
-    if (!email.trim()) return;
-    // No subscription table exists yet. Do not pretend this was saved.
-    setDone(true);
-  };
 
   // running counter so each element gets the next delay slot
   let n = 0;
@@ -191,42 +181,42 @@ export default function Footer() {
             </nav>
           ))}
 
-          {/* Subscribe */}
+          {/* Start borrowing */}
           <div>
             <R i={next()}>
-              <ColumnHeading>Library updates</ColumnHeading>
+              <ColumnHeading>Start borrowing</ColumnHeading>
             </R>
             <R i={next()}>
               <p className="mt-5 text-sm leading-relaxed">
-                Get notified about new arrivals, library announcements, and schedule
-                changes, straight to your inbox.
+                Your library card is all you need. Here is how it works:
               </p>
             </R>
+            <ol className="mt-5 space-y-3">
+              {[
+                "Register with the details printed on your library card.",
+                "Sign in and find your books in the catalog or Path Finder.",
+                "Borrow at the circulation desk — your due dates are on My Borrowing.",
+              ].map((step, index) => (
+                <li key={step} className="flex items-start gap-3 text-sm">
+                  <R i={next()}>
+                    <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-sky-400/15 text-xs font-bold text-sky-300 ring-1 ring-sky-400/40">
+                      {index + 1}
+                    </span>
+                  </R>
+                  <R i={next()}>
+                    <span className="leading-relaxed">{step}</span>
+                  </R>
+                </li>
+              ))}
+            </ol>
             <R i={next()}>
-              <form onSubmit={onSubmit} className="mt-5 flex overflow-hidden border border-white/15 transition-colors focus-within:border-sky-400">
-                <label htmlFor="lirc-footer-email" className="sr-only">Email address</label>
-                <input
-                  id="lirc-footer-email"
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => { setEmail(e.target.value); setDone(false); }}
-                  placeholder="Your email"
-                  className="min-w-0 flex-1 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:outline-none"
-                />
-                <button
-                  type="submit"
-                  aria-label="Subscribe"
-                  className="group flex w-14 items-center justify-center bg-sky-400 text-ink transition-colors hover:bg-sky-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-white"
-                >
-                  <svg viewBox="0 0 24 24" className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <path d="M5 12h14M13 6l6 6-6 6" />
-                  </svg>
-                </button>
-              </form>
-              <p role="status" className="mt-2 min-h-[1.25rem] text-xs text-sky-300">
-                {done ? "Subscriptions are not available yet. Your email was not saved." : ""}
-              </p>
+              <Link
+                to="/register"
+                className="group mt-6 inline-flex items-center gap-2 border border-sky-400/60 px-4 py-2.5 text-sm font-semibold text-white transition-colors duration-300 hover:bg-sky-400 hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400"
+              >
+                Create your account
+                <Chevron />
+              </Link>
             </R>
           </div>
         </div>
