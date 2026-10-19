@@ -344,7 +344,7 @@ const pages = [
     purpose: "Record who comes in and who leaves.",
     see: [
       "The \"Visit records\" list with today's and past visits, and the report section with the library's visit numbers.",
-      "The purpose buttons (Study, Research, Borrowing/Returning, Computer Use, Others).",
+      "The purpose buttons (Study, Research, Borrow Books, Return Books, LOA, Exit Clearance, Interview, Thesis, OJT, Others).",
     ],
     buttons: [
       ["Open scanner", "Opens the scanning window at the desk."],
@@ -355,6 +355,7 @@ const pages = [
     notes: [
       "Guests without a card use the reusable guest cards; type the guest's name and record the visit the same way.",
       "Scanning someone already inside records their time out — no purpose needed for leaving.",
+      "The highlighted purpose is easy to spot (bright blue) and is saved with every time in until you change it.",
     ],
   },
   {

@@ -260,7 +260,7 @@ export default function ScannerPanel({ onChanged, onClose, onBusy }) {
               }}
               className={`inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-strong disabled:opacity-60 ${
                 purpose === value
-                  ? "bg-navy text-white shadow-sm"
+                  ? "bg-sky-400 text-navy shadow-[0_4px_14px_rgba(56,189,248,0.45)] ring-2 ring-sky-300"
                   : "border border-slate-400 bg-slate-100 text-slate-700 hover:bg-slate-200 hover:text-ink"
               }`}
             >
