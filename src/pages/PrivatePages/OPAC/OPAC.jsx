@@ -158,7 +158,7 @@ export default function OPAC() {
             Refine results
           </h2>
         </div>
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+        <div className="grid grid-cols-2 gap-3 xl:grid-cols-3">
           <label>
             <span className={labelText}>Material format</span>
             <select

@@ -315,7 +315,7 @@ function MemberDashboard({ role }) {
   return (
     <div className="space-y-6">
       <DashboardHero role={role} />
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3">
         {data.stats.map((s, i) => {
           const stat =
             s.id === "fines" && myFines?.enabled
@@ -331,21 +331,21 @@ function MemberDashboard({ role }) {
               : s;
           const featured = i === 0;
           return (
-            <div key={stat.id} className={`flex min-w-0 flex-col rounded-2xl border p-5 shadow-[0_1px_2px_rgba(11,19,48,0.05)] ${featured ? "border-navy bg-navy text-white" : "border-slate-200 bg-surface text-ink"}`}>
-              <span className={`flex h-9 w-9 items-center justify-center rounded-lg ${featured ? "bg-white/10 text-sky-300" : stat.warn ? "bg-rose-50 text-rose-600" : "bg-tint text-accent"}`}>
-                <Icon name={stat.icon} className="h-[18px] w-[18px]" />
+            <div key={stat.id} className={`flex min-w-0 flex-col rounded-2xl border p-4 shadow-[0_1px_2px_rgba(11,19,48,0.05)] sm:p-5 ${featured ? "border-navy bg-navy text-white" : "border-slate-200 bg-surface text-ink"}`}>
+              <span className={`flex h-8 w-8 items-center justify-center rounded-lg sm:h-9 sm:w-9 ${featured ? "bg-white/10 text-sky-300" : stat.warn ? "bg-rose-50 text-rose-600" : "bg-tint text-accent"}`}>
+                <Icon name={stat.icon} className="h-4 w-4 sm:h-[18px] sm:w-[18px]" />
               </span>
-              <p className={`mt-5 text-[13px] ${featured ? "text-slate-300" : "text-slate-500"}`}>{stat.label}</p>
-              <p className="mt-1 font-serif text-3xl font-bold tracking-tight">{stat.value}</p>
+              <p className={`mt-3 text-xs sm:mt-5 sm:text-[13px] ${featured ? "text-slate-300" : "text-slate-500"}`}>{stat.label}</p>
+              <p className="mt-1 font-serif text-2xl font-bold tracking-tight sm:text-3xl">{stat.value}</p>
               {stat.of ? (
                 <div className="mt-3">
                   <div className="mb-2 h-2 w-full overflow-hidden rounded-full bg-white/15">
                     <div className="h-full rounded-full bg-sky-300" style={{ width: `${(Number(stat.value) / stat.of) * 100}%` }} />
                   </div>
-                  <p className="text-xs text-slate-400">{stat.hint}</p>
+                  <p className="text-[10px] text-slate-400 sm:text-xs">{stat.hint}</p>
                 </div>
               ) : (
-                <p className={`mt-2 text-xs ${stat.warn ? "text-rose-600" : "text-slate-500"}`}>{stat.hint}</p>
+                <p className={`mt-2 text-[10px] sm:text-xs ${stat.warn ? "text-rose-600" : "text-slate-500"}`}>{stat.hint}</p>
               )}
             </div>
           );

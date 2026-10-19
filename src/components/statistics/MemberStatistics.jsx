@@ -354,14 +354,14 @@ export default function MemberStatistics() {
           >
             <Spinner size="sm" /> Loading your numbers…
           </div>
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-3">
             {Array.from({ length: 2 }, (_, index) => (
               <CardSkeleton key={index} />
             ))}
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-3">
           {cards.map(({ key: cardKey, ...card }, index) => (
             <StatCard
               key={cardKey}

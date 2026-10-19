@@ -287,14 +287,14 @@ function OperatorStatistics() {
           >
             <Spinner size="sm" /> Loading the latest numbers…
           </div>
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6">
+          <div className="grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-3 2xl:grid-cols-6">
             {Array.from({ length: 6 }, (_, index) => (
               <CardSkeleton key={index} />
             ))}
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6">
+        <div className="grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-3 2xl:grid-cols-6">
           {cards.map(({ key, ...card }, index) => (
             <StatCard
               key={key}

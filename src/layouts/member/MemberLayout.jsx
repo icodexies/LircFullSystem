@@ -79,7 +79,7 @@ function MemberWorkspace() {
         <main
           id="member-content"
           tabIndex={-1}
-          className="min-w-0 flex-1 bg-page px-5 py-7 outline-none sm:px-8 sm:py-9 lg:px-10"
+          className="min-w-0 flex-1 bg-page px-4 py-5 outline-none sm:px-8 sm:py-9 lg:px-10"
         >
           <Suspense
             fallback={<LoadingBlock label="Loading page…" className="min-h-[50vh]" />}
