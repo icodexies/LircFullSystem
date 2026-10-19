@@ -129,7 +129,7 @@ export default function Modal({
       </div>
 
       {footer && (
-        <div className="shrink-0 bg-surface px-5 py-4 max-sm:pb-[max(1rem,env(safe-area-inset-bottom))] dark:bg-navy sm:px-6">
+        <div className="shrink-0 border-t border-slate-200 bg-gradient-to-r from-page to-surface px-5 py-4 max-sm:pb-[max(1rem,env(safe-area-inset-bottom))] dark:border-white/10 dark:from-navy dark:to-navy-deep sm:px-6">
           {footer}
         </div>
       )}
