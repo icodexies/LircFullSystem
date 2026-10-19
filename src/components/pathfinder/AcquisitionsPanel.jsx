@@ -10,12 +10,19 @@ import { buttonClass, inputClass } from "../attendance/StaffUi.jsx";
 import { useToast } from "../../hooks/shared/useToast.js";
 import { useDialog } from "../../hooks/shared/useDialog.js";
 import {
+  getAcquisitionExport,
   getAcquisitionList,
   getMyAcquisitions,
   reviewAcquisition,
   suggestAcquisition,
   withdrawAcquisition,
 } from "../../services/pathfinder/pathFinderService.js";
+import { buildAcquisitionWorkbook } from "../../services/pathfinder/acquisitionWorkbook.js";
+import { downloadBlob } from "../../services/shared/fileDownload.js";
+import { manilaDate } from "../../services/attendance/attendanceRules.js";
+
+const XLSX_MIME =
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
 const SOURCE_LABELS = {
   ai: "AI pick",
@@ -297,7 +304,39 @@ export default function AcquisitionsPanel({ canCurate, canSuggest, revision = 0 
   const [mine, setMine] = useState({ key: "", error: "", rows: [] });
   const [reviewing, setReviewing] = useState(null);
   const [suggesting, setSuggesting] = useState(false);
+  const [exporting, setExporting] = useState(false);
   const refresh = () => setLocalRevision((value) => value + 1);
+
+  // The Excel export: every suggestion (waiting, approved, not added) in one
+  // workbook — a Report sheet with the summary and an Acquisitions sheet
+  // with the full list.
+  async function exportList() {
+    if (exporting) return;
+    setExporting(true);
+    try {
+      const rows = await getAcquisitionExport();
+      if (!rows.length) {
+        toast.error("Nothing to export — the acquisition list is empty.");
+        return;
+      }
+      const workbook = await buildAcquisitionWorkbook({
+        rows,
+        context: { generatedAt: new Date() },
+      });
+      const buffer = await workbook.xlsx.writeBuffer();
+      downloadBlob(
+        new Blob([buffer], { type: XLSX_MIME }),
+        `acquisition-list-${manilaDate()}.xlsx`,
+      );
+      toast.success(
+        `${rows.length.toLocaleString("en-US")} suggestion${rows.length === 1 ? "" : "s"} exported.`,
+      );
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setExporting(false);
+    }
+  }
 
   // Loading derives from the key, so a filter change shows the loading state
   // while the previous rows stay visible until the new ones arrive.
@@ -396,9 +435,20 @@ export default function AcquisitionsPanel({ canCurate, canSuggest, revision = 0 
           >
             Not added
           </button>
-          <p className="ml-auto text-[11px] text-slate-500">
-            Faculty suggestions and AI picks land here for review.
-          </p>
+          <div className="ml-auto flex flex-wrap items-center gap-3">
+            <p className="text-[11px] text-slate-500">
+              Faculty suggestions and AI picks land here for review.
+            </p>
+            <button
+              type="button"
+              className={buttonClass}
+              onClick={exportList}
+              disabled={exporting}
+            >
+              {exporting && <Spinner size="sm" />}
+              {exporting ? "Preparing…" : "Export to Excel"}
+            </button>
+          </div>
         </div>
 
         {list.error && <WorkspaceNotice error>{list.error}</WorkspaceNotice>}

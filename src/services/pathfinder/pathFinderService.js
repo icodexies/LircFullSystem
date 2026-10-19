@@ -169,6 +169,16 @@ export async function getAcquisitionList(status, signal) {
   return data ?? { pending: 0, rows: [] };
 }
 
+// Every suggestion (waiting, approved, not added) for the Excel export.
+export async function getAcquisitionExport(signal) {
+  const client = await getSupabase();
+  const { data, error } = await client
+    .rpc("lirc_acquisition_list", { p_status: "all" })
+    .abortSignal(signal);
+  if (error) throw pathFinderError(error, "The acquisition list could not be loaded.");
+  return data?.rows ?? [];
+}
+
 export async function getMyAcquisitions(signal) {
   const client = await getSupabase();
   const { data, error } = await client
