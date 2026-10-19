@@ -11,6 +11,11 @@ export const ROLES = {
   ADMIN: "admin",
   // Walk-in visitors without a library card use the reusable GUEST-nn cards.
   GUEST: "guest",
+  // Shared station accounts for automated use by students inside the library:
+  // borrowing stations (accession + card) and the attendance station
+  // (time in / out). They never open member or operator pages.
+  SYSTEM_BORROW: "system_borrow",
+  SYSTEM_ATTENDANCE: "system_attendance",
 };
 
 export const ACCESS = {
@@ -36,6 +41,8 @@ export const ACCESS = {
   attendance: [ROLES.STAFF, ROLES.LIBRARIAN, ROLES.ADMIN],
   validation: [ROLES.LIBRARIAN, ROLES.ADMIN],
   admin: [ROLES.ADMIN],
+  // The system stations' own screens (they never open member or operator pages).
+  systemStations: [ROLES.SYSTEM_BORROW, ROLES.SYSTEM_ATTENDANCE],
 };
 
 export const ROLE_LABELS = {
@@ -46,4 +53,6 @@ export const ROLE_LABELS = {
   [ROLES.LIBRARIAN]: "Librarian",
   [ROLES.ADMIN]: "Admin",
   [ROLES.GUEST]: "Guest",
+  [ROLES.SYSTEM_BORROW]: "Borrowing station",
+  [ROLES.SYSTEM_ATTENDANCE]: "Attendance station",
 };

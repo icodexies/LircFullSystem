@@ -4,6 +4,7 @@ import { useAuth } from "../hooks/auth/useAuth.js";
 import { hasStoredAuthSession } from "../context/auth/authSessionHint.js";
 import { LoadingScreen } from "../components/ui/Loading.jsx";
 import { useToast } from "../hooks/shared/useToast.js";
+import { ACCESS } from "./roles.js";
 
 const Splash = () => <LoadingScreen label="Loading…" />;
 
@@ -58,6 +59,11 @@ export function PrivateRoute({ allowedRoles = null }) {
     />;
   }
   if (allowedRoles && !allowedRoles.includes(role)) {
+    // System stations never open member or operator pages: they go to their
+    // own screen instead of the Unauthorized page.
+    if (ACCESS.systemStations.includes(role)) {
+      return <Navigate to="/system" replace />;
+    }
     return <Navigate to="/unauthorized" replace />;
   }
   return <Outlet />;

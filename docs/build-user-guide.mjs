@@ -490,6 +490,46 @@ for (const page of pages) {
   body.push(emptyPara());
 }
 
+pages.push({
+  title: "Borrowing station (system account)",
+  who: "Students, at the library's self-service borrowing computers.",
+  purpose: "Borrow a book by scanning two numbers — no staff needed.",
+  see: [
+    "Two big boxes: the book's accession number and your library card.",
+    "\"Loans recorded here\" — the last 10 loans made from this computer.",
+  ],
+  buttons: [
+    ["Record loan", "Records the loan once both numbers are in. You can also just press Enter after the second scan."],
+    ["Refresh (in the list)", "Reloads the list of loans made here."],
+    ["Sign out (top right)", "Signs the station out when the library closes."],
+  ],
+  notes: [
+    "The due date is set automatically — 7 days from today.",
+    "If a student is not validated for the school year, or has unpaid fines, the screen explains what to do — usually, see the library staff.",
+    "The station cannot open any other page of the system.",
+  ],
+});
+
+pages.push({
+  title: "Attendance station (system account)",
+  who: "Students, at the library entrance computer.",
+  purpose: "Record your time in when you arrive and your time out when you leave.",
+  see: [
+    "The purpose buttons (Study, Research, Borrow Books, and so on).",
+    "One big box for the library card, and \"Recent visits\" — the last 10 visits in the library.",
+  ],
+  buttons: [
+    ["Purpose buttons", "Pick why you came; the highlighted one is saved with every time in."],
+    ["Record visit", "After scanning or typing your card. Pressing Enter does the same."],
+    ["Refresh (in the list)", "Reloads the recent visits."],
+    ["Sign out (top right)", "Signs the station out when the library closes."],
+  ],
+  notes: [
+    "Scanning your card records a time in — scanning it again later records your time out.",
+    "The full records with filters stay with the staff, librarian and admin pages.",
+  ],
+});
+
 /* Closing note */
 body.push(
   para(run("If something looks wrong", {}), { style: "Heading1" }),

@@ -32,6 +32,9 @@ const Unauthorized = lazy(() => import("./pages/Unauthorized.jsx"));
 const SettingsPage = lazy(
   () => import("./pages/PrivatePages/Settings/Settings.jsx"),
 );
+const SystemStationPage = lazy(
+  () => import("./pages/SystemStation/SystemStation.jsx"),
+);
 
 const memberScreens = {
   dashboard: lazy(() => import("./pages/PrivatePages/Dashboard/Dashboard.jsx")),
@@ -97,6 +100,12 @@ export default function App() {
                 <Route path="/unauthorized" element={<Unauthorized />} />
                 {/* Opens from the emailed reset link; must work signed in or out. */}
                 <Route path="/reset-password" element={<ResetPassword />} />
+
+                {/* The system stations: shared accounts for automated use by
+                    students in the library (borrowing / attendance). */}
+                <Route element={<PrivateRoute allowedRoles={ACCESS.systemStations} />}>
+                  <Route path="/system" element={<SystemStationPage />} />
+                </Route>
 
                 <Route element={<PrivateRoute allowedRoles={ACCESS.member} />}>
                   <Route element={<MemberLayout />}>

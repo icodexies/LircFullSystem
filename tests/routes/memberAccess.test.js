@@ -94,6 +94,13 @@ test("missing and unknown roles cannot access any member page", () => {
   }
 });
 
+test("system station accounts cannot access any member page", () => {
+  for (const role of ["system_borrow", "system_attendance"]) {
+    for (const page of MEMBER_PAGES)
+      assert.equal(canAccessPage(page, role), false);
+  }
+});
+
 test("all sixteen pages have unique route paths and IDs", () => {
   assert.equal(MEMBER_PAGES.length, 16);
   assert.equal(new Set(MEMBER_PAGES.map((page) => page.id)).size, 16);
