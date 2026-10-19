@@ -35,6 +35,9 @@ jobs:
     needs: verify
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
+    env:
+      NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+      NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -43,8 +46,9 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
+      - name: Netlify secrets not set yet
+        if: env.NETLIFY_AUTH_TOKEN == '' || env.NETLIFY_SITE_ID == ''
+        run: echo "Skipping publish — add NETLIFY_AUTH_TOKEN and NETLIFY_SITE_ID under Settings → Secrets and variables → Actions."
       - name: Publish the built site
+        if: env.NETLIFY_AUTH_TOKEN != '' && env.NETLIFY_SITE_ID != ''
         run: node scripts/deploy-netlify.mjs
-        env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
