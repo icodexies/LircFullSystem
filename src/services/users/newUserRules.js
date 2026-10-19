@@ -116,14 +116,15 @@ export const CSV_COLUMNS = [
   "program_id",
   "position_classification_id",
 ];
+// Legacy columns from the older student template. Year levels are computed by
+// the system from the library card (1st-4th year each school year), so the
+// template no longer asks for them. Files that still include them keep
+// working: the database honors a level typed here as a manual level for
+// irregular or continuing students (the Add User form has the same field).
 export const STUDENT_EXTRA_COLUMNS = ["year_level", "year_level_note"];
 
-export function buildTemplateCsv(kind) {
-  const headers =
-    kind === "student"
-      ? [...CSV_COLUMNS, ...STUDENT_EXTRA_COLUMNS]
-      : [...CSV_COLUMNS];
-  return `${headers.join(",")}\r\n`;
+export function buildTemplateCsv() {
+  return `${CSV_COLUMNS.join(",")}\r\n`;
 }
 
 // A small CSV reader: quoted fields, doubled quotes, \r\n, and it keeps the

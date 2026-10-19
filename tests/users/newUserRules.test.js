@@ -132,14 +132,14 @@ test("csv rows require the core header columns", () => {
   assert.match(error, /header row/);
 });
 
-test("templates include the right columns", () => {
+test("the template has the right columns (year level is computed, not asked)", () => {
   assert.equal(
-    buildTemplateCsv("student"),
-    "library_id,first_name,surname,middle_initial,suffix,role,department_id,program_id,position_classification_id,year_level,year_level_note\r\n",
+    buildTemplateCsv(),
+    "library_id,first_name,surname,middle_initial,suffix,role,department_id,program_id,position_classification_id\r\n",
   );
   assert.equal(
-    buildTemplateCsv("personnel"),
-    "library_id,first_name,surname,middle_initial,suffix,role,department_id,program_id,position_classification_id\r\n",
+    buildTemplateCsv().includes("year_level"),
+    false,
   );
 });
 

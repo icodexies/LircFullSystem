@@ -188,29 +188,19 @@ export default function BulkUserUpload({ onSaved }) {
           Fill one row per person, then save the file as{" "}
           <strong>CSV UTF-8</strong>. Keep library IDs as text so leading zeros
           (like 04) stay. Leave out IDs and login links — the system creates
-          them.
+          them. Year levels are automatic: the system computes each student's
+          1st–4th year from the library card every school year (use the single
+          Add User form when an irregular student needs a manual level).
         </p>
         <div className="mt-3 flex flex-wrap gap-2">
           <button
             type="button"
             className={tableButton}
             onClick={() =>
-              downloadCsv("student-template.csv", buildTemplateCsv("student"))
+              downloadCsv("user-template.csv", buildTemplateCsv())
             }
           >
-            Student template
-          </button>
-          <button
-            type="button"
-            className={tableButton}
-            onClick={() =>
-              downloadCsv(
-                "personnel-template.csv",
-                buildTemplateCsv("personnel"),
-              )
-            }
-          >
-            Personnel template
+            Download template
           </button>
         </div>
         <div className="mt-4 grid gap-3 sm:grid-cols-3">
