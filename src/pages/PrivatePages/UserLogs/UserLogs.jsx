@@ -156,7 +156,7 @@ export default function UserLogs() {
           <label className="text-xs text-slate-600">
             <span className="sr-only">Filter by role</span>
             <select
-              className={selectClass}
+              className={`${selectClass} w-40 max-w-full sm:w-auto`}
               value={role}
               onChange={(event) => changeFilter(setRole, event.target.value)}
             >
@@ -170,7 +170,7 @@ export default function UserLogs() {
           <label className="text-xs text-slate-600">
             <span className="sr-only">Filter by source</span>
             <select
-              className={selectClass}
+              className={`${selectClass} w-40 max-w-full sm:w-auto`}
               value={source}
               onChange={(event) => changeFilter(setSource, event.target.value)}
             >

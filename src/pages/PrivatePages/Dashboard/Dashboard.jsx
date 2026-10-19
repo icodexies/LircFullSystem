@@ -148,7 +148,7 @@ const fmt = (n) => n.toLocaleString("en-US");
 /* ------------------------------------------------------------------ */
 function Card({ title, subtitle, action, children, className = "" }) {
   return (
-    <section className={`rounded-2xl border border-slate-200 bg-surface p-5 shadow-[0_1px_2px_rgba(11,19,48,0.05)] sm:p-6 ${className}`}>
+    <section className={`min-w-0 rounded-2xl border border-slate-200 bg-surface p-5 shadow-[0_1px_2px_rgba(11,19,48,0.05)] sm:p-6 ${className}`}>
       {(title || action) && (
         <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
           <div>
