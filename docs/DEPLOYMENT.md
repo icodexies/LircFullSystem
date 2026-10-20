@@ -1,7 +1,12 @@
 # Publishing the LIRC Library System
 
-**The live site: https://ccc-lirc.netlify.app** (Netlify site name `ccc-lirc`,
-site ID `4c9e825c-d3ca-40d1-a171-cffe93bd267f`).
+**The live sites:**
+
+- **https://ccc-lirc.netlify.app** — Netlify (site name `ccc-lirc`, site ID
+  `4c9e825c-d3ca-40d1-a171-cffe93bd267f`). The site stays online, but
+  production deploys pause while the team's free deploy credits are exhausted.
+- **https://ccc-lirc.vercel.app** — Vercel (the backup host; deploy with
+  `scripts/deploy-vercel.mjs`, see section 3).
 
 Three ways to put the system online or on a computer, plus a **backup host**
 (Vercel) for when Netlify's free deploy credits run out. The recommended setup
@@ -59,6 +64,8 @@ If you prefer Netlify to build the site itself:
 ---
 
 ## 3. Vercel (backup host — deploy without the CLI)
+
+**The system is live there: https://ccc-lirc.vercel.app** (project `ccc-lirc`).
 
 Netlify pauses production deploys when the team's free credits run out (the
 published site stays online). Meanwhile, the same build can be published to
@@ -124,6 +131,6 @@ container works on any device with internet access.
 | The website's code | GitHub repository (`icodexies/LircFullSystem`) |
 | Automatic checks | GitHub → Actions tab (lint, tests, build) |
 | The published site | Netlify (address shown after the first deploy) |
-| The backup site | Vercel — `scripts/deploy-vercel.mjs` (see section 3) |
+| The backup site | Vercel — https://ccc-lirc.vercel.app (`scripts/deploy-vercel.mjs`, section 3) |
 | The database | Supabase (cloud) — nothing to publish |
 | The container | `Dockerfile` + `docker-compose.yml` in the project |
