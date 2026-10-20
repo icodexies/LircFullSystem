@@ -3,7 +3,8 @@
 **The live site: https://ccc-lirc.netlify.app** (Netlify site name `ccc-lirc`,
 site ID `4c9e825c-d3ca-40d1-a171-cffe93bd267f`).
 
-Three ways to put the system online or on a computer. The recommended setup
+Three ways to put the system online or on a computer, plus a **backup host**
+(Vercel) for when Netlify's free deploy credits run out. The recommended setup
 uses GitHub + Netlify (automatic publishing) — Docker is for running it on a
 computer of your own (or any device with Docker).
 
@@ -57,7 +58,43 @@ If you prefer Netlify to build the site itself:
 
 ---
 
-## 3. Docker (run it on any computer)
+## 3. Vercel (backup host — deploy without the CLI)
+
+Netlify pauses production deploys when the team's free credits run out (the
+published site stays online). Meanwhile, the same build can be published to
+**Vercel** with one command — no Vercel CLI and no npm install are needed
+because `scripts/deploy-vercel.mjs` talks to Vercel's API directly.
+
+1. Create a free account at https://vercel.com (signing in with GitHub is
+   easiest).
+2. **Account Settings → Tokens → Create** — name it (for example
+   `LIRC deploy`), pick an expiry, and copy the token (shown only once).
+3. Publish:
+
+```
+set VERCEL_TOKEN=...        (PowerShell: $env:VERCEL_TOKEN="...")
+npm run build
+node scripts/deploy-vercel.mjs
+```
+
+The first run creates the project (`ccc-lirc` by default) and prints the live
+address — normally **https://ccc-lirc.vercel.app**. Later runs replace the
+production deployment within about a minute. `vercel.json` already carries the
+single-page-app rewrite, the 1-year cache for hashed assets, and the security
+headers.
+
+Optional: `node scripts/deploy-vercel.mjs --dry-run` lists the files without
+uploading anything, and `$env:VERCEL_PROJECT_NAME="other-name"` deploys under a
+different project name.
+
+**After switching hosts**, update the password-reset links: the Supabase edge
+function secret `SITE_URL` (CLI: `supabase secrets set SITE_URL=https://...`)
+and the Supabase dashboard → *Authentication → URL Configuration* (Site URL and
+Redirect URLs) should point to the new address.
+
+---
+
+## 4. Docker (run it on any computer)
 
 Needs Docker installed (Docker Desktop on Windows/Mac, docker on Linux).
 No other setup — the build values are in `.env.production`.
@@ -87,5 +124,6 @@ container works on any device with internet access.
 | The website's code | GitHub repository (`icodexies/LircFullSystem`) |
 | Automatic checks | GitHub → Actions tab (lint, tests, build) |
 | The published site | Netlify (address shown after the first deploy) |
+| The backup site | Vercel — `scripts/deploy-vercel.mjs` (see section 3) |
 | The database | Supabase (cloud) — nothing to publish |
 | The container | `Dockerfile` + `docker-compose.yml` in the project |
