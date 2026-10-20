@@ -1,8 +1,9 @@
 // Skeleton blocks used while a page or panel loads. They match the shape of
 // the real content and stop pulsing when the visitor prefers reduced motion.
-export function Skeleton({ className = "" }) {
+export function Skeleton({ className = "", ...rest }) {
   return (
     <span
+      {...rest}
       aria-hidden="true"
       className={`block animate-pulse rounded-lg bg-tint motion-reduce:animate-none ${className}`}
     />
