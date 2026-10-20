@@ -258,7 +258,7 @@ function BookCollection() {
 
   return (
     <section aria-labelledby="collection-title" className="relative w-full overflow-hidden bg-surface py-20 lg:py-28">
-      <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <div className="mx-auto w-full max-w-[1320px] px-6 lg:px-12">
         {/* Header + tabs */}
         <Reveal
           once

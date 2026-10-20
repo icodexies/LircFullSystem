@@ -28,7 +28,7 @@ export function WorkspaceHeader({
   children,
 }) {
   return (
-    <section className="relative overflow-hidden rounded-2xl bg-navy px-5 py-6 sm:px-8 sm:py-8">
+    <section className="relative overflow-hidden rounded-2xl bg-navy px-5 py-6 sm:px-8 sm:py-8 xl:px-10 xl:py-9">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 opacity-[0.16]"
@@ -38,7 +38,7 @@ export function WorkspaceHeader({
         <div className="flex flex-wrap items-start justify-between gap-x-6 gap-y-4">
           <div className="min-w-0 max-w-xl">
             <p className="text-xs font-semibold text-white/60">{eyebrow}</p>
-            <h1 className="mt-1.5 font-serif text-2xl font-bold tracking-tight text-white sm:text-3xl">
+            <h1 className="mt-1.5 font-serif text-2xl font-bold tracking-tight text-white sm:text-3xl xl:text-[2rem]">
               {title}
             </h1>
             {description && (

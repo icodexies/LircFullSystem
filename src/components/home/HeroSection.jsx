@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useRef } from "react";
 import Reveal from "../ui/Reveal.jsx";
 import { ArrowIcon } from "./ArrowIcon.jsx";
 
@@ -40,7 +41,7 @@ export function LeftSide({ slides = [], active, BTN_SLANT }) {
         delay={150}
         threshold={0.1}
         // [&>div]:w-full makes Reveal's inner wrapper full width so text-center works
-        className="flex flex-1 flex-col justify-center text-center lg:pb-10 lg:text-left [&>div]:w-full"
+        className="flex flex-col justify-center text-center xl:flex-1 xl:text-left [&>div]:w-full"
       >
         <div className="grid">
           {slides.map((s, i) => {
@@ -70,21 +71,21 @@ export function LeftSide({ slides = [], active, BTN_SLANT }) {
                 </div>
 
                 {/* Title */}
-                <h1 className="mx-auto mt-4 max-w-2xl font-['Fraunces',serif] text-3xl font-bold leading-[1.1] tracking-tight text-white sm:mt-6 sm:text-5xl lg:mx-0 lg:text-7xl lg:leading-[1.05]">
+                <h1 className="mx-auto mt-4 max-w-2xl font-['Fraunces',serif] text-[2.35rem] font-bold leading-[1.08] tracking-tight text-white sm:mt-6 sm:text-5xl lg:text-6xl xl:mx-0 xl:text-7xl xl:leading-[1.05]">
                   {s.title}
                 </h1>
 
                 {/* Description */}
-                <p className="mx-auto mt-3 max-w-lg text-xs leading-relaxed text-slate-200 sm:mt-5 sm:text-sm lg:mx-0 lg:text-base">
+                <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-slate-200 sm:mt-5 sm:text-base xl:mx-0 xl:max-w-lg">
                   {s.description}
                 </p>
 
-                {/* Buttons */}
-                <div className="mt-6 flex flex-wrap items-center justify-center gap-2 sm:mt-8 sm:gap-3 lg:justify-start">
+                {/* Buttons — stacked full-width on phones, inline from sm up */}
+                <div className="mt-6 flex flex-col items-stretch gap-2 sm:mt-8 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center sm:gap-3 xl:justify-start">
                   <Link
                     to={s.to}
                     tabIndex={on ? 0 : -1}
-                    className="inline-flex items-center gap-2 bg-white px-5 py-2.5 text-xs font-semibold text-navy transition-all duration-300 hover:bg-sky-400 active:scale-95 sm:px-7 sm:py-3 sm:text-sm"
+                    className="inline-flex items-center justify-center gap-2 bg-white px-5 py-3 text-sm font-semibold text-navy transition-all duration-300 hover:bg-sky-400 active:scale-95 sm:justify-start sm:px-7 sm:py-3"
                     style={{
                       clipPath: BTN_SLANT,
                     }}
@@ -97,7 +98,7 @@ export function LeftSide({ slides = [], active, BTN_SLANT }) {
                   {s.secondary.to ? <Link
                     to={s.secondary.to}
                     tabIndex={on ? 0 : -1}
-                    className="px-3 py-2.5 text-xs font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:text-sky-300 sm:px-4 sm:py-3 sm:text-sm"
+                    className="px-3 py-2.5 text-center text-sm font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:text-sky-300 sm:px-4 sm:py-3"
                   >
                     {s.secondary.label}
                   </Link> : (
@@ -105,7 +106,7 @@ export function LeftSide({ slides = [], active, BTN_SLANT }) {
                       type="button"
                       disabled
                       title="Thesis submissions are not available yet"
-                      className="px-3 py-2.5 text-xs font-semibold text-white transition-all duration-300 sm:px-4 sm:py-3 sm:text-sm"
+                      className="px-3 py-2.5 text-center text-sm font-semibold text-white transition-all duration-300 sm:px-4 sm:py-3"
                     >
                       {s.secondary.label}
                     </button>
@@ -121,6 +122,7 @@ export function LeftSide({ slides = [], active, BTN_SLANT }) {
 }
 
 export function RightSide({ slides = [], active, next, prev, setActive, pad }) {
+  const touchStart = useRef(null);
   return (
     <>
       <Reveal
@@ -129,10 +131,10 @@ export function RightSide({ slides = [], active, next, prev, setActive, pad }) {
         duration={900}
         delay={300}
         threshold={0.1}
-        className="flex flex-col items-center lg:items-end"
+        className="flex w-full flex-col items-center xl:w-auto xl:items-end [&>div]:w-full"
       >
         {/* Controls */}
-        <div className="mb-3 flex items-center justify-center gap-5 sm:mb-5 sm:gap-6 lg:w-full lg:min-w-[520px] lg:justify-between">
+        <div className="mb-3 flex items-center justify-center gap-5 sm:mb-5 sm:gap-6 xl:w-full xl:min-w-[520px] xl:justify-between">
           <div className="flex items-end gap-2">
             <span className="font-['Fraunces',serif] text-2xl font-bold leading-none text-white sm:text-4xl">
               {pad(active)}
@@ -164,8 +166,22 @@ export function RightSide({ slides = [], active, next, prev, setActive, pad }) {
           </div>
         </div>
 
-        {/* Carousel cards */}
-        <div className="flex h-40 items-end justify-center gap-2 sm:h-56 sm:gap-3 lg:h-80">
+        {/* Carousel cards — edge-to-edge deck on phones (swipe to change) */}
+        <div
+          className="-mx-6 flex h-60 touch-pan-y items-end justify-center gap-2 overflow-hidden px-2 sm:mx-0 sm:h-56 sm:gap-3 sm:px-0 xl:h-80"
+          onTouchStart={(event) => {
+            touchStart.current = event.touches[0]?.clientX ?? null;
+          }}
+          onTouchEnd={(event) => {
+            const start = touchStart.current;
+            touchStart.current = null;
+            if (start === null) return;
+            const delta = (event.changedTouches[0]?.clientX ?? start) - start;
+            if (Math.abs(delta) < 40) return;
+            if (delta < 0) next();
+            else prev();
+          }}
+        >
           {slides.map((s, i) => {
             const on = i === active;
 
@@ -178,8 +194,8 @@ export function RightSide({ slides = [], active, next, prev, setActive, pad }) {
                 aria-current={on}
                 className={`group relative overflow-hidden rounded-xl border text-left transition-all duration-700 ease-out sm:rounded-2xl ${
                   on
-                    ? "h-full w-28 border-white/80 shadow-2xl shadow-black/40 sm:w-52 lg:w-60"
-                    : "h-[82%] w-10 border-white/20 opacity-80 hover:opacity-100 sm:w-24 lg:w-28"
+                    ? "h-full w-[55%] border-white/80 shadow-2xl shadow-black/40 sm:w-52 xl:w-60"
+                    : "h-[84%] w-[11%] border-white/20 opacity-80 hover:opacity-100 sm:w-24 xl:w-28"
                 }`}
               >
                 <img

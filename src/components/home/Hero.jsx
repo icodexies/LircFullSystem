@@ -19,7 +19,7 @@ export default function Hero() {
   return (
     <section
       ref={heroRef}
-      className="relative -mt-24 min-h-screen w-full overflow-hidden"
+      className="relative -mt-24 min-h-svh w-full overflow-hidden"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={(event) => setPaused(event.currentTarget.contains(document.activeElement))}
       onFocus={() => setPaused(true)}
@@ -39,7 +39,10 @@ export default function Hero() {
         className="absolute inset-0 bg-gradient-to-t from-navy/80 via-transparent to-navy/30"
       />
 
-      <div className="relative z-10 mx-auto flex min-h-screen max-w-7xl flex-col justify-between gap-10 px-6 pb-10 lg:flex-row lg:items-end lg:gap-8 lg:px-10 lg:pb-14">
+      {/* Phones: one centered stack (tag, title, buttons, cards) instead of a
+          full-height top/bottom split — no dead space in the middle.
+          Laptops: centered row on a wider canvas so 1440px screens breathe. */}
+      <div className="relative z-10 mx-auto flex min-h-svh w-full max-w-[1320px] flex-col justify-center gap-8 px-6 pb-8 pt-28 xl:min-h-screen xl:flex-row xl:items-center xl:gap-12 xl:px-12 xl:pb-16 xl:pt-0 2xl:max-w-[1440px]">
         <LeftSide
           slides={slides}
           active={active}

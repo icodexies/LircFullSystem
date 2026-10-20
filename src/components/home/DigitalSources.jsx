@@ -332,7 +332,7 @@ function DigitalSources() {
       <BackgroundArt />
 
       {/* Left: title, (small screens: source picker), selected source and access notice */}
-      <div className="relative mx-auto max-w-7xl px-6 lg:px-10">
+      <div className="relative mx-auto w-full max-w-[1320px] px-6 lg:px-12">
         <div className="lg:grid lg:min-h-[34rem] lg:grid-cols-2 lg:items-center lg:gap-16">
           <div>
             <Reveal>
