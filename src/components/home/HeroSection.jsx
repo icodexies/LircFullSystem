@@ -141,7 +141,7 @@ export function RightSide({ slides = [], active, next, prev, setActive, pad }) {
             </span>
 
             <span className="pb-0.5 text-[10px] font-semibold tracking-widest text-slate-300 sm:pb-1 sm:text-xs">
-              / {pad(slides.length - 1)}---
+              / {pad(slides.length - 1)}
             </span>
           </div>
 

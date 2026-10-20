@@ -356,3 +356,13 @@ html[data-ui-size="largest"] [class*="text-[2rem]"] {
 .toast-in {
   animation: toast-in 0.25s ease-out;
 }
+
+/* Wide hero: the bar under the active thumbnail tracks the autoplay timer. */
+@keyframes hero-progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}

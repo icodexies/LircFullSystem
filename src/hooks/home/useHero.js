@@ -4,7 +4,7 @@ import { useCarousel } from "../shared/useCarousel.js";
 import { useReducedMotion } from "../shared/useReducedMotion.js";
 
 const BTN_SLANT = "polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%)";
-const AUTOPLAY_MS = 6000;
+export const HERO_AUTOPLAY_MS = 6000;
 
 function subscribeVisibility(onChange) {
   document.addEventListener("visibilitychange", onChange);
@@ -38,7 +38,7 @@ export function useHero() {
 
     const timer = setTimeout(() => {
       setActive((index) => (index + 1) % HERO_SLIDES.length);
-    }, AUTOPLAY_MS);
+    }, HERO_AUTOPLAY_MS);
 
     return () => clearTimeout(timer);
   }, [activeIndex, paused, reducedMotion, pageVisible, heroVisible, setActive]);
@@ -52,6 +52,7 @@ export function useHero() {
     setActive,
     BTN_SLANT,
     setPaused,
+    reducedMotion,
     slides: HERO_SLIDES,
   };
 }
