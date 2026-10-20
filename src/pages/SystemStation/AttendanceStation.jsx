@@ -143,7 +143,11 @@ export default function AttendanceStation() {
         {result?.ok && (
           <div
             role="status"
-            className="mt-5 rounded-xl border border-jade/30 bg-jade-soft px-4 py-3.5 text-sm text-jade-deep"
+            className={`mt-5 rounded-xl border px-4 py-3.5 text-sm ${
+              result.visit.action === "in"
+                ? "border-jade/30 bg-jade-soft text-jade-deep"
+                : "border-sky-300/60 bg-sky-50 text-sky-700"
+            }`}
           >
             <p className="font-semibold">
               {result.visit.action === "in"

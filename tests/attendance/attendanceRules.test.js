@@ -94,11 +94,11 @@ test("faculty, personnel and guests bypass student validation", () => {
       "",
     );
 });
-test("library validation sends only the status; protected fields are ignored", () => {
-  const payload = enrollmentPayload(
+test("library validation sends the status plus only the level staff typed", () => {
+  // Blank level: the database derives it from the card (normal students).
+  const blank = enrollmentPayload(
     {
       status: "enrolled",
-      year_level: "4",
       validation_reference: "Confirmed list",
       year_level_note: "Returning student",
       legacy_semester_id: 99,
@@ -108,7 +108,45 @@ test("library validation sends only the status; protected fields are ignored", (
     student,
     { id: 1, start_year: 2026 },
   );
-  assert.deepEqual(payload, { status: "enrolled" });
+  assert.deepEqual(blank, { status: "enrolled" });
+
+  // A typed level is the anchor for late cards / irregular students; the
+  // database advances it automatically in later school years.
+  assert.deepEqual(
+    enrollmentPayload({ status: "enrolled", year_level: "4" }, student, {
+      id: 1,
+      start_year: 2026,
+    }),
+    { status: "enrolled", year_level: 4, year_level_source: "manual" },
+  );
+
+  // Unverified records never store a level.
+  assert.deepEqual(
+    enrollmentPayload({ status: "unverified", year_level: "3" }, student, {
+      id: 1,
+      start_year: 2026,
+    }),
+    { status: "unverified" },
+  );
+
+  // Out-of-range or non-numeric levels are rejected.
+  assert.throws(
+    () =>
+      enrollmentPayload({ status: "enrolled", year_level: "5" }, student, {
+        id: 1,
+        start_year: 2026,
+      }),
+    /1 to 4/,
+  );
+  assert.throws(
+    () =>
+      enrollmentPayload({ status: "enrolled", year_level: "3.5" }, student, {
+        id: 1,
+        start_year: 2026,
+      }),
+    /1 to 4/,
+  );
+
   assert.throws(
     () => enrollmentPayload({ status: "missing" }, student, { id: 1 }),
     /status/,
@@ -166,12 +204,12 @@ test("past school years are detected using Manila dates", () => {
 test("legacy enrolled year five needs review until the record is saved again", () => {
   const invalid = { ...preview, enrollment: { ...preview.enrollment, year_level: 5 } };
   assert.match(timeInReason(invalid, 2, "Study", "", now), /needs review/);
-  // Saving again sends only the status; the database then derives the level.
+  // Saving again without a typed level sends only the status; the database
+  // then derives a valid level and the "needs review" state clears.
   assert.deepEqual(
     enrollmentPayload(
       {
         status: "enrolled",
-        year_level: "5",
         validation_reference: "Confirmed list",
         year_level_note: "Review",
       },

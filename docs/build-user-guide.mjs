@@ -187,6 +187,7 @@ const pages = [
       ["Open record (in Recent activity)", "Takes you straight to the record where that event happened — the loan, the visit or the fine."],
       ["The bell (top right)", "Opens your notifications."],
       ["The sun/moon button", "Switches between light and dark colours."],
+      ["The Aa button", "Cycles the text through Normal, Large, Larger and Largest. Only the writing grows — the layout stays exactly the same — and your choice is remembered on this computer."],
       ["The gear (librarians and admins)", "Opens Settings."],
     ],
     notes: ["The fines card always shows your real balance."],
@@ -368,7 +369,11 @@ const pages = [
       ["Request change", "For past school years — sends the change to an admin for approval."],
       ["Approve / Reject (admins)", "Decides on a requested change; a reason is required."],
     ],
-    notes: ["At the borrow desk, a student who is not validated for the current school year cannot borrow."],
+    notes: [
+      "At the borrow desk, a student who is not validated for the current school year cannot borrow.",
+      "The year level is automatic: the system derives it from the library card and any recorded leave years.",
+      "Late card or irregular student? Type their real year level once when validating — it is saved for that school year and advances automatically every year after, so you never type it twice.",
+    ],
   },
   {
     title: "Academic periods",

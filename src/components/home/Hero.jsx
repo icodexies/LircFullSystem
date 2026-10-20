@@ -42,7 +42,7 @@ export default function Hero() {
       {/* Phones: one centered stack (tag, title, buttons, cards) instead of a
           full-height top/bottom split — no dead space in the middle.
           Laptops: centered row on a wider canvas so 1440px screens breathe. */}
-      <div className="relative z-10 mx-auto flex min-h-svh w-full max-w-[1320px] flex-col justify-center gap-8 px-6 pb-8 pt-28 xl:min-h-screen xl:flex-row xl:items-center xl:gap-12 xl:px-12 xl:pb-16 xl:pt-0 2xl:max-w-[1440px]">
+      <div className="relative z-10 mx-auto flex min-h-svh w-full max-w-[1320px] flex-col justify-center gap-8 px-6 pb-8 pt-28 xl:min-h-screen xl:flex-row xl:items-end xl:gap-12 xl:px-12 xl:pb-16 xl:pt-0 2xl:max-w-[1440px]">
         <LeftSide
           slides={slides}
           active={active}

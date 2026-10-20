@@ -43,6 +43,13 @@ export default function EnrollmentForm({
   const { role } = useAuth();
   const isAdmin = role === "admin";
   const [status, setStatus] = useState(enrollment?.status ?? "unverified");
+  // A level typed during validation becomes the anchor for late cards: it is
+  // saved for this school year and advances automatically after it.
+  const [yearLevel, setYearLevel] = useState(() =>
+    enrollment?.year_level_source === "manual" && enrollment?.year_level
+      ? String(enrollment.year_level)
+      : "",
+  );
   const [busy, setBusy] = useState(false);
   const [history, setHistory] = useState(null);
   const [overdue, setOverdue] = useState(null);
@@ -137,14 +144,14 @@ export default function EnrollmentForm({
         );
       } else {
         // Validate before asking; the service repeats this check before saving.
-        enrollmentPayload({ status }, profile, year);
+        enrollmentPayload({ status, year_level: yearLevel }, profile, year);
         const approved = await dialog.confirm({
           title: "Save library validation?",
           message: `Save ${STATUS_LABELS[status] ?? status} for ${personName(profile)} in ${year.name}? This covers both semesters and does not record a visit.`,
           confirmLabel: "Save validation",
         });
         if (!approved) return;
-        await saveEnrollment(profile, year, enrollment, { status });
+        await saveEnrollment(profile, year, enrollment, { status, year_level: yearLevel });
         toast.success("Library validation saved. Attendance has not been recorded.");
       }
       await loadHistory();
@@ -223,7 +230,7 @@ export default function EnrollmentForm({
       <p className="text-xs text-slate-600">
         {openedIsPast
           ? "This is a past school year. Changes are sent to an admin for approval (admins apply immediately)."
-          : "You only choose the status. The system sets the year level from the library card and any recorded leave years."}
+          : "Choose the status. The year level comes from the library card and any recorded leave years — type it only for a late card or an irregular student; it then advances automatically every school year."}
       </p>
 
       {needsPermission && (
@@ -255,6 +262,29 @@ export default function EnrollmentForm({
             ))}
           </select>
         </Field>
+        {!openedIsPast && status !== "unverified" && (
+          <div className="mt-4 space-y-2">
+            <Field label="Year level — only when the card year is wrong">
+              <input
+                type="number"
+                min="1"
+                max="4"
+                step="1"
+                inputMode="numeric"
+                className={inputClass}
+                placeholder="Automatic from the library card"
+                value={yearLevel}
+                onChange={(event) => setYearLevel(event.target.value)}
+              />
+            </Field>
+            <p className="text-[11px] leading-relaxed text-slate-500">
+              Leave blank for the normal case. Type the student&apos;s real
+              level only when the card doesn&apos;t match (for example, a card
+              issued in their 4th year). It is saved for this school year and
+              advances automatically after that — no need to type it again.
+            </p>
+          </div>
+        )}
       </fieldset>
 
       <section className="border-t border-slate-100 pt-5">
@@ -297,7 +327,12 @@ export default function EnrollmentForm({
                             No validation record
                           </span>
                         )}
-                        {item.year_level && <span>Year level {item.year_level}</span>}
+                        {item.year_level && (
+                          <span>
+                            Year level {item.year_level}
+                            {item.year_level_source === "manual" ? " (set)" : ""}
+                          </span>
+                        )}
                         {item.validated_at && (
                           <span>
                             Validated {displayTime(item.validated_at)}

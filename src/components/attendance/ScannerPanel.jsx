@@ -30,6 +30,7 @@ import {
 import { buttonClass, inputClass, Field } from "./StaffUi.jsx";
 import { secondaryButton } from "./WorkspaceUi.jsx";
 import { Spinner } from "../ui/Loading.jsx";
+import { useToast } from "../../hooks/shared/useToast.js";
 
 const DEFAULT_PURPOSE = "Study";
 
@@ -41,6 +42,7 @@ const TONES = {
 
 export default function ScannerPanel({ onChanged, onClose, onBusy }) {
   const periods = useSemester();
+  const toast = useToast();
   const [card, setCard] = useState("");
   const [purpose, setPurpose] = useState(DEFAULT_PURPOSE);
   const [other, setOther] = useState("");
@@ -141,10 +143,13 @@ export default function ScannerPanel({ onChanged, onClose, onBusy }) {
           { name, detail: guestDetail.trim() },
         );
         if (mounted.current) {
-          setResult({
-            tone: "success",
-            text: `${name} — guest time in recorded · ${purposeText} · ${displayTime(new Date())}`,
-          });
+          // Success leaves the window: a green toast above the scanner keeps
+          // the inline area free for warnings (blocked cards, busy states).
+          setResult(null);
+          toast.success(
+            `${name} · ${purposeText} · ${displayTime(new Date())}`,
+            "Time in recorded",
+          );
           clearGuest();
           setCard("");
           onChanged();
@@ -161,10 +166,12 @@ export default function ScannerPanel({ onChanged, onClose, onBusy }) {
       if (preview.open_visit) {
         await recordTimeOut(preview.open_visit.id);
         if (mounted.current) {
-          setResult({
-            tone: "success",
-            text: `${preview.open_visit.guest_name || personName(preview.profile)} — time out recorded · ${displayTime(new Date())}`,
-          });
+          // Time out uses the blue toast; time in uses the green one.
+          setResult(null);
+          toast.info(
+            `${preview.open_visit.guest_name || personName(preview.profile)} · ${displayTime(new Date())}`,
+            "Time out recorded",
+          );
           setCard("");
           onChanged();
         }
@@ -215,10 +222,11 @@ export default function ScannerPanel({ onChanged, onClose, onBusy }) {
         purposeText,
       );
       if (mounted.current) {
-        setResult({
-          tone: "success",
-          text: `${personName(fresh.profile)} — time in recorded · ${purposeText} · ${displayTime(new Date())}`,
-        });
+        setResult(null);
+        toast.success(
+          `${personName(fresh.profile)} · ${purposeText} · ${displayTime(new Date())}`,
+          "Time in recorded",
+        );
         setCard("");
         onChanged();
       }
@@ -238,7 +246,20 @@ export default function ScannerPanel({ onChanged, onClose, onBusy }) {
   }
 
   return (
-    <section aria-label="Attendance scanner" className="space-y-4 p-6">
+    <section
+      aria-label="Attendance scanner"
+      className="space-y-4 p-6"
+      // Clicking anywhere that is not a control puts the cursor back in the
+      // card field — the keyboard stays where the next scan will land.
+      onClick={(event) => {
+        if (
+          event.target.closest("button, input, select, textarea, a, label")
+        )
+          return;
+        if (guest) guestInput.current?.focus();
+        else input.current?.focus();
+      }}
+    >
       <div>
         <p className="mb-2 text-[11px] font-semibold text-slate-600">
           Purpose of the visit
@@ -355,6 +376,7 @@ export default function ScannerPanel({ onChanged, onClose, onBusy }) {
           <Field label="Library card">
             <input
               ref={input}
+              data-modal-autofocus="true"
               className={inputClass}
               value={card}
               disabled={busy}

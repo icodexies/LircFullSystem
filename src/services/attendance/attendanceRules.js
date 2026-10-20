@@ -88,14 +88,20 @@ export function displayTime(value) {
     : "—";
 }
 export function personName(profile) {
-  return [
-    profile?.first_name,
-    profile?.middle_initial,
-    profile?.surname,
-    profile?.suffix,
-  ]
-    .filter(Boolean)
-    .join(" ");
+  if (!profile) return "";
+  // Guest cards read as "Guest 01" instead of a made-up first/surname pair.
+  if (String(profile.role ?? "").trim().toLowerCase() === "guest") {
+    return `Guest ${String(profile.surname ?? profile.first_name ?? "").trim()}`.trim();
+  }
+  // Formal library order: Surname, Firstname M. (suffix after, when present).
+  const middleInitial = String(profile.middle_initial ?? "").trim();
+  const middle = middleInitial
+    ? ` ${middleInitial.endsWith(".") ? middleInitial : `${middleInitial}.`}`
+    : "";
+  const surname = String(profile.surname ?? "").trim();
+  const given = `${String(profile.first_name ?? "").trim()}${middle}`.trim();
+  const base = [surname, given].filter(Boolean).join(", ");
+  return [base, String(profile.suffix ?? "").trim()].filter(Boolean).join(" ");
 }
 export function timeInReason(
   preview,
@@ -142,9 +148,20 @@ export function enrollmentPayload(form, profile, year) {
     throw new Error("Only students have library validation.");
   if (!year?.id || !ENROLLMENT_STATUSES.includes(form.status))
     throw new Error("Choose an academic year and status.");
-  // Staff choose the status only. The database derives the year level from
-  // the library card and any recorded leave-of-absence years.
-  return { status: form.status };
+  // Staff normally choose the status only; the database derives the level from
+  // the card and any recorded leave years. A typed level is the ANCHOR for
+  // late cards / irregular students: it is saved for this school year and the
+  // system advances it automatically after that.
+  const payload = { status: form.status };
+  const typed = String(form.year_level ?? "").trim();
+  if (typed !== "" && form.status !== "unverified") {
+    const level = Number(typed);
+    if (!Number.isInteger(level) || level < 1 || level > 4)
+      throw new Error("Year level must be a whole number from 1 to 4.");
+    payload.year_level = level;
+    payload.year_level_source = "manual";
+  }
+  return payload;
 }
 export function csvCell(value) {
   let text = String(value ?? "");

@@ -34,7 +34,7 @@ export default function VisitTable({ rows, onChanged }) {
             <tr>
               {[
                 "Photo",
-                "Visitor/card",
+                "Visitor / library card number",
                 "Visitor type / year level",
                 "Purpose / classifications",
                 "Time in",

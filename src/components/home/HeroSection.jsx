@@ -41,7 +41,7 @@ export function LeftSide({ slides = [], active, BTN_SLANT }) {
         delay={150}
         threshold={0.1}
         // [&>div]:w-full makes Reveal's inner wrapper full width so text-center works
-        className="flex flex-col justify-center text-center xl:flex-1 xl:text-left [&>div]:w-full"
+        className="flex flex-col justify-center text-center xl:flex-1 xl:pb-10 xl:text-left [&>div]:w-full"
       >
         <div className="grid">
           {slides.map((s, i) => {
@@ -65,27 +65,27 @@ export function LeftSide({ slides = [], active, BTN_SLANT }) {
                     <span className="h-1.5 w-1.5 rounded-full bg-sky-400/20" />
                   </div>
 
-                  <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-sky-300 sm:text-[11px]">
+                  <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-sky-300 sm:text-[11px] xl:text-xs">
                     {s.tag}
                   </span>
                 </div>
 
                 {/* Title */}
-                <h1 className="mx-auto mt-4 max-w-2xl font-['Fraunces',serif] text-[2.35rem] font-bold leading-[1.08] tracking-tight text-white sm:mt-6 sm:text-5xl lg:text-6xl xl:mx-0 xl:text-7xl xl:leading-[1.05]">
+                <h1 className="mx-auto mt-4 max-w-2xl font-['Fraunces',serif] text-[2.35rem] font-bold leading-[1.08] tracking-tight text-white sm:mt-6 sm:text-5xl lg:text-6xl xl:mx-0 xl:mt-8 xl:text-[5.5rem] xl:leading-[1.03]">
                   {s.title}
                 </h1>
 
                 {/* Description */}
-                <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-slate-200 sm:mt-5 sm:text-base xl:mx-0 xl:max-w-lg">
+                <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-slate-200 sm:mt-5 sm:text-base xl:mx-0 xl:mt-6 xl:max-w-lg xl:text-lg">
                   {s.description}
                 </p>
 
                 {/* Buttons — stacked full-width on phones, inline from sm up */}
-                <div className="mt-6 flex flex-col items-stretch gap-2 sm:mt-8 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center sm:gap-3 xl:justify-start">
+                <div className="mt-6 flex flex-col items-stretch gap-2 sm:mt-8 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center sm:gap-3 xl:mt-10 xl:justify-start">
                   <Link
                     to={s.to}
                     tabIndex={on ? 0 : -1}
-                    className="inline-flex items-center justify-center gap-2 bg-white px-5 py-3 text-sm font-semibold text-navy transition-all duration-300 hover:bg-sky-400 active:scale-95 sm:justify-start sm:px-7 sm:py-3"
+                    className="inline-flex items-center justify-center gap-2 bg-white px-5 py-3 text-sm font-semibold text-navy transition-all duration-300 hover:bg-sky-400 active:scale-95 sm:justify-start sm:px-7 sm:py-3 xl:px-8 xl:py-4 xl:text-base"
                     style={{
                       clipPath: BTN_SLANT,
                     }}
@@ -98,7 +98,7 @@ export function LeftSide({ slides = [], active, BTN_SLANT }) {
                   {s.secondary.to ? <Link
                     to={s.secondary.to}
                     tabIndex={on ? 0 : -1}
-                    className="px-3 py-2.5 text-center text-sm font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:text-sky-300 sm:px-4 sm:py-3"
+                    className="px-3 py-2.5 text-center text-sm font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:text-sky-300 sm:px-4 sm:py-3 xl:px-5 xl:py-4 xl:text-base"
                   >
                     {s.secondary.label}
                   </Link> : (
@@ -106,7 +106,7 @@ export function LeftSide({ slides = [], active, BTN_SLANT }) {
                       type="button"
                       disabled
                       title="Thesis submissions are not available yet"
-                      className="px-3 py-2.5 text-center text-sm font-semibold text-white transition-all duration-300 sm:px-4 sm:py-3"
+                      className="px-3 py-2.5 text-center text-sm font-semibold text-white transition-all duration-300 sm:px-4 sm:py-3 xl:px-5 xl:py-4 xl:text-base"
                     >
                       {s.secondary.label}
                     </button>
@@ -134,9 +134,9 @@ export function RightSide({ slides = [], active, next, prev, setActive, pad }) {
         className="flex w-full flex-col items-center xl:w-auto xl:items-end [&>div]:w-full"
       >
         {/* Controls */}
-        <div className="mb-3 flex items-center justify-center gap-5 sm:mb-5 sm:gap-6 xl:w-full xl:min-w-[520px] xl:justify-between">
+        <div className="mb-3 flex items-center justify-center gap-5 sm:mb-5 sm:gap-6 xl:mb-6 xl:w-full xl:min-w-[560px] xl:justify-between">
           <div className="flex items-end gap-2">
-            <span className="font-['Fraunces',serif] text-2xl font-bold leading-none text-white sm:text-4xl">
+            <span className="font-['Fraunces',serif] text-2xl font-bold leading-none text-white sm:text-4xl xl:text-5xl">
               {pad(active)}
             </span>
 
@@ -150,7 +150,7 @@ export function RightSide({ slides = [], active, next, prev, setActive, pad }) {
               type="button"
               onClick={prev}
               aria-label="Previous slide"
-              className="flex h-9 w-9 items-center justify-center rounded-full border border-white/30 bg-white/10 text-white backdrop-blur-md transition-all duration-300 hover:bg-white hover:text-navy active:scale-95 sm:h-11 sm:w-11"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-white/30 bg-white/10 text-white backdrop-blur-md transition-all duration-300 hover:bg-white hover:text-navy active:scale-95 sm:h-11 sm:w-11 xl:h-12 xl:w-12"
             >
               <ArrowIcon direction="left" />
             </button>
@@ -159,7 +159,7 @@ export function RightSide({ slides = [], active, next, prev, setActive, pad }) {
               type="button"
               onClick={next}
               aria-label="Next slide"
-              className="flex h-9 w-9 items-center justify-center rounded-full border border-white/30 bg-white/10 text-white backdrop-blur-md transition-all duration-300 hover:bg-white hover:text-navy active:scale-95 sm:h-11 sm:w-11"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-white/30 bg-white/10 text-white backdrop-blur-md transition-all duration-300 hover:bg-white hover:text-navy active:scale-95 sm:h-11 sm:w-11 xl:h-12 xl:w-12"
             >
               <ArrowIcon />
             </button>
@@ -168,7 +168,7 @@ export function RightSide({ slides = [], active, next, prev, setActive, pad }) {
 
         {/* Carousel cards — edge-to-edge deck on phones (swipe to change) */}
         <div
-          className="-mx-6 flex h-60 touch-pan-y items-end justify-center gap-2 overflow-hidden px-2 sm:mx-0 sm:h-56 sm:gap-3 sm:px-0 xl:h-80"
+          className="-mx-6 flex h-60 touch-pan-y items-end justify-center gap-2 overflow-hidden px-2 sm:mx-0 sm:h-56 sm:gap-3 sm:px-0 xl:h-[22rem]"
           onTouchStart={(event) => {
             touchStart.current = event.touches[0]?.clientX ?? null;
           }}
@@ -194,7 +194,7 @@ export function RightSide({ slides = [], active, next, prev, setActive, pad }) {
                 aria-current={on}
                 className={`group relative overflow-hidden rounded-xl border text-left transition-all duration-700 ease-out sm:rounded-2xl ${
                   on
-                    ? "h-full w-[55%] border-white/80 shadow-2xl shadow-black/40 sm:w-52 xl:w-60"
+                    ? "h-full w-[55%] border-white/80 shadow-2xl shadow-black/40 sm:w-52 xl:w-64"
                     : "h-[84%] w-[11%] border-white/20 opacity-80 hover:opacity-100 sm:w-24 xl:w-28"
                 }`}
               >

@@ -4,8 +4,10 @@ import SemesterSelector from "../../periods/SemesterSelector.jsx";
 import SidebarIcon from "./SidebarIcon.jsx";
 import NotificationBell from "./NotificationBell.jsx";
 import ThemeToggle from "../../ui/ThemeToggle.jsx";
+import DisplaySizeToggle, { TextSizeGlyph } from "../../ui/DisplaySizeToggle.jsx";
 import Avatar from "../../ui/Avatar.jsx";
 import { useTheme } from "../../../hooks/shared/useTheme.js";
+import { useDisplaySize } from "../../../hooks/shared/useDisplaySize.js";
 import { useNotifications } from "../../../hooks/shared/useNotifications.js";
 import { ROLE_LABELS, ROLES } from "../../../routes/roles.js";
 
@@ -55,6 +57,7 @@ export default function MemberHeader({
 }) {
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
+  const { label, level, cycleSize } = useDisplaySize();
   const { unread } = useNotifications();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
@@ -118,6 +121,7 @@ export default function MemberHeader({
             </button>
           )}
           <span className="flex items-center gap-2 max-sm:hidden sm:contents">
+            <DisplaySizeToggle />
             <ThemeToggle />
             <NotificationBell />
           </span>
@@ -173,6 +177,14 @@ export default function MemberHeader({
                   >
                     {theme === "dark" ? <SunIcon /> : <MoonIcon />}
                     {theme === "dark" ? "Light mode" : "Dark mode"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={cycleSize}
+                    className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-xs font-semibold text-ink transition-colors hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-strong sm:hidden"
+                  >
+                    <TextSizeGlyph className="h-4 w-4 text-accent" level={level} />
+                    Text size: {label}
                   </button>
                   <button
                     type="button"

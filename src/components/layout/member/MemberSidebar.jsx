@@ -76,7 +76,7 @@ function SidebarContent({
   /* ---------------- collapsed (icon-only rail) ---------------- */
   if (collapsed) {
     return (
-      <div className="flex h-full w-[72px] flex-col bg-gradient-to-b from-navy to-[#101A3E] text-white shadow-[inset_-1px_0_0_rgba(56,189,248,0.10)]">
+      <div className="flex h-full w-[4.5rem] flex-col bg-gradient-to-b from-navy to-[#101A3E] text-white shadow-[inset_-1px_0_0_rgba(56,189,248,0.10)]">
         <div className="flex flex-col items-center gap-2 px-3 pb-3 pt-5">
           <Link
             to="/dashboard"
@@ -338,7 +338,7 @@ export default function MemberSidebar({
     <>
       <aside
         className={`fixed inset-y-0 left-0 z-30 hidden transition-[width] duration-200 lg:block ${
-          collapsed ? "w-[72px]" : "w-64"
+          collapsed ? "w-[4.5rem]" : "w-64"
         }`}
       >
         <SidebarContent

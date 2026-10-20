@@ -106,6 +106,9 @@ export default function Toast({ variant = "info", title, message, onClose }) {
       <button
         type="button"
         onClick={onClose}
+        // Dismissing a toast must not pull the keyboard out of a form field
+        // (for example the scanner's card input).
+        onMouseDown={(event) => event.preventDefault()}
         aria-label="Close notification"
         className={`shrink-0 rounded p-0.5 transition-opacity hover:opacity-100 ${palette.text} opacity-60`}
       >

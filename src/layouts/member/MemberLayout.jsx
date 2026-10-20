@@ -9,6 +9,8 @@ import {
 } from "../../components/layout/member/sidebarStorage.js";
 import MemberHeader from "../../components/layout/member/MemberHeader.jsx";
 import MemberFooter from "../../components/layout/member/MemberFooter.jsx";
+import DisplaySizeProvider from "../../context/display/DisplaySizeProvider.jsx";
+import { personName } from "../../services/attendance/attendanceRules.js";
 import AnnouncementPopup from "../../components/announcements/AnnouncementPopup.jsx";
 import { LoadingBlock } from "../../components/ui/Loading.jsx";
 import { useToast } from "../../hooks/shared/useToast.js";
@@ -32,9 +34,7 @@ function MemberWorkspace() {
       return !current;
     });
   const currentPage = MEMBER_PAGES.find((page) => page.path === pathname);
-  const name =
-    [profile?.first_name, profile?.surname].filter(Boolean).join(" ") ||
-    "Library member";
+  const name = personName(profile) || "Library member";
 
   const handleLogout = async () => {
     if (loggingOut) return;
@@ -64,7 +64,7 @@ function MemberWorkspace() {
       />
       <div
         className={`flex min-h-dvh min-w-0 flex-col transition-[padding] duration-200 ${
-          sidebarCollapsed ? "lg:pl-[72px]" : "lg:pl-64"
+          sidebarCollapsed ? "lg:pl-[4.5rem]" : "lg:pl-64"
         }`}
       >
         <MemberHeader
@@ -99,7 +99,9 @@ export default function MemberLayout() {
     <SemesterProvider>
       <NotificationProvider>
         <ScannerProvider>
-          <MemberWorkspace />
+          <DisplaySizeProvider>
+            <MemberWorkspace />
+          </DisplaySizeProvider>
         </ScannerProvider>
       </NotificationProvider>
     </SemesterProvider>

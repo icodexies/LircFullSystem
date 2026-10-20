@@ -13,7 +13,9 @@
     <title>Learning and Information Resource Center | City College of Calamba</title>
     <script>
       // Apply the saved (or system) theme before the first paint so the page
-      // never flashes light before switching to dark.
+      // never flashes light before switching to dark. The member workspace's
+      // saved display size is applied here too — the public pages and the
+      // station screens always keep their designed sizes.
       (function () {
         try {
           var saved = localStorage.getItem("lirc-theme");
@@ -22,7 +24,24 @@
             (saved !== "light" &&
               window.matchMedia("(prefers-color-scheme: dark)").matches);
           if (dark) document.documentElement.classList.add("dark");
-        } catch (e) {}
+
+          var path = location.pathname;
+          var keepsDesign =
+            path === "/" ||
+            path === "/unauthorized" ||
+            path === "/system" ||
+            path.indexOf("/register") === 0 ||
+            path.indexOf("/forgot-password") === 0 ||
+            path.indexOf("/reset-password") === 0;
+          var savedSize = localStorage.getItem("lirc-ui-size");
+          if (
+            !keepsDesign &&
+            (savedSize === "large" ||
+              savedSize === "larger" ||
+              savedSize === "largest")
+          ) {
+            document.documentElement.dataset.uiSize = savedSize;
+          }        } catch (e) {}
       })();
     </script>
   </head>

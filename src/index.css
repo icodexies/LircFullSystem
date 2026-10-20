@@ -261,6 +261,73 @@ body:has(#opac-dialog[open]) {
   overflow: hidden;
 }
 
+/* ---- Display size (member workspace) -------------------------------------
+   Four levels: normal, large, larger and largest. A level raises ONLY the type
+   scale (sizes and their line heights) — every margin, padding, column,
+   sidebar and window stays exactly where it is, so the layout never moves.
+   The few pixel-defined labels follow the same scale. See DisplaySizeProvider. */
+html[data-ui-size="large"] {
+  --ui-type-scale: 1.25;
+}
+html[data-ui-size="larger"] {
+  --ui-type-scale: 1.4;
+}
+html[data-ui-size="largest"] {
+  --ui-type-scale: 1.55;
+}
+
+html[data-ui-size="large"],
+html[data-ui-size="larger"],
+html[data-ui-size="largest"] {
+  --text-xs: calc(0.75rem * var(--ui-type-scale));
+  --text-xs--line-height: calc(1rem * var(--ui-type-scale));
+  --text-sm: calc(0.875rem * var(--ui-type-scale));
+  --text-sm--line-height: calc(1.25rem * var(--ui-type-scale));
+  --text-base: calc(1rem * var(--ui-type-scale));
+  --text-base--line-height: calc(1.5rem * var(--ui-type-scale));
+  --text-lg: calc(1.125rem * var(--ui-type-scale));
+  --text-lg--line-height: calc(1.75rem * var(--ui-type-scale));
+  --text-xl: calc(1.25rem * var(--ui-type-scale));
+  --text-xl--line-height: calc(1.75rem * var(--ui-type-scale));
+  --text-2xl: calc(1.5rem * var(--ui-type-scale));
+  --text-2xl--line-height: calc(2rem * var(--ui-type-scale));
+  --text-3xl: calc(1.875rem * var(--ui-type-scale));
+  --text-3xl--line-height: calc(2.25rem * var(--ui-type-scale));
+  --text-4xl: calc(2.25rem * var(--ui-type-scale));
+  --text-4xl--line-height: calc(2.5rem * var(--ui-type-scale));
+}
+
+html[data-ui-size="large"] [class*="text-[8px]"],
+html[data-ui-size="larger"] [class*="text-[8px]"],
+html[data-ui-size="largest"] [class*="text-[8px]"] {
+  font-size: calc(8px * var(--ui-type-scale));
+}
+html[data-ui-size="large"] [class*="text-[9px]"],
+html[data-ui-size="larger"] [class*="text-[9px]"],
+html[data-ui-size="largest"] [class*="text-[9px]"] {
+  font-size: calc(9px * var(--ui-type-scale));
+}
+html[data-ui-size="large"] [class*="text-[10px]"],
+html[data-ui-size="larger"] [class*="text-[10px]"],
+html[data-ui-size="largest"] [class*="text-[10px]"] {
+  font-size: calc(10px * var(--ui-type-scale));
+}
+html[data-ui-size="large"] [class*="text-[11px]"],
+html[data-ui-size="larger"] [class*="text-[11px]"],
+html[data-ui-size="largest"] [class*="text-[11px]"] {
+  font-size: calc(11px * var(--ui-type-scale));
+}
+html[data-ui-size="large"] [class*="text-[13px]"],
+html[data-ui-size="larger"] [class*="text-[13px]"],
+html[data-ui-size="largest"] [class*="text-[13px]"] {
+  font-size: calc(13px * var(--ui-type-scale));
+}
+html[data-ui-size="large"] [class*="text-[2rem]"],
+html[data-ui-size="larger"] [class*="text-[2rem]"],
+html[data-ui-size="largest"] [class*="text-[2rem]"] {
+  font-size: calc(2rem * var(--ui-type-scale));
+}
+
 /* Keep the same design while respecting the device's motion preference. */
 @media (prefers-reduced-motion: reduce) {
   *,
