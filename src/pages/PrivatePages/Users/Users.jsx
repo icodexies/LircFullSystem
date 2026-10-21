@@ -1,11 +1,9 @@
 // Users (staff / librarian / admin): member records with borrow and
-// attendance history, and profile edit requests.
+// attendance history. Staff edits apply directly and are recorded in the
+// activity log; the request tabs keep the earlier approval history.
 //
-// Tabs: "Member details" for everyone. Admins get "Pending requests" to
-// approve or reject edits; staff/librarian get Pending / Approved / Rejected
-// tabs for their own requests.
-//
-// Notifications deep-link here as /users?request=<id> and open that exact
+// Tabs: "Member details" for everyone, plus the request history. Notifications
+// deep-link here as /users?request=<id> and open that exact request window.
 // request in a window.
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -55,11 +53,12 @@ export default function Users() {
     { id: "approved", label: "Approved requests" },
     { id: "rejected", label: "Rejected requests" },
   ];
-  // Short descriptions so the request tabs explain themselves.
+  // Short descriptions so the request tabs explain themselves (they now hold
+  // the earlier approval history; new edits apply directly).
   const requestInfo = {
     pending: {
       description:
-        "Waiting for approval — approving saves the edit; rejecting keeps the member record as it is.",
+        "Older requests still waiting for a decision — approving saves the edit; rejecting keeps the record as it is.",
       empty: "Nothing is waiting for approval right now.",
     },
     approved: {
@@ -193,7 +192,7 @@ export default function Users() {
     <div className="space-y-6">
       <WorkspaceHeader
         title="Users"
-        description="Member records with borrow and attendance history. Profile edits go through admin approval."
+        description="Member records with borrow and attendance history. Staff edits apply directly and are recorded in the activity log."
         actions={
           isAdmin ? (
             <button
@@ -231,8 +230,8 @@ export default function Users() {
         </div>
         {tab !== "members" && (
           <p className="px-1 text-[11px] leading-relaxed text-slate-400">
-            Edit requests are changes to a member's details — an admin approves
-            them before they are saved.
+            Past edit requests are kept here for history. New edits by library
+            staff apply immediately and appear in the activity log.
           </p>
         )}
       </div>
@@ -406,7 +405,6 @@ export default function Users() {
           <MemberEditForm
             profile={editingProfile}
             options={options}
-            isAdmin={isAdmin}
             onCancel={() => setEditingProfile(null)}
             onSaved={editSaved}
           />

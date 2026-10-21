@@ -1,5 +1,5 @@
-// Edit member details. Admins apply immediately; staff/librarian submit a
-// request that an admin reviews (the Users page handles the tabs/notices).
+// Edit member details. Library staff (staff/librarian/admin) save the edits
+// directly; every change is recorded in the activity log.
 import { useState } from "react";
 import { useDialog } from "../../hooks/shared/useDialog.js";
 import { useToast } from "../../hooks/shared/useToast.js";
@@ -19,7 +19,6 @@ import { secondaryButton } from "../attendance/WorkspaceUi.jsx";
 export default function MemberEditForm({
   profile,
   options,
-  isAdmin,
   onCancel,
   onSaved,
 }) {
@@ -42,19 +41,13 @@ export default function MemberEditForm({
     setBusy(true);
     try {
       const approved = await dialog.confirm({
-        title: isAdmin ? "Apply this profile edit?" : "Submit for admin approval?",
-        message: isAdmin
-          ? `${profile.full_name} — the edit applies immediately.`
-          : `${profile.full_name} — the edit is sent to an admin for approval.`,
-        confirmLabel: isAdmin ? "Apply edit" : "Submit request",
+        title: "Apply this profile edit?",
+        message: `${profile.full_name} — the edit is saved now and recorded in the activity log.`,
+        confirmLabel: "Apply edit",
       });
       if (!approved) return;
-      const result = await submitMemberChange(profile.id, changes);
-      toast.success(
-        result?.applied
-          ? "Profile updated."
-          : "Request sent. An admin will review it.",
-      );
+      await submitMemberChange(profile.id, changes);
+      toast.success("Profile updated.");
       await onSaved();
     } catch (error) {
       toast.error(error.message, "Not saved");
@@ -127,7 +120,7 @@ export default function MemberEditForm({
           Cancel
         </button>
         <button disabled={busy} className={buttonClass}>
-          {busy ? "Saving…" : isAdmin ? "Apply edit" : "Submit for approval"}
+          {busy ? "Saving…" : "Apply edit"}
         </button>
       </div>
     </form>

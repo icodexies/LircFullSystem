@@ -28,7 +28,9 @@ export const ACCESS = {
     ROLES.ADMIN,
   ],
   staff: [ROLES.STAFF, ROLES.LIBRARIAN, ROLES.ADMIN],
-  books: [ROLES.LIBRARIAN, ROLES.ADMIN],
+  // Catalog records, copies and covers — the circulation desk (staff) also
+  // adds and edits books; every change is recorded in the activity log.
+  books: [ROLES.STAFF, ROLES.LIBRARIAN, ROLES.ADMIN],
   // The people who borrow books as library users (My Borrowing). The
   // circulation desk (Book Borrow) stays with staff/librarian/admin.
   borrowers: [

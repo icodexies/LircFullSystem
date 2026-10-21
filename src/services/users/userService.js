@@ -44,8 +44,9 @@ export async function getMemberOptions(signal) {
   return data ?? { department: [], program: [], position: [] };
 }
 
-// Submit a profile edit. Admins apply immediately; staff/librarian create a
-// request that an admin reviews.
+// Submit a profile edit. Library staff — staff, librarian and admin — save the
+// change directly; the activity log records it. Requests remain for any other
+// future workflow.
 export async function submitMemberChange(profileId, changes) {
   const client = await getSupabase();
   const { data, error } = await client.rpc("lirc_request_member_change", {

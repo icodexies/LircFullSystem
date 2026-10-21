@@ -1,5 +1,5 @@
-// Adding Books (librarian / admin): create a book record together with its
-// physical copies, or add accession numbers to an existing record.
+// Adding Books (staff / librarian / admin): create a book record together with
+// its physical copies, or add accession numbers to an existing record.
 // The catalog list below refreshes after every save.
 import { useState } from "react";
 import { useCatalog } from "../../../hooks/catalog/useCatalog.js";

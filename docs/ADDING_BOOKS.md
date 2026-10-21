@@ -1,7 +1,7 @@
 # Adding books
 
-The **Adding Books** page (librarian / admin) creates a book record together
-with its physical copies, in one save. The workflow:
+The **Adding Books** page (staff / librarian / admin) creates a book record
+together with its physical copies, in one save. The workflow:
 
 ## The Add Book window
 

@@ -40,6 +40,7 @@ const expectedPages = {
     "barcode-generator",
     "book-borrow",
     "inventory",
+    "adding-books",
   ],
   librarian: [
     "dashboard",

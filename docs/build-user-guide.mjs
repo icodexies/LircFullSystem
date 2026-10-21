@@ -258,7 +258,7 @@ const pages = [
       ["Search", "Looks for the words you typed in titles, authors, ISBN, call numbers or copy numbers."],
       ["Filter boxes", "Narrow the list — for example, only books from one section."],
       ["Click a book", "Opens its full record window."],
-      ["Edit (librarians and admins)", "Changes the book's details, or uploads/replaces its cover picture."],
+      ["Edit (library staff)", "Changes the book's details, or uploads/replaces its cover picture."],
     ],
     notes: ["A book with no copies available still shows its details — the copy list tells you its state."],
   },
@@ -316,7 +316,7 @@ const pages = [
       ["Open record", "Opens the member's full record: their details, loans, visits and fines."],
       ["Add User", "Creates a new member record and their login account."],
       ["Bulk upload", "Adds many members at once from a spreadsheet file."],
-      ["Edit", "Changes the member's details. Staff and librarians' changes are sent for admin approval; admins' changes apply right away."],
+      ["Edit", "Changes the member's details. The edit is saved right away and recorded in the activity log."],
       ["Approve / Reject (admins)", "Decides on a change request; a reason can be sent back."],
     ],
     notes: ["A member's history (loans and visits) is kept even if their details change."],
@@ -389,7 +389,7 @@ const pages = [
   },
   {
     title: "Adding Books",
-    who: "Librarians and admins.",
+    who: "Library staff, librarians and admins.",
     purpose: "Add new books and their copies to the catalog.",
     see: ["A form for the book's details and a list for its copy (accession) numbers."],
     buttons: [

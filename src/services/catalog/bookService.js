@@ -201,7 +201,7 @@ export async function getBookCopies(bookId, page, signal) {
 export async function updateBook(book, form, role) {
   // UI safeguard. The database RLS policy is the actual authority.
   if (!ACCESS.books.includes(role))
-    throw new Error("Only librarians and admins can edit books.");
+    throw new Error("Only library staff can edit books.");
   if (!book.updated_at)
     throw new Error(
       "The book has no updated_at value. Apply the catalog timestamp schema first.",
