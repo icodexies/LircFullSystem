@@ -46,6 +46,9 @@ export default function Attendance() {
     String(periods.selectedSemesterId) !== String(periods.activeSemester?.id);
   const summary = report.data?.summary;
   const loading = report.loading || filter.pending;
+  // The migration that adds today's in/out totals may not be applied yet; fall
+  // back to the previous metric so the card never shows a blank.
+  const hasToday = summary?.today_time_ins != null || summary?.today_time_outs != null;
   return (
     <div className="space-y-6">
       <WorkspaceHeader
@@ -112,12 +115,15 @@ export default function Attendance() {
             tone: "success",
           },
           {
-            label: "Average stay",
-            value:
-              summary?.average_duration == null
+            label: hasToday ? "In / out today" : "Average stay",
+            value: hasToday
+              ? `${Number(summary?.today_time_ins ?? 0)} / ${Number(summary?.today_time_outs ?? 0)}`
+              : summary?.average_duration == null
                 ? "—"
                 : `${Number(summary.average_duration).toFixed(1)} min`,
-            help: "Completed visits only",
+            help: hasToday
+              ? "Time-ins / time-outs recorded today"
+              : "Completed visits only",
           },
         ]}
       />

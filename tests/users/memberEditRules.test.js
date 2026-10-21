@@ -14,6 +14,7 @@ const profile = {
   department_id: 2,
   program_id: 5,
   position_classification_id: null,
+  person_status: null,
 };
 
 test("member form is seeded from the profile with string ids", () => {
@@ -25,6 +26,7 @@ test("member form is seeded from the profile with string ids", () => {
     department_id: "2",
     program_id: "5",
     position_classification_id: "",
+    person_status: "",
   });
 });
 
@@ -57,4 +59,18 @@ test("edit rules mirror the database checks", () => {
     /100 characters/,
   );
   assert.equal(memberChangesError({ program_id: "7" }), "");
+});
+
+test("person status is an edit field with a fixed list of values", () => {
+  const form = memberFormFromProfile(profile);
+  assert.deepEqual(memberChanges(profile, { ...form, person_status: "retired" }), {
+    person_status: "retired",
+  });
+  const retired = { ...profile, person_status: "retired" };
+  assert.deepEqual(
+    memberChanges(retired, { ...memberFormFromProfile(retired), person_status: "" }),
+    { person_status: "" },
+  );
+  assert.equal(memberChangesError({ person_status: "deceased" }), "");
+  assert.match(memberChangesError({ person_status: "unknown" }), /valid person status/);
 });

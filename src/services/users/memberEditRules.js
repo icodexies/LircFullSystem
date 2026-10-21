@@ -1,5 +1,7 @@
 // Client mirror of the server-side member edit validation (same rules as
 // the member edits migration). Keeps the form honest before sending.
+import { PERSON_STATUS_VALUES } from "./personStatus.js";
+
 export const EDIT_TEXT_FIELDS = [
   { key: "first_name", label: "First name", max: 100, required: true },
   { key: "surname", label: "Surname", max: 100, required: true },
@@ -15,11 +17,14 @@ export const EDIT_CLASSIFICATION_FIELDS = [
     optionsKey: "position",
   },
 ];
+// Status is a fixed list from personStatus.js, not a database lookup.
+export const EDIT_STATUS_FIELD = { key: "person_status", label: "Person status" };
 export const EDIT_FIELD_LABELS = Object.fromEntries(
-  [...EDIT_TEXT_FIELDS, ...EDIT_CLASSIFICATION_FIELDS].map((field) => [
-    field.key,
-    field.label,
-  ]),
+  [
+    ...EDIT_TEXT_FIELDS,
+    ...EDIT_CLASSIFICATION_FIELDS,
+    EDIT_STATUS_FIELD,
+  ].map((field) => [field.key, field.label]),
 );
 
 const text = (value) => String(value ?? "").trim();
@@ -38,6 +43,7 @@ export function memberFormFromProfile(profile) {
       profile?.position_classification_id == null
         ? ""
         : String(profile.position_classification_id),
+    person_status: profile?.person_status ?? "",
   };
 }
 
@@ -53,6 +59,10 @@ export function memberChanges(profile, form) {
     const value = text(form[key]);
     if (value !== base[key]) changes[key] = value;
   }
+  const status = text(form[EDIT_STATUS_FIELD.key]).toLowerCase();
+  if (status !== text(base[EDIT_STATUS_FIELD.key]).toLowerCase()) {
+    changes[EDIT_STATUS_FIELD.key] = status;
+  }
   return changes;
 }
 
@@ -65,6 +75,13 @@ export function memberChangesError(changes) {
     if (required && !value) return `${label} is required.`;
     if (value.length > max)
       return `${label} must be ${max} characters or fewer.`;
+  }
+  if (
+    "person_status" in changes &&
+    changes.person_status &&
+    !PERSON_STATUS_VALUES.includes(changes.person_status)
+  ) {
+    return "Choose a valid person status.";
   }
   return "";
 }

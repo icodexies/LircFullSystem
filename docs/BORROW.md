@@ -48,6 +48,11 @@ server-side totals:
   51 overdue"). The counts ignore the date range so open loans stay visible.
 - **Copies & loans** on a row opens the book's window, so a return can happen
   straight from a record.
+- **Borrower status** — a member's optional person status (active, on leave,
+  retired, resigned, separated, deceased) shows as a badge under their name in
+  these lists and in the Report tab; the Excel report carries it as a **Person
+  status** column. Use it to tell why an overdue borrower can no longer be
+  reached.
 
 ## Overdue reminders
 

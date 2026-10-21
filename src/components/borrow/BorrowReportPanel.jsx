@@ -26,6 +26,10 @@ import {
 import Avatar from "../ui/Avatar.jsx";
 import EmptyState from "../personnel/EmptyState.jsx";
 import BorrowReportFilters from "./BorrowReportFilters.jsx";
+import {
+  personStatusLabel,
+  personStatusTone,
+} from "../../services/users/personStatus.js";
 
 const PAGE_SIZE = 20;
 const GRID = "md:grid-cols-[210px_minmax(0,1fr)_140px_140px_150px_170px]";
@@ -272,6 +276,13 @@ export default function BorrowReportPanel({ revision = 0 }) {
                     <span className="block truncate text-[11px] text-slate-500">
                       {row.library_id} · {ROLE_LABELS[row.role] ?? row.role}
                     </span>
+                    {row.person_status && (
+                      <span className="mt-1 block">
+                        <StatusBadge tone={personStatusTone(row.person_status)}>
+                          {personStatusLabel(row.person_status)}
+                        </StatusBadge>
+                      </span>
+                    )}
                   </span>
                 </span>
                 <span className="min-w-0">

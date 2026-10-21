@@ -23,6 +23,10 @@ import {
 import Avatar from "../ui/Avatar.jsx";
 import EmptyState from "../personnel/EmptyState.jsx";
 import { Spinner } from "../ui/Loading.jsx";
+import {
+  personStatusLabel,
+  personStatusTone,
+} from "../../services/users/personStatus.js";
 
 const SCOPE_INFO = {
   borrowed: {
@@ -374,6 +378,13 @@ export default function LoanRecordsPanel({
                       {row.library_id} ·{" "}
                       {ROLE_LABELS[row.role] ?? row.role}
                     </span>
+                    {row.person_status && (
+                      <span className="mt-1 block">
+                        <StatusBadge tone={personStatusTone(row.person_status)}>
+                          {personStatusLabel(row.person_status)}
+                        </StatusBadge>
+                      </span>
+                    )}
                   </span>
                 </span>
                 <span className="min-w-0">

@@ -18,6 +18,10 @@ import { buttonClass, tableButton } from "../attendance/StaffUi.jsx";
 import { LoadingBlock, Spinner } from "../ui/Loading.jsx";
 import Modal from "../ui/Modal.jsx";
 import Avatar from "../ui/Avatar.jsx";
+import {
+  personStatusLabel,
+  personStatusTone,
+} from "../../services/users/personStatus.js";
 
 function Fact({ label, value }) {
   return (
@@ -168,9 +172,16 @@ export default function MemberDetails({ member, onBack, onEdit, showActions = tr
           <div className="flex items-center gap-4">
             <Avatar src={profile.avatar_url} className="h-14 w-14" />
             <div>
-              <p className="font-serif text-xl font-bold text-ink">
-                {profile.full_name}
-              </p>
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                <p className="font-serif text-xl font-bold text-ink">
+                  {profile.full_name}
+                </p>
+                {profile.person_status && (
+                  <StatusBadge tone={personStatusTone(profile.person_status)}>
+                    {personStatusLabel(profile.person_status)}
+                  </StatusBadge>
+                )}
+              </div>
               <p className="mt-0.5 text-xs text-slate-500">
                 {profile.library_id} · {String(profile.role).replaceAll("_", " ")} ·{" "}
                 {profile.user_linked ? "Login account linked" : "No login account"}
@@ -181,6 +192,10 @@ export default function MemberDetails({ member, onBack, onEdit, showActions = tr
             <Fact label="Department" value={profile.department ?? "Unassigned"} />
             <Fact label="Program" value={profile.program ?? "Unassigned"} />
             <Fact label="Position" value={profile.position ?? "Unassigned"} />
+            <Fact
+              label="Person status"
+              value={personStatusLabel(profile.person_status) || "Not specified"}
+            />
             <Fact
               label="Library visits"
               value={`${profile.visits} recorded`}

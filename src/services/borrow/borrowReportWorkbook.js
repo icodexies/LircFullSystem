@@ -6,11 +6,13 @@
 import { ROLE_LABELS } from "../../routes/roles.js";
 import { displayTime } from "../attendance/attendanceRules.js";
 import { rowStatusLabel } from "./borrowReportRules.js";
+import { personStatusLabel } from "../users/personStatus.js";
 
 export const LOAN_COLUMNS = [
   "Member",
   "Card",
   "Role",
+  "Person status",
   "Department",
   "Program",
   "Book",
@@ -21,7 +23,7 @@ export const LOAN_COLUMNS = [
   "Returned",
   "Status",
 ];
-export const LOAN_WIDTHS = [30, 12, 14, 26, 30, 40, 12, 16, 22, 22, 22, 22];
+export const LOAN_WIDTHS = [30, 12, 14, 16, 26, 30, 40, 12, 16, 22, 22, 22, 22];
 
 const NAVY = "FF0B1330";
 const JADE = "FF0F8A6B";
@@ -237,6 +239,7 @@ export async function buildBorrowReportWorkbook({ rows, summary, context }) {
         row.member_name,
         row.library_id,
         ROLE_LABELS[row.role] ?? row.role,
+        personStatusLabel(row.person_status),
         row.department ?? "",
         row.program ?? "",
         row.book_name,

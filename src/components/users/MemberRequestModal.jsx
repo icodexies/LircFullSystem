@@ -5,6 +5,7 @@ import { useDialog } from "../../hooks/shared/useDialog.js";
 import { useToast } from "../../hooks/shared/useToast.js";
 import { reviewMemberChange } from "../../services/users/userService.js";
 import { EDIT_FIELD_LABELS } from "../../services/users/memberEditRules.js";
+import { personStatusLabel } from "../../services/users/personStatus.js";
 import { displayTime } from "../../services/attendance/attendanceRules.js";
 import { StatusBadge } from "../attendance/WorkspaceUi.jsx";
 import { buttonClass, tableButton } from "../attendance/StaffUi.jsx";
@@ -29,6 +30,9 @@ function optionName(options, key, value) {
 }
 
 function displayValue(options, key, value) {
+  if (key === "person_status") {
+    return personStatusLabel(value) || "Not specified";
+  }
   if (key.endsWith("_id")) return optionName(options, key, value);
   return value === null || value === undefined || value === ""
     ? "—"

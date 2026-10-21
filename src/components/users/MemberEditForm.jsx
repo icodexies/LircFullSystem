@@ -7,10 +7,12 @@ import { submitMemberChange } from "../../services/users/userService.js";
 import {
   EDIT_TEXT_FIELDS,
   EDIT_CLASSIFICATION_FIELDS,
+  EDIT_STATUS_FIELD,
   memberFormFromProfile,
   memberChanges,
   memberChangesError,
 } from "../../services/users/memberEditRules.js";
+import { PERSON_STATUS_OPTIONS } from "../../services/users/personStatus.js";
 import { Field, inputClass, buttonClass } from "../attendance/StaffUi.jsx";
 import { secondaryButton } from "../attendance/WorkspaceUi.jsx";
 
@@ -95,7 +97,26 @@ export default function MemberEditForm({
             </select>
           </Field>
         ))}
+        <Field label={EDIT_STATUS_FIELD.label}>
+          <select
+            className={inputClass}
+            value={form[EDIT_STATUS_FIELD.key]}
+            onChange={change(EDIT_STATUS_FIELD.key)}
+          >
+            {PERSON_STATUS_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </Field>
       </fieldset>
+      <p className="-mt-2 text-[11px] leading-relaxed text-slate-500">
+        Person status is optional. Use it for personnel who have retired,
+        resigned, separated from the school or passed away, so their records and
+        overdue books show why they can no longer be reached. Students keep
+        their enrollment status; leave this at “Not specified” unless needed.
+      </p>
       <div className="sticky bottom-0 -mx-6 -mb-6 flex flex-wrap items-center justify-end gap-3 border-t border-slate-200 bg-gradient-to-r from-page to-surface px-6 py-4">
         <button
           type="button"
