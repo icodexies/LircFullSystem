@@ -97,14 +97,22 @@ export default function BookPickerModal({
   async function submit() {
     if (!selected || busy) return;
     setBusy(true);
+    const genEdId = subject.gen_ed_subject_id ?? null;
     try {
       if (mode === "add") {
-        await addRecommendation(subject.course_code, selected.id, note);
+        await addRecommendation(
+          subject.course_code,
+          selected.id,
+          note,
+          genEdId,
+        );
         toast.success(
-          `“${selected.book_name}” is now recommended for ${subject.course_code}.`,
+          subject.is_general_education
+            ? `“${selected.book_name}” is now recommended for ${subject.course_title}, in every program.`
+            : `“${selected.book_name}” is now recommended for ${subject.course_code}.`,
         );
       } else {
-        await suggestBook(subject.course_code, selected.id, note);
+        await suggestBook(subject.course_code, selected.id, note, genEdId);
         toast.success("Suggestion sent — a librarian will review it.");
       }
       onDone();

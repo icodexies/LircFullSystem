@@ -252,7 +252,7 @@ const pages = [
     see: [
       "A search box and filters (format, section, year, newest first).",
       "Each result: the book's cover, title, author and where it is.",
-      "Opening a book shows everything: details, the cover, the physical copies and whether each one is available.",
+      "Opening a book shows everything: details, the cover, the shelf where it is kept (highlighted below the author), the physical copies and whether each one is available.",
     ],
     buttons: [
       ["Search", "Looks for the words you typed in titles, authors, ISBN, call numbers or copy numbers."],
@@ -268,19 +268,23 @@ const pages = [
     purpose: "The books recommended for every subject in each program.",
     see: [
       "Your program's subjects, year by year, each with its recommended books and how many copies are available.",
+      "General Education at the top of the picker: the shared subjects (Understanding the Self, Ethics, Rizal, PE, NSTP and more) with one book list for every program.",
       "A subject shows its first three books, with \"View all\" for the rest.",
     ],
     buttons: [
-      ["Program and year buttons", "Switch the curriculum you are looking at."],
+      ["Program and year buttons", "Switch the curriculum you are looking at, or pick General Education for the shared subjects."],
       ["View all N books", "Opens the subject's full reading list in a window."],
-      ["View book", "Opens that book's details and availability."],
+      ["View book", "Opens that book's details, the shelf where it is kept and its availability."],
       ["Suggest a book (faculty)", "Recommends a book for that subject — a librarian reviews it first."],
-      ["Add a book (librarians/admins)", "Picks a book from the catalog and adds it to the subject."],
+      ["Add a book (librarians/admins)", "Picks a book from the catalog and adds it to the subject (or to the whole Gen Ed group)."],
       ["AI picks (librarians/admins)", "Asks the AI for recommendations for that subject. Results are saved; \"Search again\" runs a fresh search."],
       ["Review → Approve / Reject (librarians/admins)", "Decides on a suggested book; a note can be sent to the suggester."],
       ["Acquisitions tab", "The library's to-buy list: faculty may \"Suggest a book to acquire\"; librarians and admins review, withdraw and \"Export to Excel\" the whole list."],
     ],
-    notes: ["Students and faculty only see books a librarian has approved."],
+    notes: [
+      "Students and faculty only see books a librarian has approved.",
+      "A book added in General Education appears on every program that teaches that subject — add it once.",
+    ],
   },
   {
     title: "Notifications (the bell)",

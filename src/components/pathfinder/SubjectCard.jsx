@@ -37,12 +37,22 @@ const secondarySmall =
   "inline-flex items-center justify-center rounded-lg border border-slate-400 bg-slate-100 px-3 py-1.5 text-[11px] font-semibold text-slate-700 transition-colors hover:bg-slate-200 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-strong disabled:opacity-40";
 
 function metaLine(subject) {
-  const parts = [`${subject.units} ${subject.units === 1 ? "unit" : "units"}`];
-  const hours = [];
-  if (subject.lec_hours) hours.push(`${subject.lec_hours} lec`);
-  if (subject.lab_hours) hours.push(`${subject.lab_hours} lab`);
-  if (hours.length) parts.push(hours.join(" + "));
-  if (subject.prerequisites) parts.push(`Prereq: ${subject.prerequisites}`);
+  const parts = [];
+  if (subject.units != null) {
+    parts.push(`${subject.units} ${subject.units === 1 ? "unit" : "units"}`);
+    const hours = [];
+    if (subject.lec_hours) hours.push(`${subject.lec_hours} lec`);
+    if (subject.lab_hours) hours.push(`${subject.lab_hours} lab`);
+    if (hours.length) parts.push(hours.join(" + "));
+    if (subject.prerequisites) parts.push(`Prereq: ${subject.prerequisites}`);
+  }
+  if (subject.is_general_education) {
+    parts.push(
+      subject.program_count
+        ? `General education · ${subject.program_count} programs`
+        : "General education",
+    );
+  }
   return parts.join(" · ");
 }
 

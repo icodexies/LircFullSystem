@@ -314,7 +314,7 @@ pages.push({
   purpose: "Search the library's catalog and open a book's full record.",
   functions: [
     "Search by title, author, ISBN, call number or accession number with filters (format, section, year), sorting and paging.",
-    "Book window: full catalog details, cover (uploaded image first, then the Open Library API by ISBN, then a placeholder), physical copies with their status, and borrow history (operators).",
+    "Book window: full catalog details, the book's shelf/location highlighted right below the author (\"Shelf: …\"), cover (uploaded image first, then the Open Library API by ISBN, then a placeholder), physical copies with their status, and borrow history (operators).",
     "Staff, librarians and admins additionally see Edit and cover-upload actions on the book window.",
   ],
   roles: [
@@ -343,6 +343,7 @@ pages.push({
   purpose: "Recommended books for every subject in the curriculum, per program.",
   functions: [
     "Curriculum tab: choose a program (the member's own program opens first), browse year/semester, and see each subject with its recommended books and live availability; \"View all\" opens the subject's full reading list in a window.",
+    "General Education: the picker's first option lists the shared Gen Ed subjects (Understanding the Self, Ethics, Rizal, PATHFit, NSTP, …). A book added on any subject of a Gen Ed group appears on every program's matching subject — one list even when the course code differs (for example RPH201, RPH202 and RPH301).",
     "Faculty: \"Suggest a book\" on any subject — suggestions wait for librarian review; the faculty member sees their pending note on the card.",
     "Librarians and admins: add books to a subject directly, remove recommendations, review faculty suggestions (Suggestions tab with a pending count), and run \"AI picks\" per subject — the AI researches recommendations from the catalog (books published within the last 5 years) plus suggested acquisitions with sources; findings are saved so re-opening is instant and tokens are spent only on \"Search again\".",
     "Acquisitions tab: the library's books-to-acquire list — faculty may suggest a book to acquire; librarians/admins review (approve / reject with a note), withdraw their own pending items, add AI picks to the list, and export the whole list to Excel (Report + By department + Acquisitions sheets).",
@@ -350,14 +351,14 @@ pages.push({
   roles: [
     ["Students, NTP", "Browse the curriculum and reading lists; open book details."],
     ["Faculty", "Everything above plus suggest books for subjects and for acquisition (own suggestions tracked; can withdraw their own pending ones)."],
-    ["Librarian, admin", "Curate subject lists, review suggestions, run AI research, manage the acquisition queue and export it."],
+    ["Librarian, admin", "Curate subject lists (including the shared General Education list), review suggestions, run AI research, manage the acquisition queue and export it."],
     ["Staff", "May suggest books to acquire (same as faculty for that part); cannot curate."],
   ],
   restrictions: [
     "Students and faculty only ever see recommendations a librarian approved — pending faculty suggestions stay invisible to others (the suggester sees their own note).",
     "Suggestions: faculty (and library staff for acquisitions) only; curating and AI runs are librarian/admin only; reviewing is librarian/admin only.",
     "Withdrawing: only your own pending suggestion.",
-    "A book cannot be added to the same subject or the acquisition list twice while a request is open.",
+    "A book cannot be added to the same subject (or the same Gen Ed group) or the acquisition list twice while a request is open.",
     "AI research is operator-only; findings are cached per course code.",
   ],
   validations: [

@@ -32,6 +32,18 @@ export async function getCurriculum(programId, signal) {
   return data ?? null;
 }
 
+// The General Education list: shared subjects with their program count and
+// books (a book added here appears on every program's matching subject).
+export async function getGenEd(signal) {
+  const client = await getSupabase();
+  const { data, error } = await client
+    .rpc("lirc_path_finder_gen_ed")
+    .abortSignal(signal);
+  if (error)
+    throw pathFinderError(error, "The General Education list could not be loaded.");
+  return data ?? { groups: [] };
+}
+
 // The suggestions tab: faculty see their own; librarians/admins see the queue.
 export async function getSuggestions(signal) {
   const client = await getSupabase();
@@ -43,24 +55,38 @@ export async function getSuggestions(signal) {
 }
 
 // Librarian / admin: put a book on a subject's list (approved at once).
-export async function addRecommendation(courseCode, bookId, note) {
+// A Gen Ed subject code is mapped to its group by the database, so the book
+// shows in every program; p_gen_ed_subject_id is optional for explicit adds.
+export async function addRecommendation(
+  courseCode,
+  bookId,
+  note,
+  genEdSubjectId = null,
+) {
   const client = await getSupabase();
   const { data, error } = await client.rpc("lirc_path_finder_add_recommendation", {
     p_course_code: courseCode,
     p_book_id: bookId,
     p_note: note || null,
+    p_gen_ed_subject_id: genEdSubjectId ?? null,
   });
   if (error) throw pathFinderError(error, "The book could not be added.");
   return data;
 }
 
 // Faculty: suggest a book for a subject (librarians review it).
-export async function suggestBook(courseCode, bookId, note) {
+export async function suggestBook(
+  courseCode,
+  bookId,
+  note,
+  genEdSubjectId = null,
+) {
   const client = await getSupabase();
   const { data, error } = await client.rpc("lirc_path_finder_suggest", {
     p_course_code: courseCode,
     p_book_id: bookId,
     p_note: note || null,
+    p_gen_ed_subject_id: genEdSubjectId ?? null,
   });
   if (error) throw pathFinderError(error, "The suggestion could not be sent.");
   return data;

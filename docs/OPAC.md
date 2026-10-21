@@ -9,7 +9,8 @@ The OPAC reads the four catalog tables from the SQL in the supplied conversation
 - Sort by title, newest record or publication year. A unique book ID is always the final ordering field.
 - Display 10, 20 or 50 books per page. A request fetches just one extra row to decide if Next is available. There is no full-catalog download, exact-count query or guessed total page count.
 - Open full details only when a book is selected. Its physical copies use their own ten-row pagination, rather than embedding every copy into every book card.
-- Librarians/admins can edit shared book fields from the details window. Students, faculty and staff have browse access.
+- Librarians, admins and staff can edit shared book fields from the details window (staff gained catalog editing with migration `20261021130000`). Students, faculty and non-teaching personnel have browse access.
+- The details window shows the book's shelf right below the author as a highlighted **Shelf: …** line, so the physical location is easy to find.
 
 ## Simple code responsibilities
 

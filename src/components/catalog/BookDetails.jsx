@@ -156,9 +156,24 @@ export default function BookDetails({ id, canEdit, onEdit, onClose }) {
                   <p className="mt-2 text-sm text-slate-600">
                     {book.author || "Author not recorded"}
                   </p>
-                  <p className="mt-1 text-xs text-slate-500">
-                    {book.section?.name || "Section not recorded"}
-                  </p>
+                  <span className="mt-2 inline-flex items-center gap-1.5 rounded-lg border border-accent-strong/15 bg-tint px-2.5 py-1 text-xs font-semibold text-accent">
+                    <svg
+                      viewBox="0 0 24 24"
+                      className="h-3.5 w-3.5"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      aria-hidden="true"
+                    >
+                      <path d="M3 4h18M5 4v16M19 4v16M5 9h14M5 14h14" />
+                    </svg>
+                    Shelf:{" "}
+                    <strong className="font-bold text-ink">
+                      {book.section?.name || "Not recorded"}
+                    </strong>
+                  </span>
                 </div>
               </div>
             </div>

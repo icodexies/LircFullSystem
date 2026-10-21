@@ -8,6 +8,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   getCurriculum,
+  getGenEd,
   getPathFinderPrograms,
   getSuggestions,
 } from "../../services/pathfinder/pathFinderService.js";
@@ -53,14 +54,19 @@ export function usePathFinder({ withSuggestions = false } = {}) {
   }, [programs.items]);
   const programId = programChoice ?? defaultProgram;
 
-  // The selected program's curriculum.
+  // The selected program's curriculum. The special "gen-ed" choice loads the
+  // General Education list instead of one program.
   const curriculumKey = programId === null ? "" : `${programId}:${revision}`;
   useEffect(() => {
     if (programId === null) return;
     const controller = new AbortController();
     let active = true;
     const key = `${programId}:${revision}`;
-    getCurriculum(programId, controller.signal)
+    const request =
+      programId === "gen-ed"
+        ? getGenEd(controller.signal)
+        : getCurriculum(programId, controller.signal);
+    request
       .then((data) => {
         if (active) setCurriculum({ key, data, error: "" });
       })
