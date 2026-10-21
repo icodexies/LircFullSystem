@@ -5,6 +5,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLoanRecords } from "../../hooks/borrow/useLoanRecords.js";
 import { useSemester } from "../../hooks/periods/useSemester.js";
+import { useAuth } from "../../hooks/auth/useAuth.js";
+import { ACCESS } from "../../routes/roles.js";
 import {
   displayTime,
   manilaBoundary,
@@ -23,10 +25,38 @@ import {
 import Avatar from "../ui/Avatar.jsx";
 import EmptyState from "../personnel/EmptyState.jsx";
 import { Spinner } from "../ui/Loading.jsx";
+import LoanEditModal from "./LoanEditModal.jsx";
+import LoanReturnModal from "./LoanReturnModal.jsx";
 import {
   personStatusLabel,
   personStatusTone,
 } from "../../services/users/personStatus.js";
+
+const editIcon = (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.8"
+    className="h-3.5 w-3.5"
+    aria-hidden="true"
+  >
+    <path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16v4Z M13.5 6.5l4 4" />
+  </svg>
+);
+
+const returnIcon = (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.8"
+    className="h-3.5 w-3.5"
+    aria-hidden="true"
+  >
+    <path d="M9 14 4 9l5-5 M4 9h10a6 6 0 0 1 0 12h-3" />
+  </svg>
+);
 
 const SCOPE_INFO = {
   borrowed: {
@@ -66,7 +96,7 @@ const selectClass =
   "rounded-xl border border-slate-400 bg-surface px-3 py-2 text-xs text-ink focus:border-accent-strong focus:outline-none focus:ring-2 focus:ring-accent-strong/15";
 
 const GRID =
-  "md:grid-cols-[210px_minmax(0,1fr)_150px_150px_150px]";
+  "xl:grid-cols-[190px_minmax(0,1fr)_125px_125px_135px_96px]";
 
 export default function LoanRecordsPanel({
   scope,
@@ -77,6 +107,10 @@ export default function LoanRecordsPanel({
   const info = SCOPE_INFO[scope] ?? SCOPE_INFO.borrowed;
   const periods = useSemester();
   const semester = periods.selectedSemester;
+  const { role: userRole } = useAuth();
+  const canAct = ACCESS.staff.includes(userRole);
+  const [editingLoan, setEditingLoan] = useState(null);
+  const [returningLoan, setReturningLoan] = useState(null);
 
   const [personInput, setPersonInput] = useState("");
   const [person, setPerson] = useState("");
@@ -345,13 +379,14 @@ export default function LoanRecordsPanel({
         )}
 
         <div
-          className={`hidden gap-x-4 border-y border-slate-200 bg-page px-5 py-2.5 text-[11px] font-semibold text-slate-600 md:grid ${GRID}`}
+          className={`hidden gap-x-4 border-y border-slate-200 bg-page px-5 py-2.5 text-[11px] font-semibold text-slate-600 xl:grid ${GRID}`}
         >
           <span>Member</span>
           <span>Book</span>
           <span>{info.dateLabel === "Returned" ? "Borrowed" : info.dateLabel}</span>
           <span>{info.dateLabel === "Returned" ? "Returned" : "Due"}</span>
           <span>Status</span>
+          {canAct && <span>Actions</span>}
         </div>
 
         {!records.loading && records.rows.length === 0 ? (
@@ -366,7 +401,7 @@ export default function LoanRecordsPanel({
             {records.rows.map((row) => (
               <li
                 key={row.id}
-                className={`grid grid-cols-1 gap-x-4 gap-y-2 px-5 py-3.5 text-xs md:items-center ${GRID}`}
+                className={`grid grid-cols-1 gap-x-4 gap-y-2 px-5 py-3.5 text-xs xl:items-center ${GRID}`}
               >
                 <span className="flex min-w-0 items-center gap-3">
                   <Avatar src={row.avatar_url} className="h-9 w-9" />
@@ -425,6 +460,32 @@ export default function LoanRecordsPanel({
                   )}
                 </span>
                 <span>{statusBadge(row)}</span>
+                {canAct && (
+                  <span className="flex flex-wrap items-center gap-1.5">
+                    <button
+                      type="button"
+                      title="Edit dates"
+                      aria-label={`Edit dates for ${row.member_name}`}
+                      onClick={() => setEditingLoan(row)}
+                      className="inline-flex h-8 items-center justify-center gap-1.5 rounded-lg border border-slate-400 bg-slate-100 px-2 text-[11px] font-semibold text-ink transition-colors hover:border-navy hover:bg-navy hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-strong"
+                    >
+                      {editIcon}
+                      <span className="xl:hidden">Edit</span>
+                    </button>
+                    {!row.returned_at && (
+                      <button
+                        type="button"
+                        title="Record return"
+                        aria-label={`Record return for ${row.member_name}`}
+                        onClick={() => setReturningLoan(row)}
+                        className="inline-flex h-8 items-center justify-center gap-1.5 rounded-lg border border-slate-400 bg-slate-100 px-2 text-[11px] font-semibold text-ink transition-colors hover:border-navy hover:bg-navy hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-strong"
+                      >
+                        {returnIcon}
+                        <span className="xl:hidden">Return</span>
+                      </button>
+                    )}
+                  </span>
+                )}
               </li>
             ))}
           </ul>
@@ -454,6 +515,27 @@ export default function LoanRecordsPanel({
           </div>
         </div>
       </WorkspacePanel>
+
+      {editingLoan && (
+        <LoanEditModal
+          loan={editingLoan}
+          onClose={() => setEditingLoan(null)}
+          onDone={() => {
+            setEditingLoan(null);
+            records.reload();
+          }}
+        />
+      )}
+      {returningLoan && (
+        <LoanReturnModal
+          loan={returningLoan}
+          onClose={() => setReturningLoan(null)}
+          onDone={() => {
+            setReturningLoan(null);
+            records.reload();
+          }}
+        />
+      )}
     </div>
   );
 }

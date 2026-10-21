@@ -59,6 +59,39 @@ export async function returnLoan(loanId, libraryId, returnedAt = null) {
   return data;
 }
 
+// Staff correction of a record's dates (start, due, and the return date of a
+// loan that is already returned). Open loans are closed with the return
+// action, not here. Library operators only (checked by the database).
+export async function updateLoanDates({
+  loanId,
+  start,
+  due,
+  returned = null,
+}) {
+  const client = await getSupabase();
+  const { data, error } = await client.rpc("lirc_edit_loan", {
+    p_loan_id: loanId,
+    p_borrowed_at: start,
+    p_due_at: due,
+    p_returned_at: returned,
+  });
+  if (error) throw borrowError(error);
+  return data;
+}
+
+// Return a copy from the records list without scanning the borrower's card.
+// Staff / librarian / admin only (the database checks the role) and the usual
+// return checks still apply — fines are assessed by the existing trigger.
+export async function operatorReturnLoan({ loanId, returned = null }) {
+  const client = await getSupabase();
+  const { data, error } = await client.rpc("lirc_operator_return_loan", {
+    p_loan_id: loanId,
+    p_returned_at: returned,
+  });
+  if (error) throw borrowError(error);
+  return data;
+}
+
 // All loans of one book (who borrowed it, current and past).
 export async function getBookLoans(bookId, signal) {
   const client = await getSupabase();

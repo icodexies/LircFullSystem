@@ -48,6 +48,12 @@ server-side totals:
   51 overdue"). The counts ignore the date range so open loans stay visible.
 - **Copies & loans** on a row opens the book's window, so a return can happen
   straight from a record.
+- **Actions** — staff, librarian and admin get an Actions column in the
+  Borrowed, Overdue and Returned lists. **Edit** opens the record's dates
+  (start, due, and the return date of a returned loan); **Return** records a
+  return straight from the list, with the date defaulting to now (it can be
+  backdated). The usual return checks apply and an overdue fine is assessed
+  automatically. Card-scan returns still work from the copies window.
 - **Borrower status** — a member's optional person status (active, on leave,
   retired, resigned, separated, deceased) shows as a badge under their name in
   these lists and in the Report tab; the Excel report carries it as a **Person
