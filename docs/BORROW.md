@@ -16,11 +16,15 @@ and filters. A member's own borrow and attendance history lives on the
    due date (overdue marked). Below it sits the **borrowing history** — every
    person who borrowed the book, current and returned, newest first, six per
    page.
-3. **Borrow a copy** — press *Borrow this copy*, scan the member's card, and
-   review: name, card, active/overdue loans, and (for students) whether their
-   library validation is in order. Staff set the **start and due date+time**
-   (default: now → +7 days). An *already returned* checkbox records old
-   history in one step.
+3. **Borrow a copy** — press *Borrow this copy*, then find the member: type a
+   name and pick them from the list under the box, or scan the card. The name
+   search accepts any word order ("Reyes Maria"), a middle initial first
+   ("D. Villanueva"), and small typos ("Villanueba", even in two words). The
+   list shows each match's card, role, active loans and overdue count. Review
+   name, card, active/overdue loans, and (for students) whether their library
+   validation is in order. Staff set the **start and due date+time** (default:
+   now → +7 days). An *already returned* checkbox records old history in one
+   step.
 4. **Returns** — press *Return this copy* on an on-loan accession: scan the
    **borrower's own card**, set the return date+time, and record. The
    database checks the card against the loan record and rejects anyone who
@@ -95,7 +99,8 @@ additive.
 | `src/components/borrow/LoanRecordsPanel.jsx` | The borrowed / overdue / returned lists (filters, pages, badges) |
 | `src/hooks/borrow/useLoanRecords.js` | Numbered-page loading for the records lists |
 | `src/components/borrow/BookLoanDialog.jsx` | Copies + history window |
-| `src/components/borrow/BorrowAction.jsx` | The borrow flow (card, validation, dates, confirm) |
+| `src/components/borrow/BorrowAction.jsx` | The borrow flow (member search, validation, dates, confirm) |
+| `src/components/borrow/MemberSearchField.jsx` | Name-or-card box with live member suggestions under it |
 | `src/components/borrow/ReturnAction.jsx` | The return flow (borrower's card + return date, checked against the record) |
 
 ## RPCs (all operator-guarded)

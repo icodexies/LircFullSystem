@@ -19,6 +19,7 @@ import {
 import { normalizeCard } from "../../services/attendance/attendanceRules.js";
 import { Field, inputClass, buttonClass } from "../attendance/StaffUi.jsx";
 import { secondaryButton } from "../attendance/WorkspaceUi.jsx";
+import MemberSearchField from "./MemberSearchField.jsx";
 
 export default function BorrowAction({ copy, onDone, onCancel }) {
   const dialog = useDialog();
@@ -34,26 +35,58 @@ export default function BorrowAction({ copy, onDone, onCancel }) {
   const lock = useRef(false);
   const inputRef = useRef(null);
 
-  async function lookup(event) {
-    event?.preventDefault();
+  async function loadPreview(raw) {
+    const normalized = normalizeCard(raw);
+    const data = await borrowPreview(normalized);
+    setPreview(data);
+    setCard(normalized);
+    // Outstanding fines follow the same lookup (null when not available).
+    try {
+      setFines(await getMemberFines(data.profile.id));
+    } catch {
+      setFines(null);
+    }
+    return data;
+  }
+
+  async function lookupCard(raw) {
+    const typed = String(raw ?? "").trim();
     if (lock.current) return;
+    if (!typed) {
+      toast.error("Type a name or scan the card first.", "Card not loaded");
+      return;
+    }
     lock.current = true;
     setBusy(true);
     try {
-      const normalized = normalizeCard(card);
-      const data = await borrowPreview(normalized);
-      setPreview(data);
-      setCard(normalized);
-      // Outstanding fines follow the same lookup (null when not available).
-      try {
-        setFines(await getMemberFines(data.profile.id));
-      } catch {
-        setFines(null);
-      }
+      await loadPreview(typed);
     } catch (error) {
       setPreview(null);
       setFines(null);
       toast.error(error.message, "Card not loaded");
+    } finally {
+      lock.current = false;
+      setBusy(false);
+    }
+  }
+
+  function lookup(event) {
+    event?.preventDefault();
+    void lookupCard(card);
+  }
+
+  // Chosen from the name search: the card is filled in and loaded right away.
+  async function pickMember(member) {
+    if (lock.current) return;
+    lock.current = true;
+    setBusy(true);
+    setPreview(null);
+    setFines(null);
+    setCard(member.library_id);
+    try {
+      await loadPreview(member.library_id);
+    } catch (error) {
+      toast.error(error.message, "Member not loaded");
     } finally {
       lock.current = false;
       setBusy(false);
@@ -139,32 +172,35 @@ export default function BorrowAction({ copy, onDone, onCancel }) {
       </div>
 
       <form onSubmit={lookup} className="flex flex-wrap items-end gap-3">
-        <Field label="Library card" className="min-w-60 flex-1">
-          <input
-            ref={inputRef}
-            className={inputClass}
+        <div className="min-w-60 flex-1">
+          <label
+            htmlFor="borrow-member"
+            className="mb-1 block text-xs text-slate-600"
+          >
+            Name or library card
+          </label>
+          <MemberSearchField
+            id="borrow-member"
             value={card}
-            autoComplete="off"
-            maxLength="124"
-            onChange={(event) => {
-              setCard(event.target.value);
+            inputRef={inputRef}
+            holdOpen={busy || Boolean(preview)}
+            onChange={(text) => {
+              setCard(text);
               setPreview(null);
               setFines(null);
             }}
-            onKeyDown={(event) => {
-              if (event.key === "Enter") {
-                event.preventDefault();
-                void lookup();
-              }
-            }}
+            onPick={pickMember}
+            onLookupCard={(text) => void lookupCard(text)}
           />
-        </Field>
+        </div>
         <button type="submit" disabled={busy} className={buttonClass}>
           {busy && !preview ? "Looking up…" : "Look up card"}
         </button>
       </form>
       <p className="-mt-3 text-[11px] text-slate-500">
-        Scan or type the card, then press Enter. Enter only looks up the card.
+        Type a name to see matching members under the box — any word order,
+        middle initial first, small typos are fine. Pick one, or scan the card
+        and press Enter.
       </p>
 
       {preview && (

@@ -1,4 +1,5 @@
 import { getSupabase } from "../auth/authService.js";
+import { rankMembers, searchWords } from "./memberSearch.js";
 
 export function borrowError(error) {
   if (error?.code === "23505")
@@ -109,6 +110,36 @@ export async function findMembers(search, signal) {
     .abortSignal(signal);
   if (error) throw borrowError(error);
   return data?.members ?? [];
+}
+
+// Live member search for the borrow box: the database handles word order,
+// middle initials and single-typo fallbacks; the rows are then ranked so the
+// closest name comes first. When the whole query finds nothing (two typos in
+// two words), each word is looked up and the results are intersected and
+// scored per word — "sma villanueba" still finds Sam Villanueva.
+export async function searchMembers(query, signal) {
+  const text = String(query ?? "").trim();
+  if (!text) return [];
+
+  const rows = await findMembers(text, signal);
+  if (rows.length) return rankMembers(rows, text);
+
+  const words = searchWords(text).filter((word) => word.length >= 2);
+  if (words.length < 2) return rows;
+
+  const lists = await Promise.all(
+    words
+      .slice(0, 4)
+      .map((word) => findMembers(word, signal).catch(() => [])),
+  );
+  const merged = new Map();
+  for (const list of lists) {
+    for (const row of list) merged.set(row.id, row);
+  }
+  return rankMembers([...merged.values()], text, { minScore: 0.55 }).slice(
+    0,
+    8,
+  );
 }
 
 // Borrow records for the Book Borrow tabs: one page of loans (borrowed,
