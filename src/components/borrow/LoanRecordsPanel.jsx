@@ -69,7 +69,7 @@ const SCOPE_INFO = {
   overdue: {
     title: "Overdue books",
     description:
-      "Copies past their due date — most overdue first. Return one from its copies window.",
+      "Copies past their due date — alphabetical by book title. Return one from its copies window.",
     empty: "Nothing is overdue with these filters.",
     dateLabel: "Borrowed",
   },
