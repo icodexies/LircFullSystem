@@ -4,8 +4,14 @@
 //   2. a generated password (no look-alike characters),
 //   3. the auth user + the usersData profile (role, position),
 //   4. the credentials email sent from the library's Gmail to the person.
-// If the email cannot be sent, the account is rolled back so the admin can
-// simply run the same person again.
+//
+// send_email:false creates the accounts without sending any email and returns
+// the generated passwords to the admin (for a later handover). The email is
+// never stored by the function.
+//
+// An existing profile can be given a login by passing existing_library_id
+// (for example the roster profile NTP-0006) instead of creating a duplicate
+// LIB-#### record. The existing role/position/name are kept.
 import { createClient } from "@supabase/supabase-js";
 import { corsHeaders } from "@supabase/supabase-js/cors";
 import nodemailer from "nodemailer";
@@ -32,7 +38,8 @@ const norm = (s: unknown) => String(s ?? "").trim().replace(/\s+/g, " ");
 const normKey = (s: unknown) =>
   norm(s).toLowerCase().replace(/[-_]+/g, " ").replace(/\s+/g, " ");
 
-// The personnel form only offers these two roles.
+// The personnel form only offers these two new-account roles. An existing
+// roster profile (existing_library_id) keeps its own role.
 const ALLOWED_ROLES = ["staff", "librarian"];
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL");
@@ -55,11 +62,49 @@ const mailer = gmailUser && gmailAppPassword
   })
   : null;
 
+type CredentialsPerson = { first_name: string; email: string };
+
+async function sendCredentials(
+  person: CredentialsPerson,
+  libraryId: string,
+  password: string,
+) {
+  if (!mailer || !gmailUser) throw new Error("Email is not configured.");
+  await mailer.sendMail({
+    from: `"LIRC - City College of Calamba" <${gmailUser}>`,
+    to: person.email,
+    subject: "Your LIRC account details",
+    text:
+      `Hi ${person.first_name},\n\nYour LIRC account is ready.\n\n` +
+      `Library ID: ${libraryId}\nEmail: ${person.email}\nPassword: ${password}\n\n` +
+      `Log in at ${Deno.env.get("SITE_URL") ?? "the LIRC website"} with the email and password above.\n` +
+      `Keep this email private and change your password after your first login.\n`,
+    html: `
+      <div style="font-family:Arial,sans-serif;max-width:480px;margin:auto;color:#0B1330">
+        <h2 style="margin:0 0 8px">Welcome, ${esc(person.first_name)}!</h2>
+        <p>Your LIRC account is ready. Use these details to log in:</p>
+        <table style="border:2px solid #0B1330;border-radius:12px;padding:16px;width:100%">
+          <tr><td style="color:#555">Library ID</td>
+              <td><b style="font-family:monospace;font-size:16px">${esc(libraryId)}</b></td></tr>
+          <tr><td style="color:#555">Email</td><td><b>${esc(person.email)}</b></td></tr>
+          <tr><td style="color:#555">Password</td>
+              <td><b style="font-family:monospace;font-size:16px">${esc(password)}</b></td></tr>
+        </table>
+        <p style="margin-top:16px">
+          <a href="${esc(Deno.env.get("SITE_URL") ?? "#")}"
+             style="background:#0B1330;color:#fff;padding:10px 18px;border-radius:10px;text-decoration:none">
+             Go to LIRC</a>
+        </p>
+        <p style="color:#777;font-size:12px">Keep this email private. Change your password after your first login.</p>
+      </div>`,
+  });
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   if (req.method !== "POST") return json({ error: "Method not allowed." }, 405);
 
-  if (!mailer || !admin) {
+  if (!admin) {
     console.error("Provisioning services are not configured.");
     return json({ error: "Account provisioning is temporarily unavailable." }, 503);
   }
@@ -92,7 +137,14 @@ Deno.serve(async (req) => {
   } catch {
     return json({ error: "Invalid request." }, 400);
   }
-  const people = (payload as Record<string, unknown>)?.people;
+  const payloadObj = (payload ?? {}) as Record<string, unknown>;
+  const sendEmail = payloadObj.send_email !== false;
+  if (sendEmail && !mailer) {
+    console.error("Provisioning email is not configured.");
+    return json({ error: "Account provisioning is temporarily unavailable." }, 503);
+  }
+
+  const people = payloadObj.people;
   if (!Array.isArray(people) || people.length === 0 || people.length > 20) {
     return json({ error: "Send between 1 and 20 people." }, 400);
   }
@@ -104,6 +156,7 @@ Deno.serve(async (req) => {
     role: string;
     position: string;
     email: string;
+    existing_library_id?: string;
   }[] = [];
   for (const item of people) {
     const row = (item ?? {}) as Record<string, unknown>;
@@ -113,13 +166,14 @@ Deno.serve(async (req) => {
     const role = norm(row.role).toLowerCase();
     const position = norm(row.position);
     const email = norm(row.email).toLowerCase();
+    const existing_library_id = norm(row.existing_library_id).toUpperCase();
     if (!first_name || !surname || first_name.length > 100 || surname.length > 100) {
       return json({ error: "Every person needs a first name and a surname." }, 400);
     }
     if (middle_initial.length > 2) {
       return json({ error: `Check the middle initial of ${first_name} ${surname}.` }, 400);
     }
-    if (!ALLOWED_ROLES.includes(role)) {
+    if (!existing_library_id && !ALLOWED_ROLES.includes(role)) {
       return json(
         { error: `Role must be Staff or Librarian (${first_name} ${surname}).` },
         400,
@@ -131,7 +185,15 @@ Deno.serve(async (req) => {
         400,
       );
     }
-    prepared.push({ first_name, middle_initial, surname, role, position, email });
+    prepared.push({
+      first_name,
+      middle_initial,
+      surname,
+      role,
+      position,
+      email,
+      existing_library_id: existing_library_id || undefined,
+    });
   }
 
   // 3) resolve the position classification names (COS, Full Time, Part Time)
@@ -170,6 +232,8 @@ Deno.serve(async (req) => {
   const results: {
     email: string;
     library_id?: string;
+    role?: string;
+    password?: string;
     ok: boolean;
     error?: string;
   }[] = [];
@@ -177,6 +241,79 @@ Deno.serve(async (req) => {
   for (const person of prepared) {
     let libraryId = "";
     try {
+      // 5a) link a login to an existing roster profile (no duplicate row).
+      if (person.existing_library_id) {
+        const { data: existing, error: existingErr } = await admin
+          .from("usersData")
+          .select("library_id,first_name,middle_initial,surname,role,position_classification_id,user_id")
+          .eq("library_id", person.existing_library_id)
+          .maybeSingle();
+        if (existingErr) throw new Error("Couldn't read the existing profile. Try again.");
+        if (!existing) throw new Error(`Library ID ${person.existing_library_id} was not found.`);
+        if (existing.user_id) throw new Error("That profile already has a login.");
+        if (
+          norm(existing.first_name).toLowerCase() !== person.first_name.toLowerCase() ||
+          norm(existing.surname).toLowerCase() !== person.surname.toLowerCase()
+        ) {
+          throw new Error("That library ID belongs to a different person.");
+        }
+
+        const password = generatePassword();
+        const { data: created, error: createErr } = await admin.auth.admin.createUser({
+          email: person.email,
+          password,
+          email_confirm: true,
+          user_metadata: {
+            library_id: existing.library_id,
+            first_name: existing.first_name,
+            surname: existing.surname,
+          },
+        });
+        if (createErr || !created.user) {
+          const exists = /already|registered|exists/i.test(createErr?.message ?? "");
+          throw new Error(
+            exists
+              ? "That email already has an account."
+              : "Couldn't create the account. Please try again.",
+          );
+        }
+        const authId = created.user.id;
+        const { error: linkErr } = await admin
+          .from("usersData")
+          .update({ user_id: authId })
+          .eq("library_id", existing.library_id);
+        if (linkErr) {
+          console.error(linkErr);
+          await admin.auth.admin.deleteUser(authId);
+          throw new Error("Couldn't link the profile. Please try again.");
+        }
+
+        if (sendEmail) {
+          try {
+            await sendCredentials(
+              { first_name: existing.first_name, email: person.email },
+              existing.library_id,
+              password,
+            );
+          } catch (err) {
+            console.error("Email failed:", err);
+            await admin.from("usersData").update({ user_id: null }).eq("library_id", existing.library_id);
+            await admin.auth.admin.deleteUser(authId);
+            throw new Error("The email couldn't be sent, so nothing was saved. Try again.");
+          }
+        }
+
+        results.push({
+          email: person.email,
+          library_id: existing.library_id,
+          role: existing.role,
+          ok: true,
+          ...(sendEmail ? {} : { password }),
+        });
+        continue;
+      }
+
+      // 5b) create a new personnel account.
       do {
         libraryId = `LIB-${String(nextNumber).padStart(4, "0")}`;
         nextNumber += 1;
@@ -197,7 +334,7 @@ Deno.serve(async (req) => {
         .createUser({
           email: person.email,
           password,
-          email_confirm: true, // they log in with the emailed password right away
+          email_confirm: true, // they log in with the password right away
           user_metadata: {
             library_id: libraryId,
             first_name: person.first_name,
@@ -229,44 +366,29 @@ Deno.serve(async (req) => {
         throw new Error("Couldn't save the profile. Please try again.");
       }
 
-      try {
-        await mailer.sendMail({
-          from: `"LIRC – City College of Calamba" <${gmailUser}>`,
-          to: person.email,
-          subject: "Your LIRC account details",
-          text:
-            `Hi ${person.first_name},\n\nYour LIRC account is ready.\n\n` +
-            `Library ID: ${libraryId}\nEmail: ${person.email}\nPassword: ${password}\n\n` +
-            `Log in at ${Deno.env.get("SITE_URL") ?? "the LIRC website"} with the email and password above.\n` +
-            `Keep this email private and change your password after your first login.\n`,
-          html: `
-            <div style="font-family:Arial,sans-serif;max-width:480px;margin:auto;color:#0B1330">
-              <h2 style="margin:0 0 8px">Welcome, ${esc(person.first_name)}!</h2>
-              <p>Your LIRC account is ready. Use these details to log in:</p>
-              <table style="border:2px solid #0B1330;border-radius:12px;padding:16px;width:100%">
-                <tr><td style="color:#555">Library ID</td>
-                    <td><b style="font-family:monospace;font-size:16px">${esc(libraryId)}</b></td></tr>
-                <tr><td style="color:#555">Email</td><td><b>${esc(person.email)}</b></td></tr>
-                <tr><td style="color:#555">Password</td>
-                    <td><b style="font-family:monospace;font-size:16px">${esc(password)}</b></td></tr>
-              </table>
-              <p style="margin-top:16px">
-                <a href="${esc(Deno.env.get("SITE_URL") ?? "#")}"
-                   style="background:#0B1330;color:#fff;padding:10px 18px;border-radius:10px;text-decoration:none">
-                   Go to LIRC</a>
-              </p>
-              <p style="color:#777;font-size:12px">Keep this email private. Change your password after your first login.</p>
-            </div>`,
-        });
-      } catch (err) {
-        console.error("Email failed:", err);
-        // Roll back so the same person can simply be run again.
-        await admin.from("usersData").delete().eq("library_id", libraryId);
-        await admin.auth.admin.deleteUser(authId);
-        throw new Error("The email couldn't be sent, so nothing was saved. Try again.");
+      if (sendEmail) {
+        try {
+          await sendCredentials(
+            { first_name: person.first_name, email: person.email },
+            libraryId,
+            password,
+          );
+        } catch (err) {
+          console.error("Email failed:", err);
+          // Roll back so the same person can simply be run again.
+          await admin.from("usersData").delete().eq("library_id", libraryId);
+          await admin.auth.admin.deleteUser(authId);
+          throw new Error("The email couldn't be sent, so nothing was saved. Try again.");
+        }
       }
 
-      results.push({ email: person.email, library_id: libraryId, ok: true });
+      results.push({
+        email: person.email,
+        library_id: libraryId,
+        role: person.role,
+        ok: true,
+        ...(sendEmail ? {} : { password }),
+      });
     } catch (error) {
       results.push({
         email: person.email,
