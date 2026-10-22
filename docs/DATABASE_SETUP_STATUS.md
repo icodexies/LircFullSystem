@@ -160,6 +160,7 @@ transaction; migration history synced):
 | `20261022105000_member_search_single_letter_like` | Replaces the single-letter regex with an equivalent start-of-string/after-space `LIKE` on the one alphanumeric character. Staff warm timings: `hernandez` 16.8 ms, `D. VILLANUEVA` 25.9 ms, typo 18.1 ms |
 | `20261022106000_loan_open_profile_index` | Adds the missing partial index `loans_open_profile_idx ON book_loans (user_profile_id) WHERE returned_at IS NULL`. At 35 loans the planner still uses a 0.15–0.20 ms Seq Scan; a forced plan uses Index Only Scan (1.495 ms). No current speedup claimed; it is for scale |
 | `20261022107000_overdue_alphabetical` | Sorts the Book Borrow → Overdue list by book title (`lower(book_name)`) across all pages, with book/loan ID tie-breakers. Borrowed and Returned keep their existing newest-first ordering. Verified: page 1 sorted, and page 2 begins with `Human Behavior…` after page 1 ends at `How to do Research…` |
+| `20261022108000_my_statistics_purposes` | Adds `attendance.purposes` to `lirc_my_statistics`: the signed-in member's visit count per `purpose_of_visit` for the selected semester, ordered by count. Used by the “Visits by purpose” panel in Statistics → My attendance. The payload remains scoped to the caller |
 
 **Home collection covers stored**: the covers the home carousel shows were
 downloaded once from the Open Library covers API (by ISBN), converted to WebP

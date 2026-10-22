@@ -306,7 +306,7 @@ export default function BorrowAction({ copy, onDone, onCancel }) {
           className={buttonClass}
           title={preview ? undefined : "Look up the card first"}
         >
-          {busy && preview ? "Saving…" : "Record loan"}
+          {busy && preview ? "Submitting…" : "Submit"}
         </button>
       </div>
     </section>

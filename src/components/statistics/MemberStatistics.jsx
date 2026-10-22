@@ -43,8 +43,14 @@ const number = (value) => Number(value ?? 0).toLocaleString("en-US");
 
 const VIEW_TITLES = {
   attendance: "My attendance",
-  popular: "Most borrowed in your department",
 };
+
+function departmentTitle(departmentName) {
+  const code = departmentName ? String(departmentName).split(" - ")[0] : "";
+  return code
+    ? `Most borrowed by ${code} Department`
+    : "Most borrowed in your department";
+}
 
 function buildCards(data) {
   const attendance = data?.attendance?.totals ?? {};
@@ -53,6 +59,9 @@ function buildCards(data) {
   const semester = data?.semester?.id != null;
   const departmentCode = department.name
     ? String(department.name).split(" - ")[0]
+    : null;
+  const departmentLabel = departmentCode
+    ? `${departmentCode} Department`
     : null;
 
   return [
@@ -78,7 +87,7 @@ function buildCards(data) {
       value: top ? number(top.count) : "—",
       description: top
         ? `“${top.name}” — ${
-            department.name ? `${department.name}'s` : "the library's"
+            departmentLabel ? `${departmentLabel}'s` : "the library's"
           } most borrowed title this semester.`
         : "No loans have been recorded this semester yet.",
       icon: <StarIcon />,
@@ -92,6 +101,7 @@ function MyAttendanceView({ data }) {
   const totals = data.attendance?.totals ?? {};
   const months = data.attendance?.months ?? [];
   const recent = data.attendance?.recent ?? [];
+  const purposes = data.attendance?.purposes ?? [];
   const labels = months.map((month) => shortMonth(month.month));
   const monthsChip = labels.length
     ? `${labels[0]} – ${labels[labels.length - 1]}`
@@ -139,6 +149,44 @@ function MyAttendanceView({ data }) {
         ]}
       />
 
+      <StatsPanel
+        icon={<LayersIcon />}
+        title="Visits by purpose"
+        description="What you came to the library for this semester."
+        chip={
+          purposes.length
+            ? `${purposes.length} ${purposes.length === 1 ? "purpose" : "purposes"}`
+            : null
+        }
+      >
+        <div className="px-5 py-2 sm:px-6">
+          {purposes.length === 0 ? (
+            <p className="py-2 text-xs text-slate-500">
+              No visits recorded this semester yet.
+            </p>
+          ) : (
+            <ul className="divide-y divide-slate-100">
+              {purposes.map((purpose) => (
+                <li
+                  key={purpose.purpose}
+                  className="flex items-center justify-between gap-4 py-2.5 text-xs"
+                >
+                  <span className="min-w-0 truncate text-ink">
+                    {purpose.purpose || "Not recorded"}
+                  </span>
+                  <span className="shrink-0 font-semibold text-ink tabular-nums">
+                    {number(purpose.count)}{" "}
+                    <span className="font-normal text-slate-500">
+                      {Number(purpose.count) === 1 ? "visit" : "visits"}
+                    </span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </StatsPanel>
+
       {recent.length > 0 && (
         <StatsPanel
           icon={<ClockIcon />}
@@ -173,7 +221,7 @@ function MyAttendanceView({ data }) {
   );
 }
 
-function PopularBooksView({ data }) {
+function PopularBooksView({ data, title }) {
   const [bookId, setBookId] = useState(null);
   const department = data.department ?? {};
   const popular = department.popular ?? [];
@@ -183,7 +231,7 @@ function PopularBooksView({ data }) {
     <div className="space-y-6">
       <StatsPanel
         icon={<StarIcon />}
-        title="Most borrowed in your department"
+        title={title ?? "Most borrowed in your department"}
         description={
           department.name
             ? `The ten titles borrowed the most by ${department.name} members this semester — open one to see its details and availability.`
@@ -285,6 +333,7 @@ export default function MemberStatistics() {
   const data = state.data;
   const error = state.key === key ? state.error : "";
   const cards = data ? buildCards(data) : [];
+  const popularTitle = departmentTitle(data?.department?.name);
 
   return (
     <div className="space-y-6">
@@ -333,7 +382,7 @@ export default function MemberStatistics() {
                 ← All statistics
               </button>
               <h2 className="font-serif text-xl font-bold tracking-tight text-ink">
-                {VIEW_TITLES[view]}
+                {view === "popular" ? popularTitle : VIEW_TITLES[view]}
               </h2>
             </div>
             {semesterLabel && (
@@ -344,7 +393,9 @@ export default function MemberStatistics() {
           </div>
 
           {view === "attendance" && <MyAttendanceView data={data} />}
-          {view === "popular" && <PopularBooksView data={data} />}
+          {view === "popular" && (
+            <PopularBooksView data={data} title={popularTitle} />
+          )}
         </div>
       ) : loading && !data ? (
         <div className="space-y-6">

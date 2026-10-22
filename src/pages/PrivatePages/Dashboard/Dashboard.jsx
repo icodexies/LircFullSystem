@@ -1,9 +1,17 @@
 import { useEffect, useId, useState } from "react";
+import { Link } from "react-router-dom";
 import { getMyFines } from "../../../services/fines/finesService.js";
 import { peso } from "../../../services/fines/fineRules.js";
 import { useAuth } from "../../../hooks/auth/useAuth.js";
+import { useSemester } from "../../../hooks/periods/useSemester.js";
+import { getMyLoans } from "../../../services/borrow/borrowService.js";
+import { getMyStatistics } from "../../../services/statistics/statisticsService.js";
+import { shortMonth } from "../../../services/statistics/statFormat.js";
 import { ACCESS, ROLE_LABELS } from "../../../routes/roles.js";
-import { WorkspaceHeader } from "../../../components/attendance/WorkspaceUi.jsx";
+import {
+  WorkspaceHeader,
+  WorkspaceNotice,
+} from "../../../components/attendance/WorkspaceUi.jsx";
 import {
   manilaGreeting,
   manilaLongDate,
@@ -45,74 +53,13 @@ function Icon({ name, className = "h-5 w-5" }) {
   );
 }
 
-/* ------------------------------------------------------------------ */
-/*  Hardcoded sample data: student and faculty                         */
-/* ------------------------------------------------------------------ */
-const MEMBER_DATA = {
-  student: {
-    limit: 5,
-    stats: [
-      { id: "borrowed", icon: "book", label: "Currently borrowed", value: "3", of: 5, hint: "of 5 books allowed" },
-      { id: "dueSoon", icon: "clock", label: "Due within 3 days", value: "1", hint: "Database System Concepts" },
-      { id: "overdue", icon: "alert", label: "Overdue", value: "1", hint: "Return it to stop fines", warn: true },
-      { id: "fines", icon: "coin", label: "Outstanding fines", value: "₱30.00", hint: "Pay at the circulation desk" },
-      { id: "visits", icon: "door", label: "Library visits", value: "18", hint: "This semester" },
-    ],
-    borrowed: [
-      { title: "Introduction to Algorithms", author: "Cormen, Leiserson, Rivest, Stein", call: "QA76.6 .I5858", due: "Oct 5", daysLeft: -2, loanDays: 7 },
-      { title: "Database System Concepts", author: "Silberschatz, Korth, Sudarshan", call: "QA76.9.D3 S55", due: "Oct 9", daysLeft: 2, loanDays: 7 },
-      { title: "Clean Code", author: "Robert C. Martin", call: "QA76.76.D47 M37", due: "Oct 21", daysLeft: 14, loanDays: 14 },
-    ],
-    visits: [1, 2, 3, 2, 1, 3, 2, 1, 2, 1],
-    genres: [
-      { label: "Computer Science", value: 9, color: "var(--chart-dash-1)" },
-      { label: "Mathematics", value: 4, color: "var(--chart-dash-2)" },
-      { label: "General Education", value: 3, color: "var(--chart-dash-3)" },
-      { label: "Fiction", value: 2, color: "var(--chart-dash-4)" },
-    ],
-    activity: [
-      { text: "Checked in at the library entrance", time: "Today, 7:52 AM" },
-      { text: "Renewed Database System Concepts", time: "Oct 2" },
-      { text: "Borrowed Clean Code", time: "Oct 7" },
-    ],
-  },
-  faculty: {
-    limit: 10,
-    stats: [
-      { id: "borrowed", icon: "book", label: "Currently borrowed", value: "4", of: 10, hint: "of 10 books allowed" },
-      { id: "dueSoon", icon: "clock", label: "Due within 3 days", value: "1", hint: "Research Methods in Computing" },
-      { id: "overdue", icon: "alert", label: "Overdue", value: "0", hint: "Nothing to return right now" },
-      { id: "fines", icon: "coin", label: "Outstanding fines", value: "₱0.00", hint: "You are all settled" },
-      { id: "visits", icon: "door", label: "Library visits", value: "31", hint: "This semester" },
-    ],
-    borrowed: [
-      { title: "Research Methods in Computing", author: "Dawson, C.", call: "QA76 .D39", due: "Oct 9", daysLeft: 2, loanDays: 30 },
-      { title: "Teaching Programming", author: "Hazzan, Lapidot, Ragonis", call: "QA76.27 .H39", due: "Oct 28", daysLeft: 21, loanDays: 30 },
-      { title: "Software Architecture in Practice", author: "Bass, Clements, Kazman", call: "QA76.758 .B37", due: "Nov 3", daysLeft: 27, loanDays: 30 },
-      { title: "Applied Statistics for IT", author: "Montgomery, D.", call: "QA276 .M66", due: "Nov 6", daysLeft: 30, loanDays: 30 },
-    ],
-    visits: [3, 4, 3, 4, 2, 4, 3, 3, 3, 2],
-    genres: [
-      { label: "Computer Science", value: 7, color: "var(--chart-dash-1)" },
-      { label: "Education", value: 5, color: "var(--chart-dash-2)" },
-      { label: "Statistics", value: 3, color: "var(--chart-dash-3)" },
-      { label: "Journals", value: 2, color: "var(--chart-dash-4)" },
-    ],
-    activity: [
-      { text: "Checked in at the library entrance", time: "Today, 7:40 AM" },
-      { text: "Borrowed Applied Statistics for IT", time: "Oct 7" },
-      { text: "Renewed Teaching Programming", time: "Oct 1" },
-    ],
-  },
-};
-
 const DIGITAL_RESOURCES = [
   { name: "VitalSource", note: "E-books for your courses", status: "Approved" },
   { name: "Philippine E-Journals", note: "Local research and journals", status: "Approved" },
   { name: "AccessScience", note: "Science and technology reference", status: "Pending approval" },
 ];
 
-const WEEKLY_VISIT_LABELS = ["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8", "W9", "W10"];
+
 
 /* ------------------------------------------------------------------ */
 /*  Small helpers                                                      */
@@ -288,48 +235,198 @@ function ProgressBar({ value, max, tone = "sky" }) {
 /* ------------------------------------------------------------------ */
 function dueChip(daysLeft) {
   if (daysLeft < 0) return { text: `${Math.abs(daysLeft)} days overdue`, cls: "bg-rose-50 text-rose-700", tone: "rose" };
+  if (daysLeft === 0) return { text: "Due today", cls: "bg-amber-50 text-amber-700", tone: "navy" };
   if (daysLeft <= 3) return { text: daysLeft === 1 ? "Due in 1 day" : `Due in ${daysLeft} days`, cls: "bg-amber-50 text-amber-700", tone: "navy" };
   return { text: `${daysLeft} days left`, cls: "bg-sky-50 text-sky-700", tone: "sky" };
 }
 
-function MemberDashboard({ role }) {
-  const data = MEMBER_DATA[role];
-  const visitsTotal = data.visits.reduce((a, b) => a + b, 0);
-  const [myFines, setMyFines] = useState(null);
+const MS_DAY = 86_400_000;
+const dueDateFmt = new Intl.DateTimeFormat("en-US", {
+  month: "short",
+  day: "numeric",
+  timeZone: "Asia/Manila",
+});
+const activityFmt = new Intl.DateTimeFormat("en-US", {
+  month: "short",
+  day: "numeric",
+  hour: "numeric",
+  minute: "2-digit",
+  timeZone: "Asia/Manila",
+});
 
-  // The fines card follows the real balance (and the setting).
+function MemberDashboard({ role }) {
+  const periods = useSemester();
+  const semesterId = periods.selectedSemesterId;
+  const [state, setState] = useState({
+    key: "",
+    openLoans: null,
+    allLoans: null,
+    stats: null,
+    now: 0,
+    error: "",
+  });
+  const [myFines, setMyFines] = useState(undefined);
+  const key = semesterId ?? "active";
+
   useEffect(() => {
+    const controller = new AbortController();
     let active = true;
-    getMyFines()
-      .then((result) => {
-        if (active) setMyFines(result);
+    Promise.all([
+      getMyLoans({ status: "open", page: 1, pageSize: 100, signal: controller.signal }),
+      getMyLoans({ status: "all", page: 1, pageSize: 10, signal: controller.signal }),
+      getMyStatistics(semesterId, controller.signal),
+    ])
+      .then(([openLoans, allLoans, stats]) => {
+        if (active) {
+          setState({
+            key,
+            openLoans,
+            allLoans,
+            stats,
+            now: Date.now(),
+            error: "",
+          });
+        }
       })
-      .catch(() => {
-        if (active) setMyFines(null);
+      .catch((problem) => {
+        if (!active || problem?.name === "AbortError" || /abort/i.test(String(problem?.message ?? ""))) return;
+        setState({
+          key,
+          openLoans: null,
+          allLoans: null,
+          stats: null,
+          error: problem?.message || "Your dashboard could not be loaded.",
+        });
       });
+    getMyFines(controller.signal)
+      .then((result) => { if (active) setMyFines(result); })
+      .catch(() => { if (active) setMyFines(null); });
     return () => {
       active = false;
+      controller.abort();
     };
-  }, []);
+  }, [semesterId, key]);
+
+  const loading = !state.error && (state.key !== key || !state.openLoans || !state.stats);
+  const totals = state.openLoans?.totals ?? {};
+  const openRows = state.openLoans?.rows ?? [];
+  const allRows = state.allLoans?.rows ?? [];
+  const attendance = state.stats?.attendance ?? {};
+  const visits = Number(attendance.totals?.visits ?? 0);
+  const months = attendance.months ?? [];
+  const recentVisits = attendance.recent ?? [];
+  const now = Number(state.now ?? 0);
+
+  const withDays = openRows.map((loan) => ({
+    ...loan,
+    daysLeft: loan.is_overdue
+      ? -Math.max(1, Number(loan.days_overdue ?? 1))
+      : Math.max(0, Math.ceil((new Date(loan.due_at).getTime() - now) / MS_DAY)),
+  }));
+  const dueSoon = withDays.filter((loan) => !loan.is_overdue && loan.daysLeft <= 3);
+  const firstDueSoon = dueSoon[0];
+
+  const openCount = Number(totals.open ?? 0);
+  const overdueCount = Number(totals.overdue ?? 0);
+  const unpaid = Number(myFines?.unpaid_total ?? 0);
+  const finesEnabled = Boolean(myFines?.enabled);
+
+  const stats = [
+    {
+      id: "borrowed",
+      icon: "book",
+      label: "Currently borrowed",
+      value: loading ? "â€¦" : openCount,
+      hint: "Books with you right now",
+    },
+    {
+      id: "dueSoon",
+      icon: "clock",
+      label: "Due within 3 days",
+      value: loading ? "â€¦" : dueSoon.length,
+      hint: firstDueSoon ? firstDueSoon.book_name : "Nothing due soon",
+    },
+    {
+      id: "overdue",
+      icon: "alert",
+      label: "Overdue",
+      value: loading ? "â€¦" : overdueCount,
+      hint: overdueCount > 0 ? "Return to stop fines" : "Nothing overdue",
+      warn: overdueCount > 0,
+    },
+    {
+      id: "fines",
+      icon: "coin",
+      label: "Outstanding fines",
+      value:
+        myFines === undefined
+          ? "â€¦"
+          : myFines === null
+            ? "â€”"
+            : finesEnabled
+              ? peso(unpaid)
+              : "â€”",
+      hint:
+        myFines === undefined
+          ? "Checking your balance"
+          : myFines === null
+            ? "Couldn't load your balance"
+            : finesEnabled
+              ? unpaid > 0
+                ? "Settle at the circulation desk"
+                : "You are all settled"
+              : "Fines are turned off",
+      warn: finesEnabled && unpaid > 0,
+    },
+    {
+      id: "visits",
+      icon: "door",
+      label: "Library visits",
+      value: loading ? "â€¦" : visits,
+      hint: "This semester",
+    },
+  ];
+
+  const visitPoints = months.map((month) => ({
+    label: shortMonth(month.month),
+    value: Number(month.visits ?? 0),
+  }));
+  const visitData = visitPoints.map((point) => point.value);
+  const canChartVisits = visitData.length >= 2 && visitData.some((value) => value > 0);
+
+  const openNotOverdue = Math.max(0, openCount - overdueCount);
+  const segments = [
+    { label: "Still out", value: openNotOverdue, color: "var(--chart-dash-1)" },
+    { label: "Overdue", value: overdueCount, color: "var(--chart-dash-4)" },
+    { label: "Returned", value: Number(totals.returned ?? 0), color: "var(--chart-dash-2)" },
+  ].filter((segment) => segment.value > 0);
+  const circulationTotal = segments.reduce((sum, segment) => sum + segment.value, 0);
+
+  const events = [];
+  for (const loan of allRows) {
+    if (loan.borrowed_at) events.push({ text: `Borrowed ${loan.book_name}`, at: loan.borrowed_at });
+    if (loan.returned_at) events.push({ text: `Returned ${loan.book_name}`, at: loan.returned_at });
+  }
+  for (const visit of recentVisits) {
+    events.push({
+      text: `Visited the library${visit.purpose ? ` â€” ${visit.purpose}` : ""}`,
+      at: visit.time_in,
+    });
+  }
+  const activity = events
+    .filter((event) => event.at)
+    .sort((a, b) => new Date(b.at).getTime() - new Date(a.at).getTime())
+    .slice(0, 5);
+  const shownBooks = withDays.slice(0, 5);
 
   return (
     <div className="space-y-6">
       <DashboardHero role={role} />
+      {state.error && <WorkspaceNotice error>{state.error}</WorkspaceNotice>}
+
       <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3">
-        {data.stats.map((s, i) => {
-          const stat =
-            s.id === "fines" && myFines?.enabled
-              ? {
-                  ...s,
-                  value: peso(myFines.unpaid_total),
-                  hint:
-                    Number(myFines.unpaid_total) > 0
-                      ? "Please settle at the library counter"
-                      : "You are all settled",
-                  warn: Number(myFines.unpaid_total) > 0,
-                }
-              : s;
-          const featured = i === 0;
+        {stats.map((stat, index) => {
+          const featured = index === 0;
           return (
             <div key={stat.id} className={`flex min-w-0 flex-col rounded-2xl border p-4 shadow-[0_1px_2px_rgba(11,19,48,0.05)] sm:p-5 ${featured ? "border-navy bg-navy text-white" : "border-slate-200 bg-surface text-ink"}`}>
               <span className={`flex h-8 w-8 items-center justify-center rounded-lg sm:h-9 sm:w-9 ${featured ? "bg-white/10 text-sky-300" : stat.warn ? "bg-rose-50 text-rose-600" : "bg-tint text-accent"}`}>
@@ -337,87 +434,124 @@ function MemberDashboard({ role }) {
               </span>
               <p className={`mt-3 text-xs sm:mt-5 sm:text-[13px] ${featured ? "text-slate-300" : "text-slate-500"}`}>{stat.label}</p>
               <p className="mt-1 font-serif text-2xl font-bold tracking-tight sm:text-3xl">{stat.value}</p>
-              {stat.of ? (
-                <div className="mt-3">
-                  <div className="mb-2 h-2 w-full overflow-hidden rounded-full bg-white/15">
-                    <div className="h-full rounded-full bg-sky-300" style={{ width: `${(Number(stat.value) / stat.of) * 100}%` }} />
-                  </div>
-                  <p className="text-[10px] text-slate-400 sm:text-xs">{stat.hint}</p>
-                </div>
-              ) : (
-                <p className={`mt-2 text-[10px] sm:text-xs ${stat.warn ? "text-rose-600" : "text-slate-500"}`}>{stat.hint}</p>
-              )}
+              <p className={`mt-2 text-[10px] sm:text-xs ${stat.warn ? "text-rose-600" : featured ? "text-slate-300" : "text-slate-500"}`}>{stat.hint}</p>
             </div>
           );
         })}
       </div>
 
-      <Card title="Books you have borrowed" subtitle="Return or renew before the due date to avoid fines">
+      <Card
+        title="Books you have borrowed"
+        subtitle="Return before the due date to avoid fines"
+        action={openCount > 5 ? (
+          <Link to="/my-borrowing" className="text-xs font-semibold text-accent hover:underline">
+            View all
+          </Link>
+        ) : null}
+      >
+        {loading ? (
+          <p className="py-2 text-xs text-slate-500">Loading your booksâ€¦</p>
+        ) : shownBooks.length === 0 ? (
+          <p className="py-2 text-xs text-slate-500">
+            No books are currently borrowed. Browse the catalog or Path Finder to find one.
+          </p>
+        ) : (
           <ul className="space-y-3">
-            {data.borrowed.map((b) => {
-              const chip = dueChip(b.daysLeft);
-              const used = Math.min(b.loanDays, Math.max(0, b.loanDays - b.daysLeft));
+            {shownBooks.map((book) => {
+              const chip = dueChip(book.daysLeft);
+              const loanDays = Math.max(
+                1,
+                Math.ceil((new Date(book.due_at).getTime() - new Date(book.borrowed_at).getTime()) / MS_DAY),
+              );
+              const used = Math.min(loanDays, Math.max(0, loanDays - book.daysLeft));
               return (
-                <li key={b.title} className="flex flex-col gap-3 rounded-xl border border-slate-200 p-4 sm:flex-row sm:items-center sm:gap-5">
+                <li key={book.id} className="flex flex-col gap-3 rounded-xl border border-slate-200 p-4 sm:flex-row sm:items-center sm:gap-5">
                   <div className="flex min-w-0 flex-1 items-center gap-4">
                     <span className="flex h-14 w-10 shrink-0 items-center justify-center rounded-md bg-navy text-sky-300" aria-hidden="true">
                       <Icon name="book" className="h-5 w-5" />
                     </span>
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-semibold text-ink">{b.title}</p>
-                      <p className="truncate text-xs text-slate-500">{b.author}</p>
-                      <p className="mt-0.5 text-xs text-slate-400">Call number {b.call}</p>
+                      <p className="truncate text-sm font-semibold text-ink">{book.book_name}</p>
+                      <p className="truncate text-xs text-slate-500">{book.author || "Author not recorded"}</p>
+                      <p className="mt-0.5 text-xs text-slate-400">Call number {book.call_number || "not recorded"}</p>
                     </div>
                   </div>
                   <div className="sm:w-52">
                     <div className="mb-2 flex items-center justify-between gap-2">
-                      <span className="text-xs text-slate-500">Due {b.due}</span>
+                      <span className="text-xs text-slate-500">Due {dueDateFmt.format(new Date(book.due_at))}</span>
                       <span className={`rounded-full px-2.5 py-1 text-[11px] font-medium ${chip.cls}`}>{chip.text}</span>
                     </div>
-                    <ProgressBar value={used} max={b.loanDays} tone={chip.tone} />
+                    <ProgressBar value={used} max={loanDays} tone={chip.tone} />
                   </div>
                 </li>
               );
             })}
           </ul>
-        </Card>
+        )}
+      </Card>
 
       <div className="grid gap-6 xl:grid-cols-3">
-        <Card className="xl:col-span-2" title="Your library visits" subtitle={`${visitsTotal} visits over the last 10 weeks`}>
-          <AreaChart labels={WEEKLY_VISIT_LABELS} data={data.visits} unit="visits" />
+        <Card
+          className="xl:col-span-2"
+          title="Your library visits"
+          subtitle={loading ? "Loading this semesterâ€¦" : `${visits.toLocaleString("en-US")} ${visits === 1 ? "visit" : "visits"} this semester`}
+        >
+          {loading ? (
+            <p className="py-2 text-xs text-slate-500">Loading your visitsâ€¦</p>
+          ) : canChartVisits ? (
+            <AreaChart labels={visitPoints.map((point) => point.label)} data={visitData} unit="visits" />
+          ) : (
+            <p className="py-2 text-xs text-slate-500">
+              {visits > 0
+                ? `${visits.toLocaleString("en-US")} visit${visits === 1 ? "" : "s"} recorded this semester.`
+                : "No library visits recorded this semester yet."}
+            </p>
+          )}
         </Card>
-        <Card title="What you read" subtitle="Borrowed books by category">
-          <Donut segments={data.genres} centerValue={String(data.genres.reduce((s, g) => s + g.value, 0))} centerLabel="books" />
+        <Card title="Your circulation" subtitle="Still out, overdue and returned">
+          {loading ? (
+            <p className="py-2 text-xs text-slate-500">Loading your recordsâ€¦</p>
+          ) : segments.length === 0 ? (
+            <p className="py-2 text-xs text-slate-500">No circulation records yet.</p>
+          ) : (
+            <Donut segments={segments} centerValue={circulationTotal.toLocaleString("en-US")} centerLabel="records" />
+          )}
         </Card>
       </div>
 
       <div className="grid gap-6 xl:grid-cols-3">
         <Card className="xl:col-span-2" title="Recent activity">
-          <ol className="relative space-y-5 border-l border-slate-200 pl-6">
-            {data.activity.map((a) => (
-              <li key={a.text} className="relative">
-                <span className="absolute -left-[29px] top-1 h-2.5 w-2.5 rounded-full bg-sky-400 ring-4 ring-white" aria-hidden="true" />
-                <p className="text-sm text-ink">{a.text}</p>
-                <p className="text-xs text-slate-500">{a.time}</p>
-              </li>
-            ))}
-          </ol>
+          {loading ? (
+            <p className="py-2 text-xs text-slate-500">Loading your activityâ€¦</p>
+          ) : activity.length === 0 ? (
+            <p className="py-2 text-xs text-slate-500">No recent activity yet.</p>
+          ) : (
+            <ol className="relative space-y-5 border-l border-slate-200 pl-6">
+              {activity.map((event) => (
+                <li key={`${event.text}-${event.at}`} className="relative">
+                  <span className="absolute -left-[29px] top-1 h-2.5 w-2.5 rounded-full bg-sky-400 ring-4 ring-white" aria-hidden="true" />
+                  <p className="text-sm text-ink">{event.text}</p>
+                  <p className="text-xs text-slate-500">{activityFmt.format(new Date(event.at))}</p>
+                </li>
+              ))}
+            </ol>
+          )}
         </Card>
 
         <Card title="Digital resources" subtitle="Access is approved by the library admin">
           <ul className="space-y-3">
-            {DIGITAL_RESOURCES.map((r) => {
-              const approved = r.status === "Approved";
+            {DIGITAL_RESOURCES.map((resource) => {
+              const approved = resource.status === "Approved";
               return (
-                <li key={r.name} className="flex items-center gap-3">
+                <li key={resource.name} className="flex items-center gap-3">
                   <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-navy text-sky-300">
                     <Icon name="world" className="h-[18px] w-[18px]" />
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-semibold text-ink">{r.name}</p>
-                    <p className="truncate text-xs text-slate-500">{r.note}</p>
+                    <p className="truncate text-sm font-semibold text-ink">{resource.name}</p>
+                    <p className="truncate text-xs text-slate-500">{resource.note}</p>
                   </div>
-                  <span className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-medium ${approved ? "bg-sky-50 text-sky-700" : "bg-amber-50 text-amber-700"}`}>{r.status}</span>
+                  <span className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-medium ${approved ? "bg-sky-50 text-sky-700" : "bg-amber-50 text-amber-700"}`}>{resource.status}</span>
                 </li>
               );
             })}
@@ -434,5 +568,5 @@ function MemberDashboard({ role }) {
 export default function Dashboard() {
   const { role } = useAuth();
   if (ACCESS.staff.includes(role)) return <PersonnelDashboard role={role} />;
-  return <MemberDashboard role={role === "faculty" ? "faculty" : "student"} />;
+  return <MemberDashboard role={role} />;
 }
