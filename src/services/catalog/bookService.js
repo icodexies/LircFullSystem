@@ -8,6 +8,13 @@ const LIST_FIELDS =
 const DETAIL_FIELDS = `${LIST_FIELDS},publisher,place_of_publication,barcode_tag_number,asset_number,created_at`;
 const COPY_PAGE_SIZE = 10;
 
+// Formats and shelves change very rarely; one shared cache avoids fetching
+// both tables every time the catalog, borrow or adding-books page mounts.
+const LOOKUPS_TTL_MS = 5 * 60_000;
+let lookupsCache = null;
+let lookupsCachedAt = 0;
+let lookupsPending = null;
+
 function catalogReadError(error) {
   if (["PGRST205", "PGRST200", "42703", "42P01"].includes(error.code)) {
     return new Error(
@@ -63,12 +70,29 @@ async function getLookupRows(supabase, table, signal) {
 }
 
 export async function getCatalogLookups(signal) {
-  const supabase = await getSupabase();
-  const [formats, shelves] = await Promise.all([
-    getLookupRows(supabase, "book_formats", signal),
-    getLookupRows(supabase, "shelves", signal),
-  ]);
-  return { formats, shelves };
+  if (lookupsCache && Date.now() - lookupsCachedAt < LOOKUPS_TTL_MS) {
+    return lookupsCache;
+  }
+  if (lookupsPending) return lookupsPending;
+
+  const request = (async () => {
+    const supabase = await getSupabase();
+    const [formats, shelves] = await Promise.all([
+      getLookupRows(supabase, "book_formats", signal),
+      getLookupRows(supabase, "shelves", signal),
+    ]);
+    const data = { formats, shelves };
+    lookupsCache = data;
+    lookupsCachedAt = Date.now();
+    return data;
+  })();
+
+  lookupsPending = request;
+  try {
+    return await request;
+  } finally {
+    if (lookupsPending === request) lookupsPending = null;
+  }
 }
 
 export async function getBook(id, signal) {
@@ -91,22 +115,33 @@ export async function findPossibleBooks({ title, isbn }, signal) {
     const supabase = await getSupabase();
     const cleanIsbn = String(isbn ?? "").trim();
     const cleanTitle = String(title ?? "").trim();
+    const fields =
+      "id,book_name,author,isbn,publisher,edition,publish_year,call_number";
+    // ISBN and title checks are independent; run them together instead of
+    // waiting for one round trip before starting the other.
+    const requests = [];
     if (cleanIsbn) {
-      const { data } = await supabase
-        .from("books")
-        .select("id,book_name,author,isbn,publisher,edition,publish_year,call_number")
-        .eq("isbn", cleanIsbn)
-        .limit(5)
-        .abortSignal(signal);
-      (data ?? []).forEach((row) => found.set(row.id, row));
+      requests.push(
+        supabase
+          .from("books")
+          .select(fields)
+          .eq("isbn", cleanIsbn)
+          .limit(5)
+          .abortSignal(signal),
+      );
     }
     if (cleanTitle.length >= 3) {
-      const { data } = await supabase
-        .from("books")
-        .select("id,book_name,author,isbn,publisher,edition,publish_year,call_number")
-        .ilike("book_name", containsText(cleanTitle))
-        .limit(5)
-        .abortSignal(signal);
+      requests.push(
+        supabase
+          .from("books")
+          .select(fields)
+          .ilike("book_name", containsText(cleanTitle))
+          .limit(5)
+          .abortSignal(signal),
+      );
+    }
+    const results = await Promise.all(requests);
+    for (const { data } of results) {
       (data ?? []).forEach((row) => found.set(row.id, row));
     }
   } catch {

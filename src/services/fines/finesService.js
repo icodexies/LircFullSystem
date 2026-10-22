@@ -13,13 +13,48 @@ function finesError(error, fallback) {
 }
 
 // All settings (currently just "fines"). Library operators only.
-export async function getSettings(signal) {
-  const client = await getSupabase();
-  const { data, error } = await client
-    .rpc("lirc_settings_get")
-    .abortSignal(signal);
-  if (error) throw finesError(error, "The settings could not be loaded.");
-  return data ?? {};
+//
+// The values change only when an admin saves the Settings page, so a short
+// shared cache avoids a fresh RPC every time a borrow dialog opens. Errors and
+// aborts are never cached; saving invalidates it for everyone.
+const SETTINGS_TTL_MS = 60_000;
+let settingsCache = null;
+let settingsCachedAt = 0;
+let settingsPending = null;
+
+export function clearSettingsCache() {
+  settingsCache = null;
+  settingsCachedAt = 0;
+  settingsPending = null;
+}
+
+export async function getSettings(signal, { fresh = false } = {}) {
+  if (
+    !fresh &&
+    settingsCache &&
+    Date.now() - settingsCachedAt < SETTINGS_TTL_MS
+  ) {
+    return settingsCache;
+  }
+  if (settingsPending) return settingsPending;
+
+  const request = (async () => {
+    const client = await getSupabase();
+    const { data, error } = await client
+      .rpc("lirc_settings_get")
+      .abortSignal(signal);
+    if (error) throw finesError(error, "The settings could not be loaded.");
+    settingsCache = data ?? {};
+    settingsCachedAt = Date.now();
+    return settingsCache;
+  })();
+
+  settingsPending = request;
+  try {
+    return await request;
+  } finally {
+    if (settingsPending === request) settingsPending = null;
+  }
 }
 
 // Admins switch the fines on/off and set the daily rate.
@@ -30,6 +65,7 @@ export async function setFinesSetting(enabled, ratePerDay) {
     p_rate_per_day: ratePerDay,
   });
   if (error) throw finesError(error, "The fines setting could not be saved.");
+  clearSettingsCache();
   return data;
 }
 

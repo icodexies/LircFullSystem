@@ -54,7 +54,7 @@ export default function Settings() {
   useEffect(() => {
     const controller = new AbortController();
     let active = true;
-    getSettings(controller.signal)
+    getSettings(controller.signal, { fresh: true })
       .then((data) => {
         if (!active) return;
         const fines = { ...DEFAULT_FINES, ...(data.fines ?? {}) };

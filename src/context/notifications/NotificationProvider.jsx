@@ -33,14 +33,20 @@ export default function NotificationProvider({ children }) {
     active.current = true;
     const controller = new AbortController();
     // Deferred like the auth provider: run the first load just after mount,
-    // then refresh on an interval.
-    const start = window.setTimeout(() => void load(controller.signal), 0);
-    const timer = window.setInterval(() => void load(), REFRESH_MS);
+    // then refresh on an interval — but only while the tab is visible, and
+    // refresh immediately when the member comes back to it.
+    const loadIfVisible = () => {
+      if (!document.hidden) void load(controller.signal);
+    };
+    const start = window.setTimeout(loadIfVisible, 0);
+    const timer = window.setInterval(loadIfVisible, REFRESH_MS);
+    document.addEventListener("visibilitychange", loadIfVisible);
     return () => {
       active.current = false;
       controller.abort();
       window.clearTimeout(start);
       window.clearInterval(timer);
+      document.removeEventListener("visibilitychange", loadIfVisible);
     };
   }, [load]);
 

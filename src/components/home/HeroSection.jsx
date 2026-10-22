@@ -19,7 +19,7 @@ export function HeroBG({ slides = [], active }) {
             height={s.backgroundHeight}
             alt=""
             aria-hidden="true"
-            fetchPriority={i === 0 ? "high" : "auto"}
+            fetchPriority={i === active ? "high" : "low"}
             loading={i === 0 ? "eager" : "lazy"}
             decoding="async"
             className={`absolute inset-0 h-full w-full object-cover object-center transition-all duration-1000 ease-out ${

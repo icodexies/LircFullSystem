@@ -9,6 +9,7 @@ import { AuthProvider } from "./context/auth/AuthContext.jsx";
 import { PublicOnlyRoute, PrivateRoute } from "./routes/guards.jsx";
 import { ACCESS } from "./routes/roles.js";
 import { MEMBER_PAGES } from "./routes/memberPages.js";
+import { MEMBER_SCREENS } from "./routes/memberScreens.js";
 import PublicLayout from "./layouts/public/PublicLayout.jsx";
 import Home from "./pages/PublicPages/HomePage/Home.jsx";
 
@@ -36,48 +37,7 @@ const SystemStationPage = lazy(
   () => import("./pages/SystemStation/SystemStation.jsx"),
 );
 
-const memberScreens = {
-  dashboard: lazy(() => import("./pages/PrivatePages/Dashboard/Dashboard.jsx")),
-  "user-logs": lazy(
-    () => import("./pages/PrivatePages/UserLogs/UserLogs.jsx"),
-  ),
-  "user-performance": lazy(
-    () => import("./pages/PrivatePages/UserPerformance/UserPerformance.jsx"),
-  ),
-  announcements: lazy(
-    () => import("./pages/PrivatePages/Announcements/Announcements.jsx"),
-  ),
-  opac: lazy(() => import("./pages/PrivatePages/OPAC/OPAC.jsx")),
-  "path-finder": lazy(
-    () => import("./pages/PrivatePages/PathFinder/PathFinder.jsx"),
-  ),
-  statistics: lazy(
-    () => import("./pages/PrivatePages/Statistics/Statistics.jsx"),
-  ),
-  "my-borrowing": lazy(
-    () => import("./pages/PrivatePages/MyBorrowing/MyBorrowing.jsx"),
-  ),
-  enrollments: lazy(
-    () => import("./pages/PrivatePages/Enrollments/Enrollments.jsx"),
-  ),
-  "academic-periods": lazy(
-    () => import("./pages/PrivatePages/AcademicPeriods/AcademicPeriods.jsx"),
-  ),
-  attendance: lazy(
-    () => import("./pages/PrivatePages/Attendance/Attendance.jsx"),
-  ),
-  "barcode-generator": lazy(
-    () => import("./pages/PrivatePages/BarcodeGenerator/BarcodeGenerator.jsx"),
-  ),
-  "book-borrow": lazy(
-    () => import("./pages/PrivatePages/BookBorrow/BookBorrow.jsx"),
-  ),
-  inventory: lazy(() => import("./pages/PrivatePages/Inventory/Inventory.jsx")),
-  users: lazy(() => import("./pages/PrivatePages/Users/Users.jsx")),
-  "adding-books": lazy(
-    () => import("./pages/PrivatePages/AddingBooks/AddingBooks.jsx"),
-  ),
-};
+const memberScreens = MEMBER_SCREENS;
 
 export default function App() {
   return (

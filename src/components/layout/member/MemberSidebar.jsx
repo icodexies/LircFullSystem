@@ -3,6 +3,7 @@ import { Link, NavLink, useLocation } from "react-router-dom";
 import BrandMark from "../../ui/BrandMark.jsx";
 import SidebarIcon from "./SidebarIcon.jsx";
 import { MEMBER_PAGES, canAccessPage } from "../../../routes/memberPages.js";
+import { prefetchMemberScreen } from "../../../routes/memberScreens.js";
 
 // Section labels over the collapsible groups (order matters).
 const SECTIONS = [
@@ -107,6 +108,8 @@ function SidebarContent({
               to={page.path}
               end
               onClick={onNavigate}
+              onMouseEnter={() => prefetchMemberScreen(page.id)}
+              onFocus={() => prefetchMemberScreen(page.id)}
               title={page.label}
               className={({ isActive }) =>
                 `relative grid h-10 w-10 place-items-center rounded-xl transition-colors duration-150 ${focusRing} ${
@@ -240,6 +243,8 @@ function SidebarContent({
                               to={page.path}
                               end
                               onClick={onNavigate}
+                              onMouseEnter={() => prefetchMemberScreen(page.id)}
+                              onFocus={() => prefetchMemberScreen(page.id)}
                               className={({ isActive }) =>
                                 `group relative flex items-center gap-2.5 rounded-xl px-2.5 py-2 text-[13px] font-medium transition-colors duration-150 ${focusRing} ${
                                   isActive
@@ -301,6 +306,8 @@ function SidebarContent({
               key={quick.pageId}
               to={quick.page.path}
               onClick={onNavigate}
+              onMouseEnter={() => prefetchMemberScreen(quick.page.id)}
+              onFocus={() => prefetchMemberScreen(quick.page.id)}
               className={`flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-[#A7B3CD] transition-colors duration-150 hover:bg-white/[0.07] hover:text-white ${focusRing}`}
             >
               <SidebarIcon
