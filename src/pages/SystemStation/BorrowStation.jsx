@@ -129,7 +129,7 @@ export default function BorrowStation() {
           className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-navy px-5 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-accent-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-strong disabled:opacity-50 sm:w-auto"
         >
           {busy && <Spinner size="sm" />}
-          {busy ? "Recording…" : "Record loan"}
+          {busy ? "Submitting…" : "Submit"}
         </button>
 
         {result?.ok && (
