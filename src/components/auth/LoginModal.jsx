@@ -4,6 +4,32 @@ import { REVEAL_EASINGS } from "../ui/revealEasings.js";
 import { Spinner } from "../ui/Loading.jsx";
 
 const EXIT_MS = 350; // keep in sync with the exit transitions below
+const RECENT_EMAILS_KEY = "lirc-recent-login-emails";
+
+function readRecentEmails() {
+  try {
+    const parsed = JSON.parse(window.localStorage.getItem(RECENT_EMAILS_KEY) || "[]");
+    return Array.isArray(parsed)
+      ? parsed.filter((value) => typeof value === "string" && value).slice(0, 5)
+      : [];
+  } catch {
+    return [];
+  }
+}
+
+function rememberEmail(value) {
+  const email = String(value ?? "").trim().toLowerCase();
+  if (!email) return;
+  const next = [
+    email,
+    ...readRecentEmails().filter((saved) => saved !== email),
+  ].slice(0, 5);
+  try {
+    window.localStorage.setItem(RECENT_EMAILS_KEY, JSON.stringify(next));
+  } catch {
+    // Suggestions are a convenience; login still works if storage is blocked.
+  }
+}
 
 /**
  * LoginModal
@@ -33,6 +59,7 @@ function LoginModal({
   const [showPw, setShowPw] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [recentEmails, setRecentEmails] = useState([]);
   const dialogRef = useRef(null);
   const submitting = useRef(false);
 
@@ -50,6 +77,7 @@ function LoginModal({
       setPassword("");
       setShowPw(false);
       setError("");
+      setRecentEmails(readRecentEmails());
       const raf = requestAnimationFrame(() => setShown(true));
       return () => cancelAnimationFrame(raf);
     }
@@ -112,6 +140,8 @@ function LoginModal({
     setLoading(true);
     try {
       await onSubmit?.({ email, password, remember });
+      rememberEmail(email);
+      setRecentEmails(readRecentEmails());
     } catch (err) {
       setError(err?.message || "Login failed. Please try again.");
     } finally {
@@ -216,9 +246,16 @@ function LoginModal({
                 <path d="m3 7 9 6 9-6" />
               </svg>
               <input
+                id="login-email"
+                name="email"
                 type="email"
                 required
-                autoComplete="email"
+                autoComplete="username"
+                inputMode="email"
+                autoCapitalize="none"
+                autoCorrect="off"
+                spellCheck={false}
+                list="login-email-suggestions"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="reader@lirc.edu"
@@ -226,6 +263,11 @@ function LoginModal({
               />
             </div>
           </label>
+          <datalist id="login-email-suggestions">
+            {recentEmails.map((value) => (
+              <option key={value} value={value} />
+            ))}
+          </datalist>
 
           {/* Password */}
           <div className="mt-4 block">
