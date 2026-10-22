@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>LIRC bundle report — 22 Oct 2026</title>
+<style>
+  :root { color-scheme: light; --ink:#0b1330; --muted:#5b6b8c; --line:#dbe3f0; --bg:#f5f7fb; --lazy:#38bdf8; --initial:#0b1330; --warn:#f59e0b; }
+  * { box-sizing: border-box; }
+  body { margin:0; font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; color:var(--ink); background:var(--bg); }
+  main { max-width: 1040px; margin: 0 auto; padding: 36px 24px 60px; }
+  h1 { font-size: 26px; margin: 0 0 4px; letter-spacing: -0.02em; }
+  p { margin: 6px 0; color: var(--muted); }
+  .cards { display:flex; gap:12px; flex-wrap:wrap; margin:22px 0 28px; }
+  .card { flex:1 1 180px; background:#fff; border:1px solid var(--line); border-radius:14px; padding:14px 16px; }
+  .card b { display:block; font-size:20px; margin-top:2px; }
+  .legend { display:flex; gap:16px; font-size:12px; color:var(--muted); margin:8px 0 10px; }
+  .dot { display:inline-block; width:9px; height:9px; border-radius:99px; margin-right:5px; vertical-align:1px; }
+  .treemap { display:flex; flex-wrap:wrap; gap:6px; background:#fff; border:1px solid var(--line); border-radius:16px; padding:10px; }
+  .block { min-height:56px; border-radius:9px; padding:8px 9px; color:#fff; overflow:hidden; position:relative; }
+  .block.lazy { background:linear-gradient(135deg,#0ea5e9,#38bdf8); }
+  .block.initial { background:linear-gradient(135deg,#0b1330,#1e3a8a); }
+  .block.warn { background:linear-gradient(135deg,#b45309,#f59e0b); }
+  .block .name { font-weight:700; font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .block .size { font-size:11px; opacity:.9; }
+  table { width:100%; border-collapse:collapse; margin-top:24px; background:#fff; border:1px solid var(--line); border-radius:14px; overflow:hidden; }
+  th, td { text-align:left; padding:10px 12px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); background:#f8fafc; }
+  tr:last-child td { border-bottom:0; }
+  td.num { text-align:right; white-space:nowrap; font-variant-numeric: tabular-nums; }
+  .pill { display:inline-block; font-size:10px; font-weight:700; letter-spacing:.04em; padding:2px 7px; border-radius:99px; }
+  .pill.lazy { background:#e0f2fe; color:#0369a1; }
+  .pill.initial { background:#e0e7ff; color:#3730a3; }
+  .note { background:#fffbeb; border:1px solid #fde68a; border-radius:12px; padding:12px 14px; margin-top:20px; color:#78350f; }
+  code { background:#eef2f7; padding:1px 5px; border-radius:5px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>LIRC bundle report</h1>
+  <p>Production build · commit <code>00bc77b</code> · 22 Oct 2026 · chunk-level treemap from the actual <code>dist/assets</code> bytes.</p>
+  <p>The standard Rollup visualizer is not installed because this machine’s npm registry is blocked (certificate/403). This report uses the same byte data a visualizer would read; package identification comes from the chunk contents.</p>
+
+  <div class="cards">
+    <div class="card">Total JS <b>2,831.5 KB raw</b><span>823 KB gzip sum</span></div>
+    <div class="card">Top 5 chunks <b>1,915.2 KB raw</b><span>539 KB gzip · 68% of JS bytes</span></div>
+    <div class="card">Top 5 loaded on first paint <b>2 of 5</b><span>React + Supabase only</span></div>
+    <div class="card">CSS <b>122.6 KB</b><span>unchanged before/after</span></div>
+  </div>
+
+  <div class="legend">
+    <span><i class="dot" style="background:#0b1330"></i>initial / auth check</span>
+    <span><i class="dot" style="background:#38bdf8"></i>lazy (only when used)</span>
+    <span><i class="dot" style="background:#f59e0b"></i>lazy export library</span>
+  </div>
+
+  <div class="treemap" role="img" aria-label="Chunk sizes as proportional blocks">
+    <div class="block warn" style="flex: 0 0 100%; min-height:120px; background:linear-gradient(135deg,#7c2d12,#f59e0b)">
+      <div class="name">exceljs.min-oOmTiXfY.js · ExcelJS · 907.8 KB raw / 249.8 KB gzip</div>
+      <div class="size">Lazy — loaded only when an Excel/report export starts.</div>
+    </div>
+    <div class="block warn" style="flex: 0 0 43%; min-height:84px; background:linear-gradient(135deg,#9a3412,#ea580c)">
+      <div class="name">jspdf.es.min-C68J9WXZ.js · jsPDF · 389.7 KB / 124.6 KB</div>
+      <div class="size">Lazy — PDF export only.</div>
+    </div>
+    <div class="block initial" style="flex: 0 0 24%; min-height:84px">
+      <div class="name">react-vendor · 213.7 KB / 66.0 KB</div>
+      <div class="size">React + ReactDOM + scheduler. Initial.</div>
+    </div>
+    <div class="block initial" style="flex: 0 0 23%; min-height:84px">
+      <div class="name">supabase-vendor · 209.2 KB / 53.3 KB</div>
+      <div class="size">supabase-js: auth, postgrest, realtime, storage. Initial auth check.</div>
+    </div>
+    <div class="block lazy" style="flex: 0 0 22%; min-height:84px">
+      <div class="name">html2canvas · 194.8 KB / 45.0 KB</div>
+      <div class="size">Lazy — HTML→canvas for PDF.</div>
+    </div>
+    <div class="block lazy" style="flex: 0 0 17%; min-height:64px">
+      <div class="name">index.es · 147.9 KB / 47.3 KB</div>
+      <div class="size">Lazy jsPDF SVG dependency (canvg).</div>
+    </div>
+    <div class="block initial" style="flex: 0 0 10%; min-height:64px">
+      <div class="name">entry · 67.6 KB / 18.4 KB</div>
+      <div class="size">App shell + routes. Initial.</div>
+    </div>
+    <div class="block lazy" style="flex: 0 0 9%; min-height:64px">
+      <div class="name">BookBorrow · 60.4 KB</div>
+      <div class="size">Page chunk. Lazy.</div>
+    </div>
+    <div class="block lazy" style="flex: 0 0 9%; min-height:64px">
+      <div class="name">PathFinder · 60.2 KB</div>
+      <div class="size">Page chunk. Lazy.</div>
+    </div>
+    <div class="block lazy" style="flex: 0 0 9%; min-height:64px">
+      <div class="name">Statistics · 58.9 KB</div>
+      <div class="size">Page chunk. Lazy.</div>
+    </div>
+    <div class="block lazy" style="flex: 0 0 7%; min-height:64px">
+      <div class="name">MemberLayout · 43.9 KB</div>
+      <div class="size">Workspace shell. Lazy after login.</div>
+    </div>
+    <div class="block initial" style="flex: 0 0 6%; min-height:64px">
+      <div class="name">router-vendor · 39.3 KB</div>
+      <div class="size">react-router-dom. Initial.</div>
+    </div>
+  </div>
+
+  <table>
+    <thead><tr><th>#</th><th>Chunk</th><th class="num">Raw</th><th class="num">Gzip</th><th>Loaded</th><th>Contents</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>exceljs.min-oOmTiXfY.js</td><td class="num">907.8 KB</td><td class="num">249.8 KB</td><td><span class="pill lazy">LAZY</span></td><td>ExcelJS spreadsheet engine (report export).</td></tr>
+      <tr><td>2</td><td>jspdf.es.min-C68J9WXZ.js</td><td class="num">389.7 KB</td><td class="num">124.6 KB</td><td><span class="pill lazy">LAZY</span></td><td>jsPDF PDF engine; imports html2canvas/canvg paths.</td></tr>
+      <tr><td>3</td><td>react-vendor-DSNEASXB.js</td><td class="num">213.7 KB</td><td class="num">66.0 KB</td><td><span class="pill initial">INITIAL</span></td><td>React, ReactDOM, scheduler.</td></tr>
+      <tr><td>4</td><td>supabase-vendor-Bl13M3oS.js</td><td class="num">209.2 KB</td><td class="num">53.3 KB</td><td><span class="pill initial">INITIAL</span></td><td>@supabase/supabase-js — auth, postgrest, realtime, storage.</td></tr>
+      <tr><td>5</td><td>html2canvas-BiU36eqY.js</td><td class="num">194.8 KB</td><td class="num">45.0 KB</td><td><span class="pill lazy">LAZY</span></td><td>html2canvas DOM→canvas renderer for PDF.</td></tr>
+      <tr><td>6</td><td>index.es-2UjYyk_0.js</td><td class="num">147.9 KB</td><td class="num">47.3 KB</td><td><span class="pill lazy">LAZY</span></td><td>jsPDF SVG dependency (canvg).</td></tr>
+      <tr><td>7</td><td>index-BR-tZpPi.js</td><td class="num">67.6 KB</td><td class="num">18.4 KB</td><td><span class="pill initial">INITIAL</span></td><td>App entry, route table, prefetch map.</td></tr>
+      <tr><td>8</td><td>BookBorrow-DGPhcfyE.js</td><td class="num">60.4 KB</td><td class="num">15.5 KB</td><td><span class="pill lazy">LAZY</span></td><td>Book Borrow page.</td></tr>
+      <tr><td>9</td><td>PathFinder-BoRCVpNP.js</td><td class="num">60.2 KB</td><td class="num">13.6 KB</td><td><span class="pill lazy">LAZY</span></td><td>Path Finder page.</td></tr>
+      <tr><td>10</td><td>Statistics-_N50B9rV.js</td><td class="num">58.9 KB</td><td class="num">13.3 KB</td><td><span class="pill lazy">LAZY</span></td><td>Statistics page.</td></tr>
+      <tr><td>11</td><td>MemberLayout-OuS8Ctsh.js</td><td class="num">43.9 KB</td><td class="num">11.9 KB</td><td><span class="pill lazy">LAZY</span></td><td>Workspace shell, sidebar, providers.</td></tr>
+      <tr><td>12</td><td>router-vendor-kM_2Wpdo.js</td><td class="num">39.3 KB</td><td class="num">14.0 KB</td><td><span class="pill initial">INITIAL</span></td><td>react-router-dom.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="note">
+    <strong>What this means:</strong> the two largest chunks (ExcelJS + jsPDF) are <em>not</em> on any page load. The public home loads ~153 KB compressed JS (entry + React + router + Supabase + runtime/client) and 263 KB of hero images. The 907.8 KB Excel and 389.7 KB PDF engines load only when an export button is used. Supabase is an initial/auth-check cost (53.3 KB gzip); deferring the session check until interaction would remove it from the public first load but changes auth behaviour.
+  </div>
+</main>
+</body>
+</html>

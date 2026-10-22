@@ -118,3 +118,9 @@ before your code even runs. Step 3 above adds the role check on top.
    passwords are rejected at registration and password reset.
 5. When you see a **401** in testing, that is the security working — not a
    bug. 401 = no valid badge; 403 = valid badge, not enough permission.
+6. **Never commit demo or live passwords.** The manual sample-account SQL now
+   uses `CHANGE_ME_*` placeholders. Redacting a file does not remove it from git
+   history: if a real password was ever committed, **rotate that account** (and
+   rewrite history only with the team's agreement). The Supabase anon/publishable
+   key is public by design; the service_role key, Vercel token and email app
+   password must never be committed.

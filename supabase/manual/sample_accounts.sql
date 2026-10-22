@@ -107,7 +107,8 @@ from public."usersData"
 where library_id in ('FAC-0001', '26-00001');
 
 -- 7) Sample admin account (for settings like fines) -------------------------
---    admin@ccc.edu.ph / Admin#2026  -> card ADM-0001 — Alex R. Mendoza
+--    admin@ccc.edu.ph  -> card ADM-0001 — Alex R. Mendoza
+--    Set a unique password below before running; never commit it.
 insert into public."usersData"
   (library_id, first_name, middle_initial, surname, role, provenance)
 select 'ADM-0001', 'Alex', 'R', 'Mendoza', 'admin', 'setup'
@@ -120,7 +121,7 @@ insert into auth.users
    confirmation_token, recovery_token, email_change_token_new, email_change)
 select '00000000-0000-0000-0000-000000000000', gen_random_uuid(),
        'authenticated', 'authenticated', 'admin@ccc.edu.ph',
-       crypt('Admin#2026', gen_salt('bf')), now(),
+       crypt('CHANGE_ME_ADMIN_PASSWORD', gen_salt('bf')), now(),
        '{"provider": "email", "providers": ["email"]}'::jsonb,
        jsonb_build_object('library_id', 'ADM-0001', 'first_name', 'Alex',
                           'surname', 'Mendoza', 'email_verified', true),

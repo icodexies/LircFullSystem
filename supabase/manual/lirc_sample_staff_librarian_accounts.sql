@@ -1,8 +1,9 @@
 -- ============================================================================
 -- Sample login accounts for testing role-scoped screens (dev/demo only).
 --
---   Librarian: librarian@ccc.edu.ph / Librarian#2026   (card LIB-0002)
---   Staff:     staff@ccc.edu.ph     / Staff#2026       (card LIB-0003)
+--   Librarian: librarian@ccc.edu.ph   (card LIB-0002)
+--   Staff:     staff@ccc.edu.ph       (card LIB-0003)
+--   Set unique passwords below before running; never commit them.
 --
 -- Each account gets the built-in Supabase auth user (password already
 -- confirmed — no email is sent) and the matching public."usersData" profile
@@ -27,7 +28,7 @@ begin
     values
       (v_instance, v_librarian, 'authenticated', 'authenticated',
        'librarian@ccc.edu.ph',
-       extensions.crypt('Librarian#2026', extensions.gen_salt('bf')),
+       extensions.crypt('CHANGE_ME_LIBRARIAN_PASSWORD', extensions.gen_salt('bf')),
        now(), now(), now(),
        '{"provider":"email","providers":["email"]}'::jsonb, '{}'::jsonb,
        '', '', '', '');
@@ -58,7 +59,7 @@ begin
     values
       (v_instance, v_staff, 'authenticated', 'authenticated',
        'staff@ccc.edu.ph',
-       extensions.crypt('Staff#2026', extensions.gen_salt('bf')),
+       extensions.crypt('CHANGE_ME_STAFF_PASSWORD', extensions.gen_salt('bf')),
        now(), now(), now(),
        '{"provider":"email","providers":["email"]}'::jsonb, '{}'::jsonb,
        '', '', '', '');

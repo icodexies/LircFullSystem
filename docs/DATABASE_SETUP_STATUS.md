@@ -153,9 +153,12 @@ transaction; migration history synced):
 | `20261021140000_activity_member_fields` | The activity log's usersData whitelist also captures **first name, surname, M.I., suffix and person status**, so the new direct staff edits are fully audited (old → new values) |
 | `20261021150000_gen_ed_path_finder` | **General Education in the Path Finder**: `gen_ed_subjects` groups the shared subjects that appear in several programs under different codes; a recommendation saved on a group (or on any of its subject codes) now shows in every program's matching subject. Adds `lirc_path_finder_gen_ed()` and the 21 Gen Ed groups mapped from the current curricula (Understanding the Self, Ethics, Rizal, PATHFit, NSTP, …) |
 | `20261021160000_gen_ed_book_lists` | First pass of the library's Gen Ed collection list (PDF): 102 books confidently matched to catalog records and linked to their Gen Ed groups; the representative code now follows the code used by the most program entries |
-| `20261022100000_member_search_index` | **Indexed member search**: a stored `search_name` removes the per-row `person_name()` call (EXPLAIN 105.6 ms → 17.1 ms) and the pg_trgm GIN index backs the typo fallback (75.8 ms → 1.3 ms). Full RPC measured 93–174 ms before and 16–19 ms after across admin/librarian/staff; 15/18 sample queries have identical results, and three dotted-initial queries now return the complete set |
+| `20261022100000_member_search_index` | **Indexed member search**: a stored `search_name` removes the per-row `person_name()` call (EXPLAIN 105.6 ms → 17.1 ms) and the pg_trgm GIN index backs the typo fallback (75.8 ms → 1.3 ms). Full RPC measured 93–174 ms before and 16–19 ms after across admin/librarian/staff; initial parity was 15/18, later corrected by the word-start/wildcard follow-ups |
 | `20261022101000_wrap_auth_uid_catalog` | Wrapped `auth.uid()` in `lirc_private.can_edit_catalog()` as `(select auth.uid())`; permissions verified unchanged. Best-practice change only — no standalone timing gain claimed |
-| `20261022102000_member_search_punctuation_space` | Treats punctuation as a word separator in `lirc_member_lookup`, so `D.Villanueva`, `D. VILLANUEVA` and `villanueva, d.` all return the same 7 matching profiles (the old version returned 2 or fuzzy noise) |
+| `20261022102000_member_search_punctuation_space` | Treats punctuation as a word separator in `lirc_member_lookup`, so `D.Villanueva`, `D. VILLANUEVA` and `villanueva, d.` all normalize to the same words. (The next migration then limited single-letter tokens to word starts.) |
+| `20261022103000_member_search_word_start_escape` | Single `[a-z0-9]` tokens match only the start of a name word (including the standalone middle initial); longer words use literal `position()`; `%` and `_` are literal and the fuzzy fallback is skipped for them. Final 24-query parity: 13 identical, 4 single-letter corrections (`d villanueva` 7→4; `D. VILLANUEVA` 2→4; `villanueva, d.` 2→4; `D.Villanueva` 10→4), 6 wildcard queries 10→0 |
+| `20261022105000_member_search_single_letter_like` | Replaces the single-letter regex with an equivalent start-of-string/after-space `LIKE` on the one alphanumeric character. Staff warm timings: `hernandez` 16.8 ms, `D. VILLANUEVA` 25.9 ms, typo 18.1 ms |
+| `20261022106000_loan_open_profile_index` | Adds the missing partial index `loans_open_profile_idx ON book_loans (user_profile_id) WHERE returned_at IS NULL`. At 35 loans the planner still uses a 0.15–0.20 ms Seq Scan; a forced plan uses Index Only Scan (1.495 ms). No current speedup claimed; it is for scale |
 
 **Home collection covers stored**: the covers the home carousel shows were
 downloaded once from the Open Library covers API (by ISBN), converted to WebP
@@ -219,8 +222,9 @@ its loan and charges the borrower the replacement amount, and members with
 unpaid fines cannot borrow until staff settle them (paid/waived) from the
 member's record. When OFF nothing is assessed, shown, or enforced - existing
 ledger rows are kept for when it is switched back on. The sample admin
-account `admin@ccc.edu.ph / Admin#2026` (ADM-0001 Alex R. Mendoza) was
-added for testing the settings.
+account `admin@ccc.edu.ph` (ADM-0001 Alex R. Mendoza) was
+added for testing the settings; its password is handed over separately and is
+not recorded in this repository.
 
 
 Details and metric definitions: [PERSONNEL_DASHBOARD.md](PERSONNEL_DASHBOARD.md).
