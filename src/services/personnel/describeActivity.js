@@ -70,9 +70,9 @@ export const ACTIVITY_GROUPS = [
   },
   {
     id: "member_change",
-    label: "Member changes",
+    label: "Member edits",
     prefixes: ["member_change"],
-    description: "Member edit requests, approvals and rejections",
+    description: "Direct member record edits",
   },
   {
     id: "enrollment",

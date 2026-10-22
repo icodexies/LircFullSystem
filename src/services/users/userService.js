@@ -2,9 +2,7 @@ import { getSupabase } from "../auth/authService.js";
 
 export function usersError(error) {
   if (error?.code === "23505")
-    return new Error(
-      "An edit for this member is already waiting for admin approval.",
-    );
+    return new Error("That change conflicts with another record.");
   if (["42883", "PGRST202", "42703", "42P01"].includes(error?.code))
     return new Error(
       "The Users page needs its database setup first. Apply the member edits migration.",
@@ -44,38 +42,16 @@ export async function getMemberOptions(signal) {
   return data ?? { department: [], program: [], position: [] };
 }
 
-// Submit a profile edit. Library staff — staff, librarian and admin — save the
-// change directly; the activity log records it. Requests remain for any other
-// future workflow.
-export async function submitMemberChange(profileId, changes) {
+// Save a profile edit directly. Staff, librarian and admin all have this
+// right; the activity log records the actor and the changed fields.
+export async function updateMember(profileId, changes) {
   const client = await getSupabase();
-  const { data, error } = await client.rpc("lirc_request_member_change", {
+  const { data, error } = await client.rpc("lirc_update_member", {
     p_profile_id: profileId,
     p_changes: changes,
   });
   if (error) throw usersError(error);
-  return data ?? { applied: false };
-}
-
-// Change requests: admins see all; staff/librarian only their own.
-export async function getMemberChangeRequests(onlyMine, signal) {
-  const client = await getSupabase();
-  const { data, error } = await client
-    .rpc("lirc_member_change_requests", { p_only_mine: onlyMine })
-    .abortSignal(signal);
-  if (error) throw usersError(error);
-  return data?.requests ?? [];
-}
-
-// Admin only: approve or reject a member edit request.
-export async function reviewMemberChange(requestId, approve) {
-  const client = await getSupabase();
-  const { data, error } = await client.rpc("lirc_review_member_change", {
-    p_request_id: requestId,
-    p_approve: approve,
-  });
-  if (error) throw usersError(error);
-  return data ?? { ok: true };
+  return data ?? { applied: true };
 }
 
 // Add one member (and, for a student, one annual enrollment row).

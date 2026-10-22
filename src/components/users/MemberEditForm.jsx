@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useDialog } from "../../hooks/shared/useDialog.js";
 import { useToast } from "../../hooks/shared/useToast.js";
-import { submitMemberChange } from "../../services/users/userService.js";
+import { updateMember } from "../../services/users/userService.js";
 import {
   EDIT_TEXT_FIELDS,
   EDIT_CLASSIFICATION_FIELDS,
@@ -46,7 +46,7 @@ export default function MemberEditForm({
         confirmLabel: "Apply edit",
       });
       if (!approved) return;
-      await submitMemberChange(profile.id, changes);
+      await updateMember(profile.id, changes);
       toast.success("Profile updated.");
       await onSaved();
     } catch (error) {

@@ -25,7 +25,7 @@ export const GROUP_LABELS = {
   inventory: "Inventory",
   loans: "Borrowing",
   users: "Members",
-  member_change: "Member changes",
+  member_change: "Member edits",
   enrollment: "Library validation",
   catalog: "Catalog",
   attendance: "Attendance",

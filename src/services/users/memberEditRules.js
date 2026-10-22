@@ -19,13 +19,6 @@ export const EDIT_CLASSIFICATION_FIELDS = [
 ];
 // Status is a fixed list from personStatus.js, not a database lookup.
 export const EDIT_STATUS_FIELD = { key: "person_status", label: "Person status" };
-export const EDIT_FIELD_LABELS = Object.fromEntries(
-  [
-    ...EDIT_TEXT_FIELDS,
-    ...EDIT_CLASSIFICATION_FIELDS,
-    EDIT_STATUS_FIELD,
-  ].map((field) => [field.key, field.label]),
-);
 
 const text = (value) => String(value ?? "").trim();
 
