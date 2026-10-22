@@ -1,6 +1,6 @@
--- Wrap auth.uid() in the catalog role helper so PostgreSQL evaluates it once
--- per statement instead of once per row in the write policies. Behaviour is
--- unchanged (staff still cannot pass; librarian/admin still can).
+-- Wrap auth.uid() in the catalog role helper as a best-practice cleanup.
+-- Behaviour is unchanged (staff still cannot pass; librarian/admin still can).
+-- No standalone performance gain is claimed for this change.
 begin;
 
 create or replace function lirc_private.can_edit_catalog()

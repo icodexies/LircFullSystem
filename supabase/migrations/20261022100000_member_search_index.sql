@@ -2,12 +2,14 @@
 -- Member search: indexed name lookup
 --
 -- lirc_member_lookup scanned all ~10k users and called person_name() per row
--- (~95 ms per search). A stored search_name (lowercase, punctuation removed)
--- with a pg_trgm index makes the same search ~9 ms; the typo fallback uses the
--- index-backed word-similarity operator (55 ms -> 3 ms).
+-- (EXPLAIN: 105.6 ms). A stored search_name removes that per-row call (17.1 ms);
+-- the pg_trgm index backs the typo fallback (75.8 ms -> 1.3 ms). Full RPC:
+-- 93-174 ms before, 16-19 ms after. The multi-word fast path remains a cheap
+-- sequential scan at this size; the index serves the fuzzy operator.
 --
--- Search behaviour is unchanged: card, any word order, middle initials and
--- small typos still work; punctuation in the query is simply ignored now.
+-- 15/18 sampled queries return identical results; three dotted-initial queries
+-- are corrected (the old code returned 2 or fuzzy noise instead of 7). The
+-- punctuation-as-separator follow-up is 20261022102000.
 -- ============================================================================
 begin;
 
