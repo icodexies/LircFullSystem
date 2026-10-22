@@ -31,9 +31,9 @@ longer words use literal `position()`.
 
 ### Result parity — 24 queries
 
-**13 multi-letter queries are identical** (case, word order, spacing, card,
-typos). **4 single-letter queries are corrected**, and **6 wildcard queries no
-longer expand**.
+**14 of the 18 original queries are identical** (case, word order, spacing, card,
+typos). **4 single-letter queries are corrected**, and **6 added wildcard probes
+no longer expand**.
 
 | Query | Old | New | Reason |
 | --- | ---: | ---: | --- |
