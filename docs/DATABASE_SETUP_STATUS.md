@@ -163,6 +163,7 @@ transaction; migration history synced):
 | `20261022108000_my_statistics_purposes` | Adds `attendance.purposes` to `lirc_my_statistics`: the signed-in member's visit count per `purpose_of_visit` for the selected semester, ordered by count. Used by the “Visits by purpose” panel in Statistics → My attendance. The payload remains scoped to the caller |
 | `20261022109000_direct_member_update` | New `lirc_update_member` RPC: staff, librarian and admin save member edits directly (sanitize + apply, activity trigger records the actor). Replaces the request RPC for the Users page |
 | `20261022110000_remove_member_edit_approvals` | Removes the obsolete member-edit approval workflow: deletes member-edit notifications and request/review activity, drops the request/review/list functions and the `member_change_requests` table. Enrollment/validation approvals are untouched; direct-edit activity (`member_change.apply`) remains |
+| `20261023100000_registration_tokens` | Adds the email-link registration token store. Tokens are single-use, expire after 30 minutes, bind an email to an existing `usersData` profile only after library-ID/name verification, and are readable/writable only by the service-role registration function. Replaces the old generated-password registration flow |
 
 **Home collection covers stored**: the covers the home carousel shows were
 downloaded once from the Open Library covers API (by ISBN), converted to WebP

@@ -79,24 +79,13 @@ export async function logout() {
   if (error) throw error;
 }
 
-export async function registerLibraryUser(form) {
-  const details = {
-    first_name: form.first_name.trim(),
-    surname: form.surname.trim(),
-    middle_initial: form.middle_initial.trim(),
-    library_id: form.library_id.trim(),
-    email: form.email.trim().toLowerCase(),
-  };
-  if (!details.first_name || !details.surname || !details.library_id) {
-    throw new Error("Please fill in all required fields.");
-  }
-  if (!/^[^\s@]+@ccc\.edu\.ph$/.test(details.email)) {
-    throw new Error("Use your school email ending in @ccc.edu.ph.");
-  }
-
+// Token-based registration. The only public entry point is the email step;
+// the emailed token carries the claim through identity verification and the
+// password step.
+async function callRegistration(body) {
   const supabase = await getSupabase();
-  const { data, error } = await supabase.functions.invoke("register-user", {
-    body: details,
+  const { data, error } = await supabase.functions.invoke("registration", {
+    body,
   });
   if (error) {
     let response;
@@ -106,14 +95,45 @@ export async function registerLibraryUser(form) {
       // Network errors do not have a JSON response.
     }
     const registrationError = new Error(
-      response?.error || "Registration is unavailable. Please try again later."
+      response?.error || "Registration is unavailable. Please try again later.",
     );
     registrationError.code = response?.code;
     throw registrationError;
   }
   if (!data?.ok) {
-    throw new Error("Couldn't finish registration. Please try again.");
+    const registrationError = new Error(
+      data?.error || "Couldn't finish registration. Please try again.",
+    );
+    registrationError.code = data?.code;
+    throw registrationError;
   }
+  return data;
+}
+
+export async function requestRegistrationLink(email) {
+  return callRegistration({
+    action: "request",
+    email: email.trim().toLowerCase(),
+  });
+}
+
+export async function verifyRegistrationToken(token) {
+  return callRegistration({ action: "verify", token });
+}
+
+export async function matchRegistrationIdentity(token, identity) {
+  return callRegistration({
+    action: "match",
+    token,
+    library_id: identity.library_id,
+    first_name: identity.first_name,
+    surname: identity.surname,
+    middle_initial: identity.middle_initial,
+  });
+}
+
+export async function completeRegistration(token, password) {
+  return callRegistration({ action: "complete", token, password });
 }
 
 // Ask the server to email a one-time reset link. The server always replies

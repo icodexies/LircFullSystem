@@ -188,14 +188,15 @@ export default function Footer() {
             </R>
             <R i={next()}>
               <p className="mt-5 text-sm leading-relaxed">
-                Your library card is all you need. Here is how it works:
+                Your CCC email and library card are all you need. Here is how it
+                works:
               </p>
             </R>
             <ol className="mt-5 space-y-3">
               {[
-                "Register with the details printed on your library card.",
-                "Sign in and find your books in the catalog or Path Finder.",
-                "Borrow at the circulation desk — your due dates are on My Borrowing.",
+                "Enter your CCC email and open the secure registration link.",
+                "Verify the library ID and name printed on your library card.",
+                "Choose a password, then sign in to borrow and use the catalog.",
               ].map((step, index) => (
                 <li key={step} className="flex items-start gap-3 text-sm">
                   <R i={next()}>

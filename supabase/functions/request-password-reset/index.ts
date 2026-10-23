@@ -24,7 +24,7 @@ const genericReply = { ok: true };
 
 const RESEND_COOLDOWN_SECONDS = 120;
 
-// Same SMTP account as register-user; values come from function secrets.
+// Same SMTP account as the other LIRC account emails; values come from secrets.
 const gmailUser = Deno.env.get("GMAIL_USER")?.trim();
 const gmailAppPassword = Deno.env.get("GMAIL_APP_PASSWORD")?.replace(/\s/g, "");
 // The website address used inside the emailed link.

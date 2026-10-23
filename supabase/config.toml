@@ -414,17 +414,17 @@ enabled = true
 # and column/key alignment. Set to "null" to emit raw, unformatted SQL.
 # format_options = "{\"keywordCase\":\"upper\",\"indent\":2,\"maxWidth\":180,\"commaStyle\":\"trailing\"}"
 
-[functions.register-user]
+[functions.registration]
 enabled = true
-# Public endpoint: students register before they have an account.
+# Public endpoint: email-link registration for existing library profiles.
 verify_jwt = false
-import_map = "./functions/register-user/deno.json"
+import_map = "./functions/registration/deno.json"
 # Uncomment to specify a custom file path to the entrypoint.
 # Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
-entrypoint = "./functions/register-user/index.ts"
+entrypoint = "./functions/registration/index.ts"
 # Specifies static files to be bundled with the function. Supports glob patterns.
 # For example, if you want to serve static HTML pages in your function:
-# static_files = [ "./functions/register-user/*.html" ]
+# static_files = [ "./functions/registration/*.html" ]
 
 [functions.request-password-reset]
 enabled = true
