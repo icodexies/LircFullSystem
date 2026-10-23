@@ -6,7 +6,7 @@ Read [the folder guide](docs/FOLDER_STRUCTURE.md) to find files by feature. Read
 
 ## Requirements
 
-- Node.js 20.19+ or 22.12+ compatible with Vite 8
+- A security-patched Node.js line: **22.23.4+**, **24.22.1+**, or **26.12.1+** (Node 20 is end-of-life)
 - A Supabase project
 - Deno and the Supabase CLI to run or deploy Edge Functions
 

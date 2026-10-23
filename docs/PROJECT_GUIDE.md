@@ -71,7 +71,7 @@ Borrowing, reservations, online book files, thesis submission, password recovery
 
 ## Deployment and verification
 
-Run `npm run lint` and `npm run build` before releasing. Vite requires Node.js 20.19+ or 22.12+ for the installed major version. The current `es2022` build targets modern browsers and does not add runtime polyfills.
+Run `npm run lint` and `npm run build` before releasing. Vite 8 accepts Node.js 20.19+/22.12+, but use a security-patched line: **22.23.4+**, **24.22.1+**, or **26.12.1+** (Node 20 is end-of-life). The repo pins 22.23.4 in `.nvmrc`. The current `es2022` build targets modern browsers and does not add runtime polyfills.
 
 Deploy the production `dist` directory to a static host/CDN. Configure the host to return `index.html` for app routes such as `/register` and `/home`, so refreshing a route works. `vite preview` is for local build checking, not the production server.
 
