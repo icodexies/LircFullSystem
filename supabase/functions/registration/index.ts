@@ -132,7 +132,26 @@ async function requestLink(body: Record<string, unknown>) {
     email.length > 254 ||
     !/^[^\s@]+@ccc\.edu\.ph$/.test(email)
   ) {
-    return json({ error: "Use your CCC email ending in @ccc.edu.ph." }, 400);
+    return json({ error: "Use your CCC email." }, 400);
+  }
+
+  // Registration is only for people without an account. Do this before the
+  // cooldown/email send so an existing account never receives a new link.
+  const { data: alreadyRegistered, error: lookupError } = await admin!
+    .rpc("lirc_email_has_account", { p_email: email });
+  if (lookupError) {
+    console.error("Couldn't check the registration email.", lookupError);
+    return json({ error: "Registration is temporarily unavailable." }, 500);
+  }
+  if (alreadyRegistered) {
+    return json(
+      {
+        error:
+          "This email already has an account. Log in or reset your password.",
+        code: "email_registered",
+      },
+      409,
+    );
   }
 
   // Quiet cooldown: the visitor always gets the same reply.

@@ -164,6 +164,7 @@ transaction; migration history synced):
 | `20261022109000_direct_member_update` | New `lirc_update_member` RPC: staff, librarian and admin save member edits directly (sanitize + apply, activity trigger records the actor). Replaces the request RPC for the Users page |
 | `20261022110000_remove_member_edit_approvals` | Removes the obsolete member-edit approval workflow: deletes member-edit notifications and request/review activity, drops the request/review/list functions and the `member_change_requests` table. Enrollment/validation approvals are untouched; direct-edit activity (`member_change.apply`) remains |
 | `20261023100000_registration_tokens` | Adds the email-link registration token store. Tokens are single-use, expire after 30 minutes, bind an email to an existing `usersData` profile only after library-ID/name verification, and are readable/writable only by the service-role registration function. Replaces the old generated-password registration flow |
+| `20261023102000_registration_email_check` | Adds a service-role-only helper that checks `auth.users` for an email. The registration request uses it to reject existing accounts before sending a link; the page keeps the CCC-email wording without spelling out the domain |
 
 **Home collection covers stored**: the covers the home carousel shows were
 downloaded once from the Open Library covers API (by ISBN), converted to WebP

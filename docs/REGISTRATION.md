@@ -5,8 +5,11 @@ no login yet. It does **not** create a new roster record.
 
 ## Flow
 
-1. **CCC email only** — the visitor enters an email ending in `@ccc.edu.ph` on
-   `/register`.
+1. **CCC email only** — the visitor enters their CCC email on `/register`.
+   The page says “CCC email” without spelling out the domain; the server still
+   accepts only `@ccc.edu.ph` addresses.
+   Before any link is sent, the server rejects an email that already has an
+   auth account with a clear error (log in or reset the password).
 2. **Secure link** — the `registration` edge function creates a random token
    (only its SHA-256 hash is stored in `public.registration_tokens`) and emails
    `/register?token=...` from the library Gmail. The link expires after
@@ -27,8 +30,9 @@ no login yet. It does **not** create a new roster record.
 - The raw token exists only in the email; the database stores a hash.
 - Tokens are single-use and expire; a new request invalidates the previous
   unused link for that email.
-- The public request endpoint always replies the same way for valid CCC
-  addresses, so it does not reveal whether an email/library record exists.
+- New CCC addresses receive the same generic reply. Per the current product
+  requirement, an address that already has an account is rejected explicitly.
+  The endpoint never reveals roster/library-ID details.
 - Only `service_role` can read/write `registration_tokens`; RLS is enabled and
   all public/authenticated grants are revoked.
 - Passwords are never stored by the library system — Supabase Auth hashes them.

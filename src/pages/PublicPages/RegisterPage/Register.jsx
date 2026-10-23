@@ -23,7 +23,6 @@ import AuthShell, {
 } from "../../../components/auth/AuthShell.jsx";
 import { Spinner } from "../../../components/ui/Loading.jsx";
 
-const DOMAIN = "@ccc.edu.ph";
 const EMPTY_IDENTITY = {
   library_id: "",
   first_name: "",
@@ -98,8 +97,8 @@ function Register() {
     event.preventDefault();
     if (loading) return;
     const email = emailInput.trim().toLowerCase();
-    if (!/^[^\s@]+@ccc\.edu\.ph$/.test(email)) {
-      setError(`Use your CCC email ending in ${DOMAIN}.`);
+    if (!email) {
+      setError("Enter your CCC email.");
       setHelp(false);
       return;
     }
@@ -229,7 +228,6 @@ function Register() {
                   maxLength={254}
                   value={emailInput}
                   onChange={(event) => setEmailInput(event.target.value)}
-                  placeholder={`yourname${DOMAIN}`}
                   className={inputCls}
                 />
               </Field>
