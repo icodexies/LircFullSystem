@@ -4,8 +4,6 @@ import HeroStandard from "./HeroStandard.jsx";
 import HeroWide from "./HeroWide.jsx";
 import { useHero } from "../../hooks/home/useHero.js";
 
-const pad = (index) => String(index + 1).padStart(2, "0");
-
 // One hero, three layouts, one shared state:
 //   phones        → swipe carousel with dots
 //   tablet/laptop → centred text + expanding card strip (the reference)
@@ -34,7 +32,6 @@ export default function Hero() {
     prev,
     setActive,
     BTN_SLANT,
-    pad,
     reducedMotion,
     paused,
   };

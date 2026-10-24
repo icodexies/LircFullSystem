@@ -1,9 +1,9 @@
 // Large screens (1280px+): split layout with a featured panel.
 //
-// Left column (~40%): label, headline, description, CTA, then the counter and
-// arrows together, all flush to the same left edge. Right column (~55%): the
-// active slide as a big featured panel, with a vertical thumbnail list
-// 01–04 beside it and a progress bar under the active thumbnail.
+// Left column (~40%): label, headline, description, CTA, then the arrows, all
+// flush to the same left edge. Right column (~55%): the active slide as a big
+// featured panel, with a vertical thumbnail list beside it and a progress bar
+// under the active thumbnail.
 import { Link } from "react-router-dom";
 import Reveal from "../ui/Reveal.jsx";
 import { ArrowIcon } from "./ArrowIcon.jsx";
@@ -16,7 +16,6 @@ export default function HeroWide({
   prev,
   setActive,
   BTN_SLANT,
-  pad,
   paused,
 }) {
   const slide = slides[active];
@@ -24,7 +23,7 @@ export default function HeroWide({
   return (
     <div className="relative z-10 mx-auto flex min-h-svh w-full max-w-[1360px] items-center px-10">
       <div className="flex w-full items-center gap-12 2xl:gap-16">
-        {/* Left column — text, CTA, counter + arrows (all one left edge). */}
+        {/* Left column — text, CTA + arrows (all one left edge). */}
         <Reveal
           direction="left"
           distance={60}
@@ -60,34 +59,24 @@ export default function HeroWide({
             <ArrowIcon />
           </Link>
 
-          {/* Counter + arrows live under the text, on the same left edge. */}
-          <div className="mt-10 flex items-center gap-6">
-            <div className="flex items-end gap-2">
-              <span className="font-['Fraunces',serif] text-4xl font-bold leading-none text-white">
-                {pad(active)}
-              </span>
-              <span className="pb-1 text-xs font-semibold tracking-widest text-slate-300">
-                / {pad(slides.length - 1)}
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={prev}
-                aria-label="Previous slide"
-                className="flex h-11 w-11 items-center justify-center rounded-full border border-white/30 bg-white/10 text-white backdrop-blur-md transition-all duration-300 hover:bg-white hover:text-navy active:scale-95"
-              >
-                <ArrowIcon direction="left" />
-              </button>
-              <button
-                type="button"
-                onClick={next}
-                aria-label="Next slide"
-                className="flex h-11 w-11 items-center justify-center rounded-full border border-white/30 bg-white/10 text-white backdrop-blur-md transition-all duration-300 hover:bg-white hover:text-navy active:scale-95"
-              >
-                <ArrowIcon />
-              </button>
-            </div>
+          {/* Arrows live under the text, on the same left edge. */}
+          <div className="mt-10 flex items-center gap-2">
+            <button
+              type="button"
+              onClick={prev}
+              aria-label="Previous slide"
+              className="flex h-11 w-11 items-center justify-center rounded-full border border-white/30 bg-white/10 text-white backdrop-blur-md transition-all duration-300 hover:bg-white hover:text-navy active:scale-95"
+            >
+              <ArrowIcon direction="left" />
+            </button>
+            <button
+              type="button"
+              onClick={next}
+              aria-label="Next slide"
+              className="flex h-11 w-11 items-center justify-center rounded-full border border-white/30 bg-white/10 text-white backdrop-blur-md transition-all duration-300 hover:bg-white hover:text-navy active:scale-95"
+            >
+              <ArrowIcon />
+            </button>
           </div>
         </Reveal>
 
@@ -121,10 +110,6 @@ export default function HeroWide({
                 />
               ))}
               <div className="absolute inset-0 bg-gradient-to-t from-navy via-navy/25 to-transparent" />
-
-              <span className="absolute right-5 top-5 flex h-9 min-w-9 items-center justify-center rounded-full bg-white px-2 text-xs font-bold text-navy">
-                {pad(active)}
-              </span>
 
               <div className="absolute inset-x-0 bottom-0 p-6">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-sky-300">
@@ -173,9 +158,6 @@ export default function HeroWide({
                         className="absolute inset-0 h-full w-full object-cover object-center"
                       />
                       <span className="absolute inset-0 bg-navy/30" />
-                      <span className="absolute left-1.5 top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-white px-1 text-[9px] font-bold text-navy">
-                        {pad(i)}
-                      </span>
                     </span>
                     <span
                       aria-hidden="true"

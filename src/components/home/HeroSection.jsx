@@ -121,7 +121,7 @@ export function LeftSide({ slides = [], active, BTN_SLANT }) {
   );
 }
 
-export function RightSide({ slides = [], active, next, prev, setActive, pad }) {
+export function RightSide({ slides = [], active, next, prev, setActive }) {
   const touchStart = useRef(null);
   return (
     <>
@@ -134,17 +134,7 @@ export function RightSide({ slides = [], active, next, prev, setActive, pad }) {
         className="flex w-full flex-col items-center xl:w-auto xl:items-end [&>div]:w-full"
       >
         {/* Controls */}
-        <div className="mb-3 flex items-center justify-center gap-5 sm:mb-5 sm:gap-6 xl:mb-6 xl:w-full xl:min-w-[560px] xl:justify-between">
-          <div className="flex items-end gap-2">
-            <span className="font-['Fraunces',serif] text-2xl font-bold leading-none text-white sm:text-4xl xl:text-5xl">
-              {pad(active)}
-            </span>
-
-            <span className="pb-0.5 text-[10px] font-semibold tracking-widest text-slate-300 sm:pb-1 sm:text-xs">
-              / {pad(slides.length - 1)}
-            </span>
-          </div>
-
+        <div className="mb-3 flex items-center justify-center gap-5 sm:mb-5 sm:gap-6 xl:mb-6">
           <div className="flex items-center gap-2">
             <button
               type="button"
@@ -211,11 +201,6 @@ export function RightSide({ slides = [], active, next, prev, setActive, pad }) {
                 />
 
                 <div className="absolute inset-0 bg-gradient-to-t from-navy/90 via-navy/20 to-transparent" />
-
-                {/* Number */}
-                <span className="absolute left-1.5 top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-white px-1 text-[9px] font-bold text-navy sm:left-3 sm:top-3 sm:h-7 sm:min-w-7 sm:px-1.5 sm:text-[11px]">
-                  {pad(i)}
-                </span>
 
                 {/* Active card text */}
                 <div

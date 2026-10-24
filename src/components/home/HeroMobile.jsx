@@ -14,7 +14,6 @@ export default function HeroMobile({
   active,
   setActive,
   BTN_SLANT,
-  pad,
   reducedMotion,
 }) {
   const track = useRef(null);
@@ -141,9 +140,6 @@ export default function HeroMobile({
                   className="absolute inset-0 h-full w-full object-cover object-center"
                 />
                 <span className="absolute inset-0 bg-gradient-to-t from-navy/95 via-navy/35 to-transparent" />
-                <span className="absolute left-3 top-3 flex h-7 min-w-7 items-center justify-center rounded-full bg-white px-1.5 text-[11px] font-bold text-navy">
-                  {pad(i)}
-                </span>
                 <span className="absolute inset-x-0 bottom-0 block p-4">
                   <span className="block text-[10px] font-semibold uppercase tracking-[0.16em] text-sky-300">
                     {s.stat.label}
