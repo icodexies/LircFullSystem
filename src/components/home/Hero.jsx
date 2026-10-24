@@ -39,18 +39,19 @@ export default function Hero() {
     paused,
   };
 
+  // The hero fills the first screen, so pausing on hover meant a resting
+  // cursor could stop autoplay indefinitely. Keep pauses for keyboard focus
+  // (when focus-visible) and touch, plus the hook's visibility and
+  // reduced-motion checks.
   return (
     <section
       ref={heroRef}
       className="relative -mt-24 min-h-svh w-full overflow-hidden"
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={(event) =>
-        setPaused(event.currentTarget.contains(document.activeElement))
-      }
-      onFocus={() => setPaused(true)}
+      onFocus={(event) => {
+        if (event.target.matches?.(":focus-visible")) setPaused(true);
+      }}
       onBlur={(event) => {
-        if (!event.currentTarget.contains(event.relatedTarget))
-          setPaused(event.currentTarget.matches(":hover"));
+        if (!event.currentTarget.contains(event.relatedTarget)) setPaused(false);
       }}
       onTouchStart={() => setPaused(true)}
       onTouchEnd={() => setPaused(false)}
