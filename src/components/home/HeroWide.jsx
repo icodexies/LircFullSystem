@@ -160,9 +160,12 @@ export default function HeroWide({
                           : "border-white/20 group-hover:border-white/50"
                       }`}
                     >
+                      {/* The rail is a preview of the featured panel, so use
+                          the same source as the panel rather than a separate
+                          thumbnail photo. */}
                       <img
-                        src={s.thumbnail}
-                        srcSet={s.thumbnailSrcSet}
+                        src={s.background}
+                        srcSet={s.backgroundSrcSet}
                         sizes="96px"
                         alt=""
                         aria-hidden="true"
