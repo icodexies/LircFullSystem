@@ -101,14 +101,16 @@ export default function HeroWide({
         >
           <div className="flex gap-4">
             <div className="relative h-[clamp(420px,52vh,520px)] min-w-0 flex-1 overflow-hidden rounded-3xl border border-white/10">
+              {/* The featured tab mirrors the highlighted thumbnail. The
+                  full-bleed backdrop behind the hero remains its own image. */}
               {slides.map((s, i) => (
                 <img
                   key={s.id}
-                  src={s.background}
-                  srcSet={s.backgroundSrcSet}
+                  src={s.thumbnail}
+                  srcSet={s.thumbnailSrcSet}
                   sizes="55vw"
-                  width={s.backgroundWidth ?? undefined}
-                  height={s.backgroundHeight ?? undefined}
+                  width={s.thumbnailWidth ?? undefined}
+                  height={s.thumbnailHeight ?? undefined}
                   alt=""
                   aria-hidden="true"
                   loading={i === 0 ? "eager" : "lazy"}
@@ -160,12 +162,9 @@ export default function HeroWide({
                           : "border-white/20 group-hover:border-white/50"
                       }`}
                     >
-                      {/* The rail is a preview of the featured panel, so use
-                          the same source as the panel rather than a separate
-                          thumbnail photo. */}
                       <img
-                        src={s.background}
-                        srcSet={s.backgroundSrcSet}
+                        src={s.thumbnail}
+                        srcSet={s.thumbnailSrcSet}
                         sizes="96px"
                         alt=""
                         aria-hidden="true"
