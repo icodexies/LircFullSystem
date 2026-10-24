@@ -19,9 +19,33 @@ export function useHero() {
   const heroRef = useRef(null);
   const [heroVisible, setHeroVisible] = useState(true);
   const [paused, setPaused] = useState(false);
+  // Once the visitor chooses a slide, autoplay must not move the highlight
+  // and background away from that choice a few seconds later.
+  const [manualPaused, setManualPaused] = useState(false);
   const reducedMotion = useReducedMotion();
   const pageVisible = useSyncExternalStore(subscribeVisibility, isPageVisible, () => true);
-  const { activeIndex, setActive, step } = useCarousel(HERO_SLIDES);
+  const {
+    activeIndex,
+    setActive: setCarouselActive,
+    step,
+  } = useCarousel(HERO_SLIDES);
+
+  const isPaused = paused || manualPaused;
+
+  function select(index) {
+    setManualPaused(true);
+    setCarouselActive(index);
+  }
+
+  function next() {
+    setManualPaused(true);
+    step(1);
+  }
+
+  function prev() {
+    setManualPaused(true);
+    step(-1);
+  }
 
   useEffect(() => {
     if (!heroRef.current || typeof IntersectionObserver === "undefined") return;
@@ -34,22 +58,22 @@ export function useHero() {
   }, []);
 
   useEffect(() => {
-    if (paused || reducedMotion || !pageVisible || !heroVisible || HERO_SLIDES.length < 2) return;
+    if (isPaused || reducedMotion || !pageVisible || !heroVisible || HERO_SLIDES.length < 2) return;
 
     const timer = setTimeout(() => {
-      setActive((index) => (index + 1) % HERO_SLIDES.length);
+      setCarouselActive((index) => (index + 1) % HERO_SLIDES.length);
     }, HERO_AUTOPLAY_MS);
 
     return () => clearTimeout(timer);
-  }, [activeIndex, paused, reducedMotion, pageVisible, heroVisible, setActive]);
+  }, [activeIndex, isPaused, reducedMotion, pageVisible, heroVisible, setCarouselActive]);
 
   return {
     heroRef,
     active: activeIndex,
-    paused,
-    next: () => step(1),
-    prev: () => step(-1),
-    setActive,
+    paused: isPaused,
+    next,
+    prev,
+    setActive: select,
     BTN_SLANT,
     setPaused,
     reducedMotion,
