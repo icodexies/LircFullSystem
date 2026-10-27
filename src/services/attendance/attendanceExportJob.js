@@ -59,6 +59,7 @@ async function run(job, { periodId, periodName, filters }) {
       context: {
         semesterName: periodName,
         filters: describeAttendanceFilters(filters),
+        rawFilters: filters,
         generatedAt: new Date(),
       },
     });

@@ -3,12 +3,14 @@
 // The server sends the rows; everything here is shaping only.
 import { ROLE_LABELS } from "../../routes/roles.js";
 import { ATTENDANCE_FIELDS, STATUS_LABELS } from "./reportFilters.js";
-import { displayTime } from "./attendanceRules.js";
+import { displayTime, manilaDate } from "./attendanceRules.js";
 
 const UNASSIGNED = "Unassigned";
 const NO_DEPARTMENT = "(No department)";
 const NO_PROGRAM = "(No program)";
 const SKIP_FILTER_KEYS = new Set(["search_by", "sort", "direction"]);
+const MAX_DAILY_DAYS = 400;
+const ONE_DAY_MS = 86_400_000;
 
 const FIELD_LABELS = new Map(
   ATTENDANCE_FIELDS.map(([key, label]) => [key, label]),
@@ -293,4 +295,89 @@ export function describeAttendanceFilters(filters = {}) {
     lines.push(`${label}: ${text}`);
   }
   return lines;
+}
+
+// A Manila calendar day from a timestamp. Keeping the key as YYYY-MM-DD makes
+// the daily sheet stable even when the browser or server timezone differs.
+function manilaDay(value) {
+  if (!value) return "";
+  const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  return manilaDate(date);
+}
+
+// The raw report filters are already converted by reportFilters() into an
+// inclusive from-boundary and an exclusive next-day to-boundary. Turn them
+// back into Manila calendar days for the sheet's Day 1...Day N labels.
+function filterDayRange(filters = {}) {
+  const from = manilaDay(filters?.arrival_from);
+  const toBoundary = filters?.arrival_to
+    ? Date.parse(filters.arrival_to)
+    : Number.NaN;
+  if (!from || !Number.isFinite(toBoundary)) return null;
+  const to = manilaDate(new Date(toBoundary - 1));
+  return from <= to ? { from, to } : null;
+}
+
+function listDays(start, end) {
+  const days = [];
+  let current = start;
+  while (current <= end) {
+    if (days.length >= MAX_DAILY_DAYS) return null;
+    days.push(current);
+    const next = Date.parse(`${current}T00:00:00+08:00`) + ONE_DAY_MS;
+    if (!Number.isFinite(next)) return null;
+    current = manilaDate(new Date(next));
+  }
+  return days;
+}
+
+function comparePrograms(a, b) {
+  if (a === NO_PROGRAM) return 1;
+  if (b === NO_PROGRAM) return -1;
+  return a.localeCompare(b, undefined, { sensitivity: "base" });
+}
+
+// The Attendance by Program sheet. Each cell is the number of recorded visits
+// for one program on one day. If the visitor supplied an explicit visit-date
+// range, every day in that range is shown (zero days included); otherwise the
+// sheet shows the days that actually have a visit.
+export function dailyProgramAttendance(rows = [], filters = {}) {
+  const range = filterDayRange(filters);
+  const rowDays = new Set();
+  const programs = new Set();
+  const perDay = new Map();
+
+  for (const row of rows) {
+    const day = manilaDay(row.time_in);
+    if (!day) continue;
+    if (range && (day < range.from || day > range.to)) continue;
+
+    rowDays.add(day);
+    const program = String(row.program ?? "").trim() || NO_PROGRAM;
+    programs.add(program);
+    const counts = perDay.get(day) ?? new Map();
+    counts.set(program, (counts.get(program) ?? 0) + 1);
+    perDay.set(day, counts);
+  }
+
+  const programLabels = [...programs].sort(comparePrograms);
+  const days = (range && listDays(range.from, range.to)) ||
+    [...rowDays].sort();
+
+  return {
+    programs: programLabels,
+    days: days.map((date, index) => {
+      const counts = perDay.get(date) ?? new Map();
+      const values = programLabels.map(
+        (program) => counts.get(program) ?? 0,
+      );
+      return {
+        day: index + 1,
+        date,
+        counts: values,
+        total: values.reduce((sum, count) => sum + count, 0),
+      };
+    }),
+  };
 }

@@ -1,15 +1,20 @@
 // Builds the attendance Excel report. Kept separate from the download so the
-// layout can be tested. Three sheets:
+// layout can be tested. Four sheets:
 //   Report — title block, the applied filters, and the summary sections:
 //            visitor type, purpose, department → program, students by year
 //            level (department → year · program), faculty/staff by position
+//   Attendance by Program — one row per day, one column per program, using
+//            each filtered visit's arrival date
 //   Unique visitors — one line per person with their entry count, organized
 //            students by department → program, faculty and non-teaching
 //            personnel by position, library personnel by role, guests by card
 //   Visits — the filtered rows in a clean table
 import { ROLE_LABELS } from "../../routes/roles.js";
 import { displayTime } from "./attendanceRules.js";
-import { yearLabel } from "./attendanceReportRules.js";
+import {
+  dailyProgramAttendance,
+  yearLabel,
+} from "./attendanceReportRules.js";
 
 export const VISIT_COLUMNS = [
   "Visitor",
@@ -72,6 +77,16 @@ function tableHeader(sheet, rowNumber, labels) {
     cell.border = border;
     cell.alignment = { vertical: "middle" };
   });
+}
+
+function attendanceDayLabel(day) {
+  const date = new Date(`${day}T12:00:00+08:00`);
+  return new Intl.DateTimeFormat("en-PH", {
+    timeZone: "Asia/Manila",
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(date);
 }
 
 function dataRow(sheet, rowNumber, values, { bold = false, indent = 0, zebra = false, muted = false } = {}) {
@@ -211,6 +226,98 @@ export async function buildAttendanceReportWorkbook({ rows, summary, context }) 
       "Faculty & staff by position",
       ["Position", "Visits", "Share"],
       summary.byPosition,
+    );
+  }
+
+  /* ---------------------- Attendance by Program sheet --------------------- */
+  const daily = dailyProgramAttendance(rows, context.rawFilters);
+  const dailyHeaders = ["Day", "Date", ...daily.programs, "Total"];
+  const dailySheet = workbook.addWorksheet("Attendance by Program", {
+    pageSetup: {
+      paperSize: A4_PAPER_SIZE,
+      orientation: "landscape",
+      fitToPage: true,
+      fitToWidth: 1,
+      fitToHeight: 0,
+      margins: MARGINS,
+    },
+    views: [{ state: "frozen", ySplit: 6 }],
+  });
+
+  dailySheet.getColumn(1).width = 10;
+  dailySheet.getColumn(2).width = 20;
+  daily.programs.forEach((_, index) => {
+    dailySheet.getColumn(index + 3).width = 12;
+  });
+  dailySheet.getColumn(3 + daily.programs.length).width = 10;
+
+  band(dailySheet, 1, "Attendance by Program", dailyHeaders.length);
+  dailySheet.getCell(1, 1).font = {
+    bold: true,
+    size: 14,
+    color: { argb: "FFFFFFFF" },
+  };
+
+  dailySheet.mergeCells(2, 1, 2, dailyHeaders.length);
+  cell = dailySheet.getCell(2, 1);
+  cell.value = context.semesterName ?? "Attendance";
+  cell.font = { bold: true, size: 11, color: { argb: JADE } };
+
+  dailySheet.mergeCells(3, 1, 3, dailyHeaders.length);
+  cell = dailySheet.getCell(3, 1);
+  cell.value =
+    context.filters && context.filters.length > 0
+      ? `Filters - ${context.filters.join(" | ")}`
+      : "Filters - none (every visit in this semester)";
+  cell.font = { size: 9, color: { argb: MUTED } };
+  cell.alignment = { wrapText: true, vertical: "top" };
+  dailySheet.getRow(3).height = 30;
+
+  dailySheet.mergeCells(4, 1, 4, dailyHeaders.length);
+  cell = dailySheet.getCell(4, 1);
+  cell.value =
+    "Each recorded visit counts once. A visitor with more than one visit on the same day is counted for each visit.";
+  cell.font = { size: 9, color: { argb: MUTED } };
+
+  tableHeader(dailySheet, 6, dailyHeaders);
+  let d = 7;
+  if (daily.days.length === 0) {
+    dailySheet.mergeCells(d, 1, d, dailyHeaders.length);
+    cell = dailySheet.getCell(d, 1);
+    cell.value = "No visits match these filters.";
+    cell.font = { italic: true, size: 10, color: { argb: MUTED } };
+  } else {
+    daily.days.forEach((entry, index) => {
+      dataRow(
+        dailySheet,
+        d,
+        [
+          `Day ${entry.day}`,
+          attendanceDayLabel(entry.date),
+          ...entry.counts,
+          entry.total,
+        ],
+        { zebra: index % 2 === 1 },
+      );
+      d++;
+    });
+
+    const totals = daily.programs.map((_, programIndex) =>
+      daily.days.reduce(
+        (sum, entry) => sum + entry.counts[programIndex],
+        0,
+      ),
+    );
+    dataRow(
+      dailySheet,
+      d,
+      [
+        "Total",
+        "",
+        ...totals,
+        totals.reduce((sum, count) => sum + count, 0),
+      ],
+      { bold: true },
     );
   }
 

@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
+  dailyProgramAttendance,
   describeAttendanceFilters,
   summarizeAttendance,
   visitorSections,
@@ -208,6 +209,51 @@ test("unique visitors carry their entry count, organized for the report", () => 
     [
       ["Juan Visitor", 2],
       ["Another Guest", 1],
+    ],
+  );
+});
+
+test("daily program attendance fills every day in a filtered date range", () => {
+  const rows = [
+    { time_in: "2026-10-01T02:00:00Z", program: "IT", user_profile_id: 1 },
+    { time_in: "2026-10-01T03:00:00Z", program: "IT", user_profile_id: 1 },
+    { time_in: "2026-10-01T04:00:00Z", program: "CS", user_profile_id: 2 },
+    { time_in: "2026-10-03T02:00:00Z", program: "BA", user_profile_id: 3 },
+    { time_in: "2026-10-03T03:00:00Z", program: null, user_profile_id: 4 },
+  ];
+  const daily = dailyProgramAttendance(rows, {
+    // Oct 1 00:00 Manila through Oct 4 00:00 Manila (exclusive).
+    arrival_from: "2026-09-30T16:00:00.000Z",
+    arrival_to: "2026-10-03T16:00:00.000Z",
+  });
+
+  assert.deepEqual(daily.programs, ["BA", "CS", "IT", "(No program)"]);
+  assert.deepEqual(
+    daily.days.map((entry) => [
+      entry.day,
+      entry.date,
+      entry.counts,
+      entry.total,
+    ]),
+    [
+      [1, "2026-10-01", [0, 1, 2, 0], 3],
+      [2, "2026-10-02", [0, 0, 0, 0], 0],
+      [3, "2026-10-03", [1, 0, 0, 1], 2],
+    ],
+  );
+});
+
+test("daily program attendance without a date range uses days with visits", () => {
+  const daily = dailyProgramAttendance([
+    { time_in: "2026-10-01T02:00:00Z", program: "IT" },
+    { time_in: "2026-10-03T02:00:00Z", program: "BA" },
+  ]);
+
+  assert.deepEqual(
+    daily.days.map((entry) => [entry.day, entry.date, entry.total]),
+    [
+      [1, "2026-10-01", 1],
+      [2, "2026-10-03", 1],
     ],
   );
 });
