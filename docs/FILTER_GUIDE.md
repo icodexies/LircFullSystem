@@ -52,7 +52,7 @@ Book department was removed from OPAC. A person's department still exists in att
 | Control | Meaning |
 | --- | --- |
 | Search by | Select Full name, Library ID, First name, Surname, Middle initial or Suffix. |
-| Search | Enter part of the value. Search ignores uppercase/lowercase and several words work in any order. It only searches the field selected above. |
+| Search | Enter part of the value. Search ignores uppercase/lowercase, commas, periods and extra punctuation, and several words work in any order. `Villanueva, Sam D.` and `sam d.` both match the same student. Card numbers can be typed with or without the hyphen (`2600001` finds `26-00001`). It searches the field selected above; Full name also accepts a card number. |
 | Sort | Changes row order, without changing which rows match. |
 | Order | Choose the direction: A → Z / oldest first, or Z → A / newest first. Empty values appear last. |
 

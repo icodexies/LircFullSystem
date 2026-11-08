@@ -7,6 +7,7 @@ import {
   setMyAvatar,
   uploadMyAvatar,
 } from "../../../services/auth/authService.js";
+import { getMyValidationStatus } from "../../../services/validation/onlineValidationService.js";
 import { useAuth } from "../../../hooks/auth/useAuth.js";
 import { useToast } from "../../../hooks/shared/useToast.js";
 import { ROLE_LABELS } from "../../../routes/roles.js";
@@ -20,6 +21,10 @@ import { buttonClass } from "../../../components/attendance/StaffUi.jsx";
 import { panelClass } from "../../../components/personnel/panel.js";
 import { LoadingBlock } from "../../../components/ui/Loading.jsx";
 import Avatar from "../../../components/ui/Avatar.jsx";
+import LibraryCard from "../../../components/profile/LibraryCard.jsx";
+import ProfileValidation, {
+  ValidationBadge,
+} from "../../../components/profile/ProfileValidation.jsx";
 
 const ACCEPTED_TYPES = ["image/png", "image/jpeg", "image/webp"];
 const MAX_BYTES = 2 * 1024 * 1024;
@@ -28,6 +33,11 @@ export default function Profile() {
   const toast = useToast();
   const { refreshProfile } = useAuth();
   const [state, setState] = useState({ loading: true, error: "", data: null });
+  const [validation, setValidation] = useState({
+    loading: true,
+    error: "",
+    data: null,
+  });
   const [photoBusy, setPhotoBusy] = useState(false);
   const [pendingSrc, setPendingSrc] = useState(null);
 
@@ -35,18 +45,47 @@ export default function Profile() {
     const controller = new AbortController();
     let active = true;
     getMyProfile(controller.signal)
-      .then((data) => {
-        if (active) setState({ loading: false, error: "", data });
+      .then(async (data) => {
+        if (!active) return;
+        // Show the card and profile immediately; validation loads beside it.
+        setState({ loading: false, error: "", data });
+        let nextValidation = { loading: false, error: "", data: null };
+        if (data.role === "student") {
+          try {
+            const status = await getMyValidationStatus(controller.signal);
+            nextValidation = { loading: false, error: "", data: status };
+          } catch (error) {
+            if (error?.name === "AbortError") return;
+            nextValidation = {
+              loading: false,
+              error: error.message,
+              data: null,
+            };
+          }
+        }
+        if (!active) return;
+        setValidation(nextValidation);
       })
       .catch((error) => {
-        if (active && error?.name !== "AbortError")
+        if (active && error?.name !== "AbortError") {
           setState({ loading: false, error: error.message, data: null });
+          setValidation({ loading: false, error: "", data: null });
+        }
       });
     return () => {
       active = false;
       controller.abort();
     };
   }, []);
+
+  async function refreshValidation() {
+    try {
+      const status = await getMyValidationStatus();
+      setValidation({ loading: false, error: "", data: status });
+    } catch (error) {
+      setValidation({ loading: false, error: error.message, data: null });
+    }
+  }
 
   const data = state.data;
   const fields = [
@@ -113,12 +152,58 @@ export default function Profile() {
     <div className="space-y-6">
       <WorkspaceHeader
         title="Your profile"
-        description="Your basic library account information and profile photo."
+        description="Your library card, validation status, account information, and profile photo."
       >
         {data && <span>{ROLE_LABELS[data.role] ?? data.role} account</span>}
       </WorkspaceHeader>
 
       {state.error && <WorkspaceNotice error>{state.error}</WorkspaceNotice>}
+
+      {data && (
+        <div
+          className={`grid gap-5 ${
+            data.role === "student"
+              ? "xl:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]"
+              : ""
+          }`}
+        >
+          <section className={panelClass}>
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <h2 className="text-sm font-semibold text-ink">
+                  Library card
+                </h2>
+                <p className="mt-1 text-[11px] leading-relaxed text-slate-500">
+                  Your printable library card. The barcode uses the same
+                  library ID the scanner reads.
+                </p>
+              </div>
+              <button
+                type="button"
+                className={`${secondaryButton} no-print`}
+                onClick={() => window.print()}
+              >
+                Print card
+              </button>
+            </div>
+            <div className="mt-4">
+              <LibraryCard profile={data} validation={validation.data} />
+            </div>
+            <p className="mt-3 text-[10px] leading-relaxed text-slate-500">
+              Print at 100% / actual size, then cut along the edge and laminate.
+            </p>
+          </section>
+
+          {data.role === "student" && (
+            <ProfileValidation
+              status={validation.data}
+              loading={validation.loading}
+              error={validation.error}
+              onChanged={refreshValidation}
+            />
+          )}
+        </div>
+      )}
 
       <section className={panelClass}>
         {state.loading ? (
@@ -137,6 +222,12 @@ export default function Profile() {
                 <p className="mt-1 text-xs text-slate-500">
                   {ROLE_LABELS[data.role] ?? data.role} · {data.library_id}
                 </p>
+                {data.role === "student" && validation.data && (
+                  <ValidationBadge
+                    state={validation.data.state}
+                    className="mt-2"
+                  />
+                )}
                 <div className="mt-3 flex flex-wrap items-center gap-2">
                   <label
                     className={`${buttonClass} cursor-pointer ${

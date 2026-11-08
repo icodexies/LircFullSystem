@@ -22,6 +22,7 @@ import {
   getEnrollmentRequestDetail,
   getEnrollmentRequests,
 } from "../../../services/attendance/attendanceService.js";
+import { getOnlineValidationRequests } from "../../../services/validation/onlineValidationService.js";
 import {
   ReportState,
   Pagination,
@@ -34,6 +35,7 @@ import {
 import ReportFilters from "../../../components/attendance/ReportFilters.jsx";
 import ReportExport from "../../../components/attendance/ReportExport.jsx";
 import EnrollmentForm from "../../../components/attendance/EnrollmentForm.jsx";
+import OnlineValidationReviewModal from "../../../components/attendance/OnlineValidationReviewModal.jsx";
 import {
   displayTime,
   enrollmentLevelLabel,
@@ -71,6 +73,8 @@ export default function Enrollments() {
   const [formBusy, setFormBusy] = useState(false);
   const [tab, setTab] = useState("validations");
   const [requests, setRequests] = useState(null);
+  const [onlineRequests, setOnlineRequests] = useState(null);
+  const [onlineReview, setOnlineReview] = useState(null);
   const [requestRevision, setRequestRevision] = useState(0);
   const [opening, setOpening] = useState(false);
   const id = filter.error || periods.error || periods.loading ? null : year?.id;
@@ -91,6 +95,28 @@ export default function Enrollments() {
       controller.abort();
     };
   }, [role, requestRevision]);
+
+  // Student online requests share the same Pending/Approved/Rejected tabs as
+  // the staff change requests. Fetch all three states once per revision.
+  useEffect(() => {
+    const controller = new AbortController();
+    let active = true;
+    Promise.all([
+      getOnlineValidationRequests("pending", controller.signal),
+      getOnlineValidationRequests("approved", controller.signal),
+      getOnlineValidationRequests("rejected", controller.signal),
+    ])
+      .then(([pending, approved, rejected]) => {
+        if (active) setOnlineRequests([...pending, ...approved, ...rejected]);
+      })
+      .catch(() => {
+        if (active) setOnlineRequests([]);
+      });
+    return () => {
+      active = false;
+      controller.abort();
+    };
+  }, [requestRevision]);
 
   // Deep link from a notification: open that exact request's window. Runs
   // once per request id — on mount in dev StrictMode the second run simply
@@ -155,10 +181,29 @@ export default function Enrollments() {
   // Spinner while a window is being fetched: the deep link resolves on its
   // own (no state), the tab buttons use the opening state.
   const openingFromLink = Boolean(deepLinkId) && !selected;
-  const pendingRequests = (requests ?? []).filter(
+  const staffRequests = (requests ?? []).map((row) => ({
+    ...row,
+    kind: "staff",
+    student_card: row.student_card,
+    year_name: row.year_name,
+  }));
+  const onlineRows = (onlineRequests ?? []).map((row) => ({
+    ...row,
+    kind: "online",
+    student_card: row.library_id,
+    year_name: row.academic_year,
+    requested_status: "enrolled",
+    requested_by: "Student",
+    created_at: row.requested_at,
+    raw: row,
+  }));
+  const allRequests = [...staffRequests, ...onlineRows].sort(
+    (a, b) => Date.parse(b.created_at) - Date.parse(a.created_at),
+  );
+  const pendingRequests = allRequests.filter(
     (row) => row.status === "pending",
   ).length;
-  const visibleRequests = (requests ?? []).filter((row) => row.status === tab);
+  const visibleRequests = allRequests.filter((row) => row.status === tab);
   const tabs = [
     { id: "validations", label: "Student validations" },
     { id: "pending", label: "Pending requests" },
@@ -168,15 +213,17 @@ export default function Enrollments() {
   const requestInfo = {
     pending: {
       description:
-        "Waiting for approval — approving saves the change; rejecting keeps the record as it is.",
+        "Waiting for approval — student online validation and staff change requests. Approving saves the change; rejecting keeps the record as it is.",
       empty: "Nothing is waiting for approval right now.",
     },
     approved: {
-      description: "Approved changes — already saved to the student's record.",
+      description:
+        "Approved student online validations and staff changes — already saved to the student's record.",
       empty: "No approved changes yet.",
     },
     rejected: {
-      description: "Rejected changes — the student's record stayed the same.",
+      description:
+        "Rejected student online validations and staff changes — the student's record stayed the same.",
       empty: "No rejected changes yet.",
     },
   };
@@ -195,7 +242,10 @@ export default function Enrollments() {
           <button
             type="button"
             className={heroSecondary}
-            onClick={() => setRevision((value) => value + 1)}
+            onClick={() => {
+              setRevision((value) => value + 1);
+              setRequestRevision((value) => value + 1);
+            }}
           >
             Refresh records
           </button>
@@ -232,20 +282,19 @@ export default function Enrollments() {
             </button>
           ))}
         </div>
-        {tab !== "validations" && (
+        {["pending", "approved", "rejected"].includes(tab) && (
           <p className="px-1 text-[11px] leading-relaxed text-slate-400">
-            Validation change requests — past-year changes and overdue-book
-            permissions — an admin approves them before they are saved.
+            Student online validation and staff change requests share these
+            tabs. The colored label on each row shows who made the request.
           </p>
         )}
       </div>
 
       {isAdmin && pendingRequests > 0 && tab === "validations" && (
         <WorkspaceNotice>
-          <strong>{pendingRequests}</strong> validation change
-          {pendingRequests === 1 ? "" : "s"} waiting for your approval. Review
-          them on the Pending requests tab — or click the bell notification to
-          jump straight to the approval window.
+          <strong>{pendingRequests}</strong> validation request
+          {pendingRequests === 1 ? "" : "s"} waiting for review. Online student
+          requests and staff changes are combined on the Pending requests tab.
         </WorkspaceNotice>
       )}
 
@@ -413,7 +462,7 @@ export default function Enrollments() {
           description={requestInfo[tab]?.description}
         >
           <div className="px-5 py-4 sm:px-6">
-            {requests === null ? (
+            {requests === null || onlineRequests === null ? (
               <LoadingBlock
                 label="Loading requests…"
                 className="min-h-[8rem]"
@@ -424,52 +473,91 @@ export default function Enrollments() {
               </p>
             ) : (
               <ul className="divide-y divide-slate-100">
-                {visibleRequests.map((row) => (
-                  <li
-                    key={row.id}
-                    className="flex flex-wrap items-center justify-between gap-3 py-3"
-                  >
-                    <div className="min-w-0">
-                      <p className="text-sm font-semibold text-ink">
-                        {row.student} · {row.student_card}
-                      </p>
-                      <p className="mt-0.5 text-xs text-slate-500">
-                        {row.year_name} · requested:{" "}
-                        {STATUS_LABELS[row.requested_status] ??
-                          row.requested_status}
-                        {isAdmin ? ` · Requested by ${row.requested_by}` : ""} ·{" "}
-                        {displayTime(row.created_at)}
-                      </p>
-                      {row.status !== "pending" && row.reviewed_at && (
-                        <p className="mt-0.5 text-[11px] text-slate-400">
-                          {row.status === "approved" ? "Approved" : "Rejected"}
-                          {row.reviewed_by ? ` by ${row.reviewed_by}` : ""} ·{" "}
-                          {displayTime(row.reviewed_at)}
+                {visibleRequests.map((row) => {
+                  const online = row.kind === "online";
+                  return (
+                    <li
+                      key={`${row.kind}-${row.id}`}
+                      className={`flex flex-wrap items-center justify-between gap-3 border-l-4 py-3 pl-4 ${
+                        online
+                          ? "border-sky-400 bg-sky-500/[0.035]"
+                          : "border-amber-400 bg-amber-500/[0.035]"
+                      }`}
+                    >
+                      <div className="min-w-0">
+                        <div className="mb-1.5 flex flex-wrap items-center gap-2">
+                          <span
+                            className={`rounded-full border px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.08em] ${
+                              online
+                                ? "border-sky-300 bg-sky-50 text-sky-900 dark:border-sky-400/40 dark:bg-sky-400/10 dark:text-sky-100"
+                                : "border-amber-300 bg-amber-50 text-amber-900 dark:border-amber-400/40 dark:bg-amber-400/10 dark:text-amber-100"
+                            }`}
+                          >
+                            {online ? "Student online" : "Staff request"}
+                          </span>
+                        </div>
+                        <p className="text-sm font-semibold text-ink">
+                          {row.student} · {row.student_card}
                         </p>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {row.status !== "pending" && (
-                        <StatusBadge
-                          tone={row.status === "approved" ? "success" : "muted"}
+                        <p className="mt-0.5 text-xs text-slate-500">
+                          {row.semester ? `${row.semester} · ` : ""}
+                          {row.year_name} · requested:{" "}
+                          {STATUS_LABELS[row.requested_status] ??
+                            row.requested_status}
+                          {!online && isAdmin
+                            ? ` · Requested by ${row.requested_by}`
+                            : ""}{" "}
+                          · {displayTime(row.created_at)}
+                        </p>
+                        {row.status !== "pending" && row.reviewed_at && (
+                          <p className="mt-0.5 text-[11px] text-slate-400">
+                            {row.status === "approved" ? "Approved" : "Rejected"}
+                            {row.reviewed_by ? ` by ${row.reviewed_by}` : ""} ·{" "}
+                            {displayTime(row.reviewed_at)}
+                          </p>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {row.status !== "pending" && (
+                          <StatusBadge
+                            tone={
+                              row.status === "approved" ? "success" : "muted"
+                            }
+                          >
+                            {row.status === "approved" ? "Approved" : "Rejected"}
+                          </StatusBadge>
+                        )}
+                        <button
+                          type="button"
+                          className={tableButton}
+                          onClick={() =>
+                            online ? setOnlineReview(row.raw) : openRequest(row.id)
+                          }
                         >
-                          {row.status === "approved" ? "Approved" : "Rejected"}
-                        </StatusBadge>
-                      )}
-                      <button
-                        type="button"
-                        className={tableButton}
-                        onClick={() => openRequest(row.id)}
-                      >
-                        {isAdmin && row.status === "pending" ? "Review" : "View"}
-                      </button>
-                    </div>
-                  </li>
-                ))}
+                          {row.status === "pending" &&
+                          (online || isAdmin)
+                            ? "Review"
+                            : "View"}
+                        </button>
+                      </div>
+                    </li>
+                  );
+                })}
               </ul>
             )}
           </div>
         </WorkspacePanel>
+      )}
+
+      {onlineReview && (
+        <OnlineValidationReviewModal
+          request={onlineReview}
+          onClose={() => setOnlineReview(null)}
+          onReviewed={async () => {
+            setRevision((value) => value + 1);
+            setRequestRevision((value) => value + 1);
+          }}
+        />
       )}
 
       {current && modalYear && (
