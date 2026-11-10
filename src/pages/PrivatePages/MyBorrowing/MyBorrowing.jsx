@@ -18,6 +18,7 @@ import {
 } from "../../../components/attendance/WorkspaceUi.jsx";
 import EmptyState from "../../../components/personnel/EmptyState.jsx";
 import BookDetails from "../../../components/catalog/BookDetails.jsx";
+import MyReservationsPanel from "../../../components/borrow/MyReservationsPanel.jsx";
 import { Spinner } from "../../../components/ui/Loading.jsx";
 
 const PAGE_SIZE = 20;
@@ -201,6 +202,8 @@ export default function MyBorrowing() {
           },
         ]}
       />
+
+      <MyReservationsPanel onOpenBook={setBookId} />
 
       <WorkspacePanel
         title="My circulation records"

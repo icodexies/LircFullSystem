@@ -1,7 +1,17 @@
 import { useEffect, useState } from "react";
 import { getBook, getBookCopies } from "../../services/catalog/bookService.js";
+import {
+  cancelBookReservation,
+  getBookReservationState,
+  reserveBook,
+} from "../../services/borrow/reservationService.js";
+import { useAuth } from "../../hooks/auth/useAuth.js";
+import { useDialog } from "../../hooks/shared/useDialog.js";
+import { useToast } from "../../hooks/shared/useToast.js";
+import { displayTime } from "../../services/attendance/attendanceRules.js";
 import CatalogDialog from "./CatalogDialog.jsx";
 import BookCover from "./BookCover.jsx";
+import ReservationCountdown from "../borrow/ReservationCountdown.jsx";
 import { Spinner, LoadingBlock } from "../ui/Loading.jsx";
 import { buttonClass } from "../attendance/StaffUi.jsx";
 import { secondaryButton } from "../attendance/WorkspaceUi.jsx";
@@ -46,14 +56,25 @@ function Fields({ title, rows, book }) {
 }
 
 export default function BookDetails({ id, canEdit, onEdit, onClose }) {
+  const { role } = useAuth();
+  const dialog = useDialog();
+  const toast = useToast();
   const [detail, setDetail] = useState({ book: null, error: "" });
   const [page, setPage] = useState(1);
+  const [copyRevision, setCopyRevision] = useState(0);
+  const [reservationBusy, setReservationBusy] = useState(false);
+  const [reservationState, setReservationState] = useState({
+    loading: true,
+    error: "",
+    data: null,
+  });
   const [copies, setCopies] = useState({
     page: 0,
     rows: [],
     hasNext: false,
     error: "",
   });
+  const canReserve = ["student", "faculty"].includes(role);
   useEffect(() => {
     const controller = new AbortController();
     let active = true;
@@ -100,10 +121,94 @@ export default function BookDetails({ id, canEdit, onEdit, onClose }) {
       active = false;
       controller.abort();
     };
-  }, [id, page]);
+  }, [id, page, copyRevision]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    let active = true;
+    getBookReservationState(id, controller.signal)
+      .then((data) => {
+        if (active) setReservationState({ loading: false, error: "", data });
+      })
+      .catch((error) => {
+        if (active && error?.name !== "AbortError")
+          setReservationState({
+            loading: false,
+            error: error.message,
+            data: null,
+          });
+      });
+    return () => {
+      active = false;
+      controller.abort();
+    };
+  }, [id, copyRevision]);
+
+  async function refreshReservation() {
+    try {
+      const data = await getBookReservationState(id);
+      setReservationState({ loading: false, error: "", data });
+    } catch (error) {
+      setReservationState({ loading: false, error: error.message, data: null });
+    }
+  }
+
+  async function reserve() {
+    if (reservationBusy) return;
+    const confirmed = await dialog.confirm({
+      title: "Reserve a copy for 1 hour?",
+      message:
+        "The library will hold one copy for you for one hour. Pick it up at the circulation desk with your library card. The hold expires automatically and cannot be extended.",
+      confirmLabel: "Reserve for 1 hour",
+    });
+    if (!confirmed) return;
+    setReservationBusy(true);
+    try {
+      const result = await reserveBook(id);
+      toast.success(
+        `Copy ${result.accession_number} is held for you until ${displayTime(result.expires_at)}.`,
+        "Book reserved",
+      );
+      await refreshReservation();
+      setCopyRevision((value) => value + 1);
+    } catch (error) {
+      toast.error(error.message, "Not reserved");
+    } finally {
+      setReservationBusy(false);
+    }
+  }
+
+  async function cancelReservation(reservation) {
+    if (!reservation || reservationBusy) return;
+    const confirmed = await dialog.confirm({
+      title: "Cancel this reservation?",
+      message: "The copy will be released for other borrowers.",
+      confirmLabel: "Cancel hold",
+      variant: "warning",
+    });
+    if (!confirmed) return;
+    setReservationBusy(true);
+    try {
+      await cancelBookReservation(reservation.id);
+      toast.success("Reservation cancelled.");
+      await refreshReservation();
+      setCopyRevision((value) => value + 1);
+    } catch (error) {
+      toast.error(error.message, "Not cancelled");
+    } finally {
+      setReservationBusy(false);
+    }
+  }
 
   const { book, error } = detail;
   const loadingCopies = copies.page !== page;
+  const reservationInfo = reservationState.data;
+  const holdsByAccession = new Map(
+    (reservationInfo?.reservations ?? []).map((hold) => [
+      hold.accession_id,
+      hold,
+    ]),
+  );
   return (
     <CatalogDialog
       title="Book details"
@@ -187,6 +292,87 @@ export default function BookDetails({ id, canEdit, onEdit, onClose }) {
           </>
         )}
 
+        {book && canReserve && (
+          <section className="rounded-2xl border border-sky-200 bg-sky-50/60 p-5 dark:border-sky-400/30 dark:bg-sky-400/10">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <h3 className="text-sm font-semibold text-ink">
+                  Reserve for 1 hour
+                </h3>
+                <p className="mt-1 max-w-lg text-[11px] leading-relaxed text-slate-600 dark:text-slate-300">
+                  The library will hold one copy for you for one hour. Pick it
+                  up at the circulation desk with your library card. This is a
+                  pickup hold, not a loan.
+                </p>
+              </div>
+              {reservationInfo && (
+                <span className="rounded-full border border-sky-200 bg-surface px-2.5 py-1 text-[10px] font-semibold text-sky-800 dark:border-sky-400/30 dark:text-sky-100">
+                  {reservationInfo.available_count} free{" "}
+                  {reservationInfo.available_count === 1 ? "copy" : "copies"}
+                </span>
+              )}
+            </div>
+
+            {reservationState.loading && !reservationInfo ? (
+              <div className="mt-3 flex items-center gap-2 text-xs text-slate-500">
+                <Spinner size="sm" /> Checking availability…
+              </div>
+            ) : reservationState.error ? (
+              <p className="mt-3 text-xs text-red-700 dark:text-red-300">
+                {reservationState.error}
+              </p>
+            ) : reservationInfo?.my_reservation ? (
+              <div className="mt-4 rounded-xl border border-amber-300 bg-amber-100 p-4 text-xs text-amber-950">
+                <p className="font-semibold">
+                  Reserved for you · {reservationInfo.my_reservation.accession_number}
+                </p>
+                <p className="mt-1">
+                  Pick it up by {displayTime(reservationInfo.my_reservation.expires_at)}.
+                </p>
+                <p className="mt-1 font-semibold">
+                  <ReservationCountdown
+                    expiresAt={reservationInfo.my_reservation.expires_at}
+                    onExpire={() => {
+                      refreshReservation();
+                      setCopyRevision((value) => value + 1);
+                    }}
+                  />{" "}
+                  left
+                </p>
+                <button
+                  type="button"
+                  className={`${secondaryButton} mt-3`}
+                  disabled={reservationBusy}
+                  onClick={() => cancelReservation(reservationInfo.my_reservation)}
+                >
+                  Cancel reservation
+                </button>
+              </div>
+            ) : (
+              <div className="mt-3">
+                <button
+                  type="button"
+                  className={buttonClass}
+                  disabled={reservationBusy || !reservationInfo?.can_reserve}
+                  onClick={reserve}
+                >
+                  {reservationBusy ? "Reserving…" : "Reserve a copy for 1 hour"}
+                </button>
+                {reservationInfo?.reason && (
+                  <p className="mt-2 text-[11px] leading-relaxed text-slate-600 dark:text-slate-300">
+                    {reservationInfo.reason}
+                  </p>
+                )}
+                <p className="mt-2 text-[10px] leading-relaxed text-slate-500">
+                  Maximum 3 active reservations. Reservations are only allowed
+                  while at least two copies are free. Return overdue books
+                  first.
+                </p>
+              </div>
+            )}
+          </section>
+        )}
+
         <section
           className="border-t border-slate-200 pt-6"
           aria-labelledby="opac-copies-title"
@@ -228,24 +414,47 @@ export default function BookDetails({ id, canEdit, onEdit, onClose }) {
           ) : (
             <ul className="mt-4 divide-y divide-slate-100 overflow-hidden rounded-xl border border-slate-200 bg-surface">
               {copies.rows.map((copy) => {
-                const available = copy.status === "Available";
+                const hold = holdsByAccession.get(copy.id);
+                const available = copy.status === "Available" && !hold;
                 return (
                   <li
                     key={copy.id}
-                    className="flex items-center justify-between gap-3 px-4 py-3 text-xs"
+                    className="flex flex-wrap items-center justify-between gap-2 px-4 py-3 text-xs"
                   >
                     <span className="break-all font-semibold text-ink">
                       {copy.accession_number}
                     </span>
-                    <span
-                      className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 font-medium ${available ? "bg-jade-soft text-jade-deep" : "bg-slate-100 text-slate-600"}`}
-                    >
+                    {hold ? (
+                      <span className="inline-flex shrink-0 flex-wrap items-center gap-1.5 rounded-full border border-amber-300 bg-amber-100 px-2.5 py-1 font-medium text-amber-950">
+                        <span
+                          aria-hidden="true"
+                          className="h-1.5 w-1.5 rounded-full bg-amber-500"
+                        />
+                        {hold.mine
+                          ? "Reserved for you"
+                          : hold.holder
+                            ? `Reserved · ${hold.holder}`
+                            : "Reserved for pickup"}
+                        <ReservationCountdown
+                          expiresAt={hold.expires_at}
+                          className="font-semibold"
+                          onExpire={() => {
+                            refreshReservation();
+                            setCopyRevision((value) => value + 1);
+                          }}
+                        />
+                      </span>
+                    ) : (
                       <span
-                        aria-hidden="true"
-                        className={`h-1.5 w-1.5 rounded-full ${available ? "bg-jade" : "bg-slate-400"}`}
-                      />
-                      {copy.status}
-                    </span>
+                        className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 font-medium ${available ? "bg-jade-soft text-jade-deep" : "bg-slate-100 text-slate-600"}`}
+                      >
+                        <span
+                          aria-hidden="true"
+                          className={`h-1.5 w-1.5 rounded-full ${available ? "bg-jade" : "bg-slate-400"}`}
+                        />
+                        {copy.status}
+                      </span>
+                    )}
                   </li>
                 );
               })}

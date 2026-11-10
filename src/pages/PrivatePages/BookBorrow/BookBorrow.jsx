@@ -2,9 +2,11 @@
 // return its copies by accession number, and browse the borrow records —
 // borrowed / overdue / returned — in the tabs, with search and filters.
 import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useCatalog } from "../../../hooks/catalog/useCatalog.js";
 import { SEARCH_FIELDS } from "../../../services/catalog/catalogQuery.js";
 import { getLoanRecords } from "../../../services/borrow/borrowService.js";
+import { getStaffReservations } from "../../../services/borrow/reservationService.js";
 import {
   WorkspaceHeader,
   WorkspacePanel,
@@ -16,9 +18,11 @@ import { LoadingBlock } from "../../../components/ui/Loading.jsx";
 import BookLoanDialog from "../../../components/borrow/BookLoanDialog.jsx";
 import LoanRecordsPanel from "../../../components/borrow/LoanRecordsPanel.jsx";
 import BorrowReportPanel from "../../../components/borrow/BorrowReportPanel.jsx";
+import ReservationQueue from "../../../components/borrow/ReservationQueue.jsx";
 
 const TABS = [
   { id: "action", label: "Borrow & return" },
+  { id: "reservations", label: "Reservations" },
   { id: "borrowed", label: "Borrowed" },
   { id: "overdue", label: "Overdue" },
   { id: "returned", label: "Returned" },
@@ -27,11 +31,35 @@ const TABS = [
 
 export default function BookBorrow() {
   const catalog = useCatalog();
+  const [searchParams] = useSearchParams();
+  const requestedTab = searchParams.get("tab");
+  const initialTab = TABS.some((item) => item.id === requestedTab)
+    ? requestedTab
+    : "action";
   const [selection, setSelection] = useState(null);
-  const [tab, setTab] = useState("action");
+  const [tab, setTab] = useState(initialTab);
   const [counts, setCounts] = useState(null);
+  const [reservationCount, setReservationCount] = useState(0);
   const [recordsRevision, setRecordsRevision] = useState(0);
   const busy = catalog.loading || catalog.searching;
+
+  useEffect(() => {
+    let active = true;
+    getStaffReservations()
+      .then((data) => {
+        if (active) {
+          setReservationCount(
+            Number(data?.count ?? data?.reservations?.length ?? 0),
+          );
+        }
+      })
+      .catch(() => {
+        if (active) setReservationCount(0);
+      });
+    return () => {
+      active = false;
+    };
+  }, [recordsRevision]);
 
   // The tab badges are visible before a records tab is opened.
   useEffect(() => {
@@ -74,6 +102,11 @@ export default function BookBorrow() {
             }`}
           >
             {item.label}
+            {item.id === "reservations" && reservationCount > 0 && (
+              <span className="rounded-full bg-sky-100 px-1.5 text-[10px] font-bold text-sky-800">
+                {reservationCount}
+              </span>
+            )}
             {item.id === "borrowed" && counts?.borrowed > 0 && (
               <span className="rounded-full bg-tint px-1.5 text-[10px] font-bold text-accent">
                 {counts.borrowed}
@@ -88,7 +121,9 @@ export default function BookBorrow() {
         ))}
       </div>
 
-      {tab === "action" ? (
+      {tab === "reservations" ? (
+        <ReservationQueue revision={recordsRevision} />
+      ) : tab === "action" ? (
         <WorkspacePanel
           title="Find a book"
           description="Search like the OPAC. Open a book to see its accession numbers, who has them, and the borrowing history."

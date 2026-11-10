@@ -490,7 +490,7 @@ export default function Enrollments() {
                             className={`rounded-full border px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.08em] ${
                               online
                                 ? "border-sky-300 bg-sky-50 text-sky-900 dark:border-sky-400/40 dark:bg-sky-400/10 dark:text-sky-100"
-                                : "border-amber-300 bg-amber-50 text-amber-900 dark:border-amber-400/40 dark:bg-amber-400/10 dark:text-amber-100"
+                                : "border-amber-400 bg-[#6b430f] text-white"
                             }`}
                           >
                             {online ? "Student online" : "Staff request"}

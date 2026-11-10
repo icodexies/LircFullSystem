@@ -10,6 +10,8 @@ import Modal from "../ui/Modal.jsx";
 import { useToast } from "../../hooks/shared/useToast.js";
 import { getBookCopies } from "../../services/catalog/bookService.js";
 import { getBookLoans } from "../../services/borrow/borrowService.js";
+import { getBookReservationState } from "../../services/borrow/reservationService.js";
+import ReservationCountdown from "./ReservationCountdown.jsx";
 import {
   flagCopyLost,
   getSettings,
@@ -152,6 +154,7 @@ export default function BookLoanDialog({ book, onClose }) {
   const [page, setPage] = useState(1);
   const [copies, setCopies] = useState(null);
   const [loans, setLoans] = useState(null);
+  const [reservationInfo, setReservationInfo] = useState(null);
   const [historyPage, setHistoryPage] = useState(1);
   const [revision, setRevision] = useState(0);
   const [borrowCopy, setBorrowCopy] = useState(null);
@@ -176,12 +179,17 @@ export default function BookLoanDialog({ book, onClose }) {
 
   useEffect(() => {
     let active = true;
-    Promise.all([getBookCopies(book.id, page), getBookLoans(book.id)])
-      .then(([copyData, loanRows]) => {
+    Promise.all([
+      getBookCopies(book.id, page),
+      getBookLoans(book.id),
+      getBookReservationState(book.id).catch(() => null),
+    ])
+      .then(([copyData, loanRows, reservations]) => {
         if (!active) return;
         // getBookCopies returns { copies, hasNext }; keep the dialog's row shape.
         setCopies({ rows: copyData.copies, hasNext: copyData.hasNext });
         setLoans(loanRows);
+        setReservationInfo(reservations);
       })
       .catch((error) => {
         if (active) toast.error(error.message, "Copies not loaded");
@@ -195,6 +203,12 @@ export default function BookLoanDialog({ book, onClose }) {
     setHistoryPage(1);
     setRevision((value) => value + 1);
   };
+  const holdsByAccession = new Map(
+    (reservationInfo?.reservations ?? []).map((hold) => [
+      hold.accession_id,
+      hold,
+    ]),
+  );
   const openByAccession = new Map(
     (loans ?? []).filter((loan) => loan.is_open).map((loan) => [loan.accession_id, loan]),
   );
@@ -283,9 +297,9 @@ export default function BookLoanDialog({ book, onClose }) {
               </h4>
               <p className="mt-1 text-xs text-slate-500">
                 Borrow uses the exact copy. A copy is unavailable while it is
-                on loan; return it first or choose another copy. Copies marked
-                damaged, missing or lost are kept in Inventory and are not
-                shown here.
+                on loan or reserved for pickup; return it first or choose
+                another copy. Copies marked damaged, missing or lost are kept
+                in Inventory and are not shown here.
               </p>
               {copies === null ? (
                 <SkeletonRows count={3} label="Loading copies…" />
@@ -297,6 +311,7 @@ export default function BookLoanDialog({ book, onClose }) {
                 <ul className="mt-3 divide-y divide-slate-100">
                   {copies.rows.map((copy) => {
                     const open = openByAccession.get(copy.id);
+                    const hold = holdsByAccession.get(copy.id);
                     const statusText = (copy.status ?? "").trim();
                     const borrowable =
                       !open &&
@@ -330,6 +345,19 @@ export default function BookLoanDialog({ book, onClose }) {
                                   {peso(accruing)} accruing
                                 </span>
                               )}
+                            </p>
+                          ) : hold ? (
+                            <p className="mt-0.5 flex flex-wrap items-center gap-1.5 text-xs text-amber-800">
+                              <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-900">
+                                Reserved for pickup
+                              </span>
+                              {hold.holder ? `${hold.holder} · ` : ""}
+                              until{" "}
+                              <ReservationCountdown
+                                expiresAt={hold.expires_at}
+                                className="font-semibold"
+                                onExpire={refresh}
+                              />
                             </p>
                           ) : (
                             <p className="mt-0.5 text-xs text-slate-500">

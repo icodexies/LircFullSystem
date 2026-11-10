@@ -20,8 +20,7 @@ const BADGES = {
   },
   pending: {
     label: "Pending review",
-    className:
-      "border-amber-300 bg-amber-100 text-amber-950 dark:border-amber-400/40 dark:bg-amber-400/20 dark:text-amber-50",
+    className: "border-amber-300 bg-amber-100 text-amber-950",
   },
   rejected: {
     label: "Needs attention",
@@ -34,8 +33,7 @@ const BADGES = {
   },
   ineligible: {
     label: "Visit the library",
-    className:
-      "border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200",
+    className: "border-amber-300 bg-amber-100 text-amber-950",
   },
   no_semester: {
     label: "No active semester",
@@ -208,22 +206,22 @@ export default function ProfileValidation({
           </p>
         </div>
       ) : state === "pending" ? (
-        <div className="mt-4 rounded-xl border border-amber-300 bg-amber-50 p-4 text-xs leading-relaxed text-slate-900 dark:border-amber-400/40 dark:bg-amber-950/30 dark:text-amber-50">
-          <p className="font-semibold text-amber-950 dark:text-white">
+        <div className="mt-4 rounded-xl border border-amber-300 bg-amber-100 p-4 text-xs leading-relaxed text-amber-950">
+          <p className="font-semibold">
             Your request is under review.
           </p>
-          <p className="mt-1 text-slate-800 dark:text-amber-50">
+          <p className="mt-1">
             Submitted {request?.requested_at ? displayTime(request.requested_at) : "recently"}.
             A librarian or admin will check your proof.
           </p>
           {request?.student_note && (
-            <p className="mt-2 text-slate-700 dark:text-amber-100">
+            <p className="mt-2 text-amber-900">
               Your note: {request.student_note}
             </p>
           )}
         </div>
       ) : state === "ineligible" ? (
-        <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4 text-xs leading-relaxed text-amber-900 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-100">
+        <div className="mt-4 rounded-xl border border-amber-300 bg-amber-100 p-4 text-xs leading-relaxed text-amber-950">
           <p className="font-semibold">
             Online validation is not available for your current record.
           </p>
@@ -236,7 +234,7 @@ export default function ProfileValidation({
           </p>
         </div>
       ) : state === "no_semester" ? (
-        <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4 text-xs leading-relaxed text-amber-900 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-100">
+        <div className="mt-4 rounded-xl border border-amber-300 bg-amber-100 p-4 text-xs leading-relaxed text-amber-950">
           There is no active semester yet. Ask the library to set the academic
           period before requesting validation.
         </div>
@@ -252,7 +250,7 @@ export default function ProfileValidation({
           )}
 
           {status.overdue_books > 0 ? (
-            <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4 text-xs leading-relaxed text-amber-900 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-100">
+            <div className="mt-4 rounded-xl border border-amber-300 bg-amber-100 p-4 text-xs leading-relaxed text-amber-950">
               You have <strong>{status.overdue_books} overdue book(s)</strong>.
               Return them before requesting validation. This is the same rule
               used at the library desk.

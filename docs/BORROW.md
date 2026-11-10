@@ -60,6 +60,21 @@ server-side totals:
   status** column. Use it to tell why an overdue borrower can no longer be
   reached.
 
+## Book reservations (1-hour pickup holds)
+
+Students and faculty can reserve an available copy from **OPAC → Book details**. A reservation is a **pickup hold**, not a loan:
+
+- The member must have no overdue books.
+- A book is reservable only while **at least two copies are free**, so the system never holds the last available copy.
+- Each member may have at most **3 active reservations**.
+- A hold expires exactly **1 hour** after creation; it cannot be extended.
+- The exact accession copy is held. Staff borrow the copy normally when the member arrives; borrowing it for someone else is rejected until they cancel the hold.
+- If the member does not arrive, the hold expires and the copy becomes available again. They must reserve again if they still want it.
+
+Members see active holds, countdowns and cancellation on **My Borrowing → My reservations**. Staff see the **Reservations** tab in Book Borrow and can cancel a hold. Reserved copies are marked in the OPAC and the Copies & loans window.
+
+Every new hold also sends an in-app notification to **all staff, librarians and admins** with the book, reserved copy, member and pickup deadline. The notification links directly to **Book Borrow → Reservations** so the copy can be pulled from circulation.
+
 ## Overdue reminders
 
 Every day at **8:00 AM Philippine time** the system reminds borrowers whose
