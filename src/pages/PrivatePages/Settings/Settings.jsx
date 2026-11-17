@@ -65,7 +65,11 @@ export default function Settings() {
         });
       })
       .catch((error) => {
-        if (active && error.name !== "AbortError")
+        if (
+          active &&
+          error?.name !== "AbortError" &&
+          !/abort/i.test(String(error?.message ?? ""))
+        )
           setState({ loading: false, error: error.message, fines: null });
       });
     return () => {

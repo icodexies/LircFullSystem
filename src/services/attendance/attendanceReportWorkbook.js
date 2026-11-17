@@ -41,6 +41,7 @@ export const VISITOR_WIDTHS = [32, 14, 15, 12, 16, 24, 8];
 const NAVY = "FF0B1330";
 const JADE = "FF0F8A6B";
 const HEAD_FILL = "FFF0EDFA";
+const GROUP_FILL = "FFE8EEFF";
 const ZEBRA = "FFF7F6FB";
 const MUTED = "FF5B6B8C";
 const BORDER_COLOR = "FFD9D5E8";
@@ -89,7 +90,18 @@ function attendanceDayLabel(day) {
   }).format(date);
 }
 
-function dataRow(sheet, rowNumber, values, { bold = false, indent = 0, zebra = false, muted = false } = {}) {
+function dataRow(
+  sheet,
+  rowNumber,
+  values,
+  {
+    bold = false,
+    indent = 0,
+    zebra = false,
+    muted = false,
+    highlight = false,
+  } = {},
+) {
   values.forEach((value, index) => {
     const cell = sheet.getCell(rowNumber, index + 1);
     cell.value = value;
@@ -98,8 +110,19 @@ function dataRow(sheet, rowNumber, values, { bold = false, indent = 0, zebra = f
       size: 10,
       color: { argb: muted ? MUTED : NAVY },
     };
-    cell.border = border;
-    if (zebra) {
+    cell.border = highlight
+      ? {
+          ...border,
+          top: { style: "medium", color: { argb: NAVY } },
+        }
+      : border;
+    if (highlight) {
+      cell.fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: GROUP_FILL },
+      };
+    } else if (zebra) {
       cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: ZEBRA } };
     }
     if (index === 0 && indent) cell.alignment = { indent };
@@ -365,6 +388,7 @@ export async function buildAttendanceReportWorkbook({ rows, summary, context }) 
   summary.visitors.students.forEach((dept) => {
     dataRow(visitors, v, [dept.department, "", "", "", "", "", dept.visits], {
       bold: true,
+      highlight: true,
     });
     v++;
     dept.programs.forEach((program) => {
@@ -400,6 +424,7 @@ export async function buildAttendanceReportWorkbook({ rows, summary, context }) 
       if (entry.label) {
         dataRow(visitors, v, [entry.label, "", "", "", "", "", entry.visits], {
           bold: true,
+          highlight: true,
         });
         v++;
       }

@@ -162,11 +162,12 @@ export default function AiRecommendModal({ subject, onClose, onOpenBook }) {
             className="rounded-xl border border-slate-200 bg-page/70 px-4 py-6 text-center"
           >
             <div className="flex items-center justify-center gap-2 text-sm font-semibold text-ink">
-              <Spinner size="sm" /> Asking the AI with web sources…
+              <Spinner size="sm" /> Checking the catalog and AI recommendations…
             </div>
             <p className="mt-2 text-xs leading-relaxed text-slate-500">
-              This can take up to a minute. The result is saved, so the next
-              time this subject opens instantly.
+              The result is saved, so the next time this subject opens
+              instantly. If the AI is unavailable, recent catalog matches are
+              shown instead.
             </p>
           </div>
         )}

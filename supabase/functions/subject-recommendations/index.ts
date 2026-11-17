@@ -20,7 +20,9 @@ const CORS = {
 // CHED CMO 22 s.2021: five relevant titles per major subject, published
 // within the last five years. Candidates are limited to that window.
 const RECENT_YEARS = 5;
-const CANDIDATE_LIMIT = 60;
+const CANDIDATE_LIMIT = 48;
+const AI_CANDIDATE_LIMIT = 24;
+const GEMINI_TIMEOUT_MS = 18000;
 const MAX_PICKS = 6;
 const MAX_ACQUISITIONS = 8;
 const MAX_CITATIONS = 12;
@@ -83,8 +85,7 @@ function json(body, status = 200) {
   });
 }
 
-const RETRYABLE_STATUS = new Set([429, 500, 502, 503]);
-const TOOL_HINT = /tool|grounding|google_search|google search/i;
+const RETRYABLE_STATUS = new Set([408, 429, 500, 502, 503, 504]);
 
 async function callGemini({ apiKey, model, dossier, web, schema }) {
   const body = {
@@ -95,14 +96,30 @@ async function callGemini({ apiKey, model, dossier, web, schema }) {
       : { temperature: 0.2 },
   };
   if (web) body.tools = [{ google_search: {} }];
-  const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    },
-  );
+
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), GEMINI_TIMEOUT_MS);
+  let response;
+  try {
+    response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+        signal: controller.signal,
+      },
+    );
+  } catch (error) {
+    return {
+      ok: false,
+      status: 408,
+      detail: `${model} timed out or could not be reached: ${error?.message ?? "request failed"}`,
+    };
+  } finally {
+    clearTimeout(timer);
+  }
+
   if (!response.ok) {
     return {
       ok: false,
@@ -122,26 +139,33 @@ async function callGemini({ apiKey, model, dossier, web, schema }) {
 // fails, the rest of the run continues catalog-only across the model chain
 // (and the stored row says so). Transient failures retry, like the
 // performance summary function.
-async function generateFindings({ apiKey, models, webModel, dossier }) {
+async function generateFindings({
+  apiKey,
+  models,
+  webModel,
+  dossier,
+  webEnabled,
+}) {
   let lastError = "";
-
-  // 1) Web-grounded attempt(s).
   let webError = "";
-  for (let attempt = 1; attempt <= 2; attempt++) {
-    const withWeb = await callGemini({ apiKey, model: webModel, dossier, web: true });
+  if (!webEnabled) {
+    webError = "Web search is disabled for speed; results use the library catalog only.";
+  } else {
+    const withWeb = await callGemini({
+      apiKey,
+      model: webModel,
+      dossier,
+      web: true,
+    });
     if (withWeb.ok) return { ...withWeb, model: webModel, web: true };
     lastError = withWeb.detail;
     webError = withWeb.detail.slice(0, 300);
-    const worthRetrying =
-      RETRYABLE_STATUS.has(withWeb.status) && !TOOL_HINT.test(withWeb.detail);
-    if (!worthRetrying) break;
-    if (attempt < 2) await new Promise((resolve) => setTimeout(resolve, 2500));
   }
 
-  // 2) Catalog-only across the chain.
+  // Catalog-only across the model chain. A 404 or other non-retryable model
+  // error moves to the next model instead of failing the whole request.
   for (const model of models) {
-    const attempts = model === models[0] ? 2 : 2;
-    for (let attempt = 1; attempt <= attempts; attempt++) {
+    for (let attempt = 1; attempt <= 2; attempt++) {
       const noWeb = await callGemini({
         apiKey,
         model,
@@ -151,15 +175,48 @@ async function generateFindings({ apiKey, models, webModel, dossier }) {
       });
       if (noWeb.ok) return { ...noWeb, model, web: false, webError };
       lastError = noWeb.detail;
-      if (!RETRYABLE_STATUS.has(noWeb.status)) {
-        return { error: lastError, retryable: false };
-      }
-      if (attempt < attempts) {
-        await new Promise((resolve) => setTimeout(resolve, attempt * 2500));
+      if (!RETRYABLE_STATUS.has(noWeb.status)) break;
+      if (attempt < 2) {
+        await new Promise((resolve) => setTimeout(resolve, 800));
       }
     }
   }
   return { error: lastError, retryable: true };
+}
+
+
+
+function rankCandidates(books, words) {
+  const needles = words.filter(Boolean);
+  return [...books]
+    .map((book) => {
+      const text = `${book.book_name ?? ""} ${book.author ?? ""}`.toLowerCase();
+      const matches = needles.reduce(
+        (score, word) => score + (text.includes(word) ? 1 : 0),
+        0,
+      );
+      return { book, score: matches };
+    })
+    .sort(
+      (a, b) =>
+        b.score - a.score ||
+        (b.book.publish_year ?? 0) - (a.book.publish_year ?? 0),
+    )
+    .map((entry) => entry.book)
+    .slice(0, AI_CANDIDATE_LIMIT);
+}
+
+function catalogFallback(candidates) {
+  return {
+    summary: candidates.length
+      ? "The AI is temporarily unavailable, so these are recent catalog matches for this subject. Use Search again for fresh AI picks."
+      : "The AI is temporarily unavailable and no recent catalog title matched this subject.",
+    picks: candidates.slice(0, MAX_PICKS).map((book) => ({
+      book_id: book.id,
+      reason: "Recent catalog title matching the subject.",
+    })),
+    acquisitions: [],
+  };
 }
 
 // The model may wrap JSON in fences or add a sentence; keep the JSON block.
@@ -282,7 +339,7 @@ Deno.serve(async (req) => {
         .gte("publish_year", minYear)
         .or(orFilter)
         .limit(CANDIDATE_LIMIT);
-      candidates = books ?? [];
+      candidates = rankCandidates(books ?? [], words);
     }
 
     const dossier = {
@@ -303,9 +360,9 @@ Deno.serve(async (req) => {
     };
 
     const apiKey = Deno.env.get("GEMINI_API_KEY");
-    if (!apiKey) return json({ error: "The AI key is not configured yet." }, 500);
+    const webEnabled = Deno.env.get("GEMINI_WEB_ENABLED") === "true";
     const webModel = Deno.env.get("GEMINI_WEB_MODEL") ?? "gemini-3.8-flash";
-    const primary = Deno.env.get("GEMINI_MODEL") ?? "gemini-2.5-flash";
+    const primary = Deno.env.get("GEMINI_MODEL") ?? "gemini-3.8-flash";
     const fallbacks = (
       Deno.env.get("GEMINI_FALLBACK_MODEL") ?? "gemini-flash-lite-latest"
     )
@@ -313,26 +370,42 @@ Deno.serve(async (req) => {
       .map((model) => model.trim())
       .filter(Boolean);
 
-    const result = await generateFindings({
-      apiKey,
-      webModel,
-      models: [primary, ...fallbacks.filter((model) => model !== primary)],
-      dossier,
-    });
-    if (result.error) {
-      return json(
-        {
-          error: result.retryable
-            ? "The AI is busy right now (Google's side). Please try again in a minute."
-            : `The AI request failed — ${result.error}`,
-        },
-        502,
-      );
+    let parsed: any = null;
+    let model = "catalog-match";
+    let web = false;
+    let webError = "";
+    let grounding = null;
+
+    if (apiKey) {
+      const result: any = await generateFindings({
+        apiKey,
+        webModel,
+        webEnabled,
+        models: [primary, ...fallbacks.filter((item) => item !== primary)],
+        dossier,
+      });
+      if (!result.error) {
+        parsed = parseJson(result.text);
+        if (parsed && typeof parsed === "object") {
+          model = result.model;
+          web = Boolean(result.web);
+          webError = result.webError ?? "";
+          grounding = result.grounding ?? null;
+        } else {
+          webError =
+            "The AI returned an unreadable answer; catalog matches are shown instead.";
+        }
+      } else {
+        webError = result.error;
+      }
+    } else {
+      webError =
+        "The AI key is not configured; catalog matches are shown instead.";
     }
 
-    const parsed = parseJson(result.text);
-    if (!parsed || typeof parsed !== "object")
-      return json({ error: "The AI returned an unreadable answer. Try again." }, 502);
+    // Fast deterministic fallback: never leave the librarian with an empty
+    // error screen when the catalog already has relevant recent titles.
+    if (!parsed) parsed = catalogFallback(candidates);
 
     // Validate the picks against the real candidate list.
     const byId = new Map(candidates.map((book) => [book.id, book]));
@@ -370,7 +443,7 @@ Deno.serve(async (req) => {
 
     const seen = new Set();
     const citations = [];
-    for (const chunk of result.grounding?.groundingChunks ?? []) {
+    for (const chunk of grounding?.groundingChunks ?? []) {
       const uri = httpUrl(chunk?.web?.uri);
       if (!uri || seen.has(uri)) continue;
       seen.add(uri);
@@ -383,15 +456,15 @@ Deno.serve(async (req) => {
       picks,
       acquisitions,
       candidate_count: candidates.length,
-      web_error: result.webError || null,
+      web_error: webError || null,
     };
 
     const { data: saved, error: saveError } = await supabase
       .from("subject_ai_findings")
       .insert({
         course_code: subject.course_code,
-        model: result.model,
-        web: Boolean(result.web),
+        model,
+        web,
         findings,
         citations,
         generated_by: me.id,

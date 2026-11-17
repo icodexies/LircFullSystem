@@ -6,7 +6,10 @@ import { ACCESS } from "../../routes/roles.js";
 const LIST_FIELDS =
   "id,book_name,author,isbn,publish_year,edition,book_image,call_number,shelf_id,book_format_id,updated_at,section:shelves(id,name),format:book_formats(id,name)";
 const DETAIL_FIELDS = `${LIST_FIELDS},publisher,place_of_publication,barcode_tag_number,asset_number,created_at`;
+const EXPORT_FIELDS = `${LIST_FIELDS},publisher,place_of_publication`;
 const COPY_PAGE_SIZE = 10;
+const EXPORT_BATCH_SIZE = 1000;
+const EXPORT_CONCURRENCY = 4;
 
 // Formats and shelves change very rarely; one shared cache avoids fetching
 // both tables every time the catalog, borrow or adding-books page mounts.
@@ -51,25 +54,60 @@ export async function getBooks(query, signal) {
   };
 }
 
-async function getLookupRows(supabase, table, signal) {
+// Every filtered book for the downloadable catalog cards. The table is
+// paginated for browsing, but the export reads all matching rows in bounded
+// 1,000-row batches, four at a time, so a large export does not make one
+// request per book.
+export async function getBooksForExport(query, signal) {
+  const supabase = await getSupabase();
+  const fields =
+    query.searchBy === "accession_number" && query.search.trim()
+      ? `${EXPORT_FIELDS},matching_copies:book_accession_numbers!inner()`
+      : EXPORT_FIELDS;
+  const build = () =>
+    applyCatalogFilters(supabase.from("books").select(fields), query);
   const rows = [];
-  const batchSize = 100;
-  // Only the small lookup tables are collected, in bounded batches. Never books.
-  for (let from = 0; ; from += batchSize) {
-    const { data, error } = await supabase
-      .from(table)
-      .select("id,name")
-      .order("name")
-      .order("id")
-      .range(from, from + batchSize - 1)
-      .abortSignal(signal);
-    if (error) throw catalogReadError(error);
-    rows.push(...(data ?? []));
-    if (!data || data.length < batchSize) return rows;
+  let start = 0;
+  let done = false;
+
+  while (!done) {
+    const starts = Array.from(
+      { length: EXPORT_CONCURRENCY },
+      (_, index) => start + index * EXPORT_BATCH_SIZE,
+    );
+    const pages = await Promise.all(
+      starts.map(async (from) => {
+        const request = build().range(from, from + EXPORT_BATCH_SIZE - 1);
+        if (signal) request.abortSignal(signal);
+        const { data, error } = await request;
+        if (error) throw catalogReadError(error);
+        return data ?? [];
+      }),
+    );
+    for (const page of pages) {
+      rows.push(...page);
+      if (page.length < EXPORT_BATCH_SIZE) done = true;
+    }
+    start += EXPORT_BATCH_SIZE * EXPORT_CONCURRENCY;
   }
+
+  return rows;
 }
 
-export async function getCatalogLookups(signal) {
+async function getLookupRows(supabase, table) {
+  // These are tiny reference tables (single-digit rows). One request each is
+  // faster and more reliable than batching, and it is not tied to a page
+  // component's abort signal.
+  const { data, error } = await supabase
+    .from(table)
+    .select("id,name")
+    .order("name")
+    .order("id");
+  if (error) throw catalogReadError(error);
+  return data ?? [];
+}
+
+export async function getCatalogLookups() {
   if (lookupsCache && Date.now() - lookupsCachedAt < LOOKUPS_TTL_MS) {
     return lookupsCache;
   }
@@ -77,14 +115,25 @@ export async function getCatalogLookups(signal) {
 
   const request = (async () => {
     const supabase = await getSupabase();
-    const [formats, shelves] = await Promise.all([
-      getLookupRows(supabase, "book_formats", signal),
-      getLookupRows(supabase, "shelves", signal),
-    ]);
-    const data = { formats, shelves };
-    lookupsCache = data;
-    lookupsCachedAt = Date.now();
-    return data;
+    let lastError;
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        const [formats, shelves] = await Promise.all([
+          getLookupRows(supabase, "book_formats"),
+          getLookupRows(supabase, "shelves"),
+        ]);
+        const data = { formats, shelves };
+        lookupsCache = data;
+        lookupsCachedAt = Date.now();
+        return data;
+      } catch (error) {
+        lastError = error;
+        if (attempt === 0) {
+          await new Promise((resolve) => setTimeout(resolve, 200));
+        }
+      }
+    }
+    throw lastError;
   })();
 
   lookupsPending = request;

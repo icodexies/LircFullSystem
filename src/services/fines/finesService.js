@@ -5,11 +5,14 @@ import { getSupabase } from "../auth/authService.js";
 const MISSING_SETUP = ["42883", "PGRST202", "42703", "42P01"];
 
 function finesError(error, fallback) {
+  if (error?.name === "AbortError") return error;
   if (MISSING_SETUP.includes(error?.code))
     return new Error(
       "Fines need their database setup first. Apply the fines migration.",
     );
-  return new Error(error?.message || fallback);
+  const wrapped = new Error(error?.message || fallback);
+  if (error?.name) wrapped.name = error.name;
+  return wrapped;
 }
 
 // All settings (currently just "fines"). Library operators only.
@@ -40,9 +43,10 @@ export async function getSettings(signal, { fresh = false } = {}) {
 
   const request = (async () => {
     const client = await getSupabase();
-    const { data, error } = await client
-      .rpc("lirc_settings_get")
-      .abortSignal(signal);
+    // This is a tiny shared setting. Do not tie the shared promise to one
+    // page's abort signal: a remount can otherwise abort the request for every
+    // component waiting on it.
+    const { data, error } = await client.rpc("lirc_settings_get");
     if (error) throw finesError(error, "The settings could not be loaded.");
     settingsCache = data ?? {};
     settingsCachedAt = Date.now();

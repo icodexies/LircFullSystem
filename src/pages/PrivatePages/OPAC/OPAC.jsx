@@ -2,7 +2,13 @@ import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../../../hooks/auth/useAuth.js";
 import { useCatalog } from "../../../hooks/catalog/useCatalog.js";
+import { useToast } from "../../../hooks/shared/useToast.js";
+import { getBooksForExport } from "../../../services/catalog/bookService.js";
+import { downloadBookCardsDocx } from "../../../services/catalog/bookCardDocx.js";
+import { findBookCardIssues } from "../../../services/catalog/bookCardValidation.js";
 import { ACCESS } from "../../../routes/roles.js";
+import Modal from "../../../components/ui/Modal.jsx";
+import { secondaryButton } from "../../../components/attendance/WorkspaceUi.jsx";
 import { SEARCH_FIELDS, PAGE_SIZES } from "../../../services/catalog/catalogQuery.js";
 import BookCover from "../../../components/catalog/BookCover.jsx";
 import BookDetails from "../../../components/catalog/BookDetails.jsx";
@@ -22,9 +28,13 @@ const dots = {
 
 export default function OPAC() {
   const catalog = useCatalog();
+  const toast = useToast();
   const { role } = useAuth();
   const canEdit = ACCESS.books.includes(role);
   const [filters, setFilters] = useState(INITIAL_FILTERS);
+  const [checking, setChecking] = useState(false);
+  const [exporting, setExporting] = useState(false);
+  const [pendingExport, setPendingExport] = useState(null);
   const [selection, setSelection] = useState(null);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -53,6 +63,57 @@ export default function OPAC() {
   function reset() {
     setFilters(INITIAL_FILTERS);
     catalog.clearFilters();
+  }
+
+  async function exportRows(rows) {
+    setExporting(true);
+    try {
+      await downloadBookCardsDocx(rows);
+      toast.success(
+        `${rows.length} book card${rows.length === 1 ? "" : "s"} downloaded.`,
+      );
+      setPendingExport(null);
+    } catch (error) {
+      if (error?.name !== "AbortError") {
+        toast.error(error.message, "Download failed");
+      }
+    } finally {
+      setExporting(false);
+    }
+  }
+
+  async function downloadCards() {
+    if (busy || checking || exporting) return;
+    setChecking(true);
+    try {
+      const rows = await getBooksForExport(catalog.query);
+      if (!rows.length) {
+        toast.info("No books match the current filters.");
+        return;
+      }
+      const issues = findBookCardIssues(rows);
+      if (issues.length > 0) {
+        setPendingExport({ rows, issues });
+        return;
+      }
+      await exportRows(rows);
+    } catch (error) {
+      if (error?.name !== "AbortError") {
+        toast.error(error.message, "Download failed");
+      }
+    } finally {
+      setChecking(false);
+    }
+  }
+
+  function continueExport() {
+    const rows = pendingExport?.rows;
+    setPendingExport(null);
+    if (rows) void exportRows(rows);
+  }
+
+  function cancelExport() {
+    setPendingExport(null);
   }
 
   return (
@@ -274,6 +335,21 @@ export default function OPAC() {
           </label>
           <button
             type="button"
+            onClick={downloadCards}
+            disabled={
+              busy || checking || exporting || catalog.books.length === 0
+            }
+            aria-label="Download all filtered books as Word catalog cards"
+            className="rounded-xl bg-navy px-3 py-2.5 text-xs font-semibold text-white hover:bg-accent-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-strong disabled:opacity-40"
+          >
+            {exporting
+              ? "Preparing..."
+              : checking
+                ? "Checking..."
+                : "Download Word"}
+          </button>
+          <button
+            type="button"
             onClick={() => catalog.refresh()}
             disabled={busy}
             className="rounded-xl border border-slate-400 bg-slate-100 px-3 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-200 hover:text-ink disabled:opacity-40"
@@ -486,6 +562,82 @@ export default function OPAC() {
             }}
           />
         ))}
+
+      {pendingExport && !selection && (
+        <Modal
+          title="Some books are missing details"
+          description={`${pendingExport.issues.length} of ${pendingExport.rows.length} books will have at least one card field marked “Not recorded” in the Word file.`}
+          icon={
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              className="h-5 w-5"
+              aria-hidden="true"
+            >
+              <path d="M12 9v4" />
+              <path d="M10.36 3.59 2.26 17.13a1.91 1.91 0 0 0 1.63 2.87h16.22a1.91 1.91 0 0 0 1.63-2.87L13.64 3.59a1.91 1.91 0 0 0-3.28 0z" />
+              <path d="M12 16h.01" />
+            </svg>
+          }
+          iconClassName="bg-amber-50 text-amber-800"
+          size="lg"
+          onClose={cancelExport}
+          footer={
+            <div className="flex flex-wrap items-center justify-end gap-3">
+              <button
+                type="button"
+                className={secondaryButton}
+                onClick={cancelExport}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                data-modal-autofocus="true"
+                onClick={continueExport}
+                className="inline-flex items-center justify-center rounded-xl bg-navy px-4 py-2.5 text-xs font-semibold text-white transition-colors hover:bg-accent-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-strong"
+              >
+                Continue anyway
+              </button>
+            </div>
+          }
+        >
+          <div className="p-5">
+            <p className="text-xs leading-relaxed text-slate-600">
+              The missing values are listed below. You can fix the catalog
+              records and download again, or continue and generate the cards
+              with the available data.
+            </p>
+            <ul className="mt-3 max-h-[45dvh] divide-y divide-slate-100 overflow-y-auto rounded-xl border border-slate-200 bg-surface">
+              {pendingExport.issues.map(({ book, missing }) => (
+                <li
+                  key={book.id}
+                  className="flex flex-wrap items-center gap-3 px-3 py-2.5"
+                >
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs font-semibold text-ink">
+                      {book.book_name || "Untitled book"}
+                    </p>
+                    <p className="mt-0.5 text-[11px] text-slate-500">
+                      Missing: {missing.join(", ")}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setSelection({ id: book.id })}
+                    aria-label={`View details for ${book.book_name || "this book"}`}
+                    className="shrink-0 rounded-lg border border-slate-400 bg-slate-100 px-3 py-1.5 text-[11px] font-semibold text-slate-700 transition-colors hover:border-navy hover:bg-navy hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-strong"
+                  >
+                    View
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </Modal>
+      )}
     </>
   );
 }
