@@ -48,11 +48,11 @@ Academic-year start year/name and a semester's parent academic year are immutabl
 
 ## Online validation from the member profile
 
-Students can request validation from **Profile → Library validation** (no separate sidebar page). The profile shows the current semester/academic-year badge, the printable library card, and the request state. The student uploads a private proof of enrollment (PNG/JPG/WebP/PDF, up to 5 MB) and a note; the request is tied to the active semester's academic year and only one request may wait at a time.
+Students can request validation from **Profile → Library validation** (no separate sidebar page). The profile shows the current semester/academic-year badge, the downloadable PDF library card, and the request state. The student uploads a private proof of enrollment (PNG/JPG/WebP/PDF, up to 5 MB) and a note; the request is tied to the active semester's academic year and only one request may wait at a time.
 
 Online requests appear in the same **Pending / Approved / Rejected** tabs as staff validation-change requests for librarians/admins, with a colored **Student online** or **Staff request** label and left border. Approving calls the existing annual validation/enrollment rules, sets the normal validator/date/year level, and notifies the student. Rejections require a reason. Submissions are blocked for overdue books, already-validated records, ineligible statuses, and outside the active semester's academic year. Proof files are private; reviewers open short-lived signed URLs. The student never chooses a status, year level, or reviewer.
 
-The library card is a credit-card-sized printable front with the member's basic information and a Code 39 barcode encoding the library ID as `*LIBRARY-ID*`. The card uses the same number the scanner accepts.
+The library card downloads as a PDF laid out on long bond paper (8.5 × 13 in) with the card at credit-card size, centered with corner cut marks. The card has the member's basic information and a Code 39 barcode encoding the library ID as `*LIBRARY-ID*`. The card uses the same number the scanner accepts.
 
 ## Reports, filters and performance
 

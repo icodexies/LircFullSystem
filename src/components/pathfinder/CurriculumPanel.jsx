@@ -10,7 +10,12 @@ import SubjectCard from "./SubjectCard.jsx";
 import { SkeletonRows } from "../ui/Skeleton.jsx";
 import { Spinner } from "../ui/Loading.jsx";
 import { inputClass } from "../attendance/StaffUi.jsx";
-import { WorkspaceNotice } from "../attendance/WorkspaceUi.jsx";
+import {
+  secondaryButton,
+  WorkspaceNotice,
+} from "../attendance/WorkspaceUi.jsx";
+import { useToast } from "../../hooks/shared/useToast.js";
+import { downloadCurriculumWorkbook } from "../../services/pathfinder/curriculumWorkbook.js";
 
 const GEN_ED = "gen-ed";
 
@@ -35,8 +40,10 @@ export default function CurriculumPanel({
   onOpenBook,
   onAiPicks,
 }) {
+  const toast = useToast();
   const [yearChoice, setYearChoice] = useState(null);
   const [filter, setFilter] = useState("");
+  const [downloading, setDownloading] = useState(false);
 
   const isGenEd = programId === GEN_ED;
   const data = curriculum.data;
@@ -87,6 +94,22 @@ export default function CurriculumPanel({
         group.course_code.toLowerCase().includes(needle),
     );
   }, [groups, filter]);
+
+  async function downloadReport() {
+    if (!data || downloading) return;
+    setDownloading(true);
+    try {
+      await downloadCurriculumWorkbook({
+        data,
+        program: selected,
+        isGenEd,
+      });
+    } catch (error) {
+      toast.error(error.message, "Download failed");
+    } finally {
+      setDownloading(false);
+    }
+  }
 
   if (programs.error) {
     return <WorkspaceNotice error>{programs.error}</WorkspaceNotice>;
@@ -173,14 +196,32 @@ export default function CurriculumPanel({
           )
         )}
 
-        {curriculum.updating && (
-          <div
-            role="status"
-            className="ml-auto inline-flex items-center gap-1.5 text-[11px] text-slate-500"
+        <div className="ml-auto flex flex-wrap items-center gap-2">
+          {curriculum.updating && (
+            <div
+              role="status"
+              className="inline-flex items-center gap-1.5 text-[11px] text-slate-500"
+            >
+              <Spinner size="sm" /> Updating…
+            </div>
+          )}
+          <button
+            type="button"
+            className={secondaryButton}
+            onClick={downloadReport}
+            disabled={
+              !data ||
+              curriculum.loading ||
+              curriculum.updating ||
+              downloading
+            }
+            aria-label={`Download Excel report for ${
+              isGenEd ? "General Education" : selected?.name ?? "this program"
+            }`}
           >
-            <Spinner size="sm" /> Updating…
-          </div>
-        )}
+            {downloading ? "Preparing…" : "Download Excel"}
+          </button>
+        </div>
       </div>
 
       {curriculum.error && <WorkspaceNotice error>{curriculum.error}</WorkspaceNotice>}

@@ -22,6 +22,7 @@ import { panelClass } from "../../../components/personnel/panel.js";
 import { LoadingBlock } from "../../../components/ui/Loading.jsx";
 import Avatar from "../../../components/ui/Avatar.jsx";
 import LibraryCard from "../../../components/profile/LibraryCard.jsx";
+import { downloadLibraryCardPdf } from "../../../services/profile/libraryCardPdf.js";
 import ProfileValidation, {
   ValidationBadge,
 } from "../../../components/profile/ProfileValidation.jsx";
@@ -40,6 +41,7 @@ export default function Profile() {
   });
   const [photoBusy, setPhotoBusy] = useState(false);
   const [pendingSrc, setPendingSrc] = useState(null);
+  const [cardBusy, setCardBusy] = useState(false);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -121,6 +123,21 @@ export default function Profile() {
     }
   }
 
+  async function downloadCard() {
+    if (!data || cardBusy) return;
+    setCardBusy(true);
+    try {
+      await downloadLibraryCardPdf(data, validation.data);
+    } catch (error) {
+      toast.error(
+        error?.message || "The card could not be downloaded.",
+        "Download failed",
+      );
+    } finally {
+      setCardBusy(false);
+    }
+  }
+
   async function pickFile(event) {
     const file = event.target.files?.[0];
     event.target.value = "";
@@ -163,7 +180,7 @@ export default function Profile() {
         <div
           className={`grid gap-5 ${
             data.role === "student"
-              ? "xl:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]"
+              ? "xl:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]"
               : ""
           }`}
         >
@@ -174,23 +191,25 @@ export default function Profile() {
                   Library card
                 </h2>
                 <p className="mt-1 text-[11px] leading-relaxed text-slate-500">
-                  Your printable library card. The barcode uses the same
-                  library ID the scanner reads.
+                  Use the barcode at the circulation desk. Download the PDF
+                  for a copy you can keep on your phone or print.
                 </p>
               </div>
               <button
                 type="button"
-                className={`${secondaryButton} no-print`}
-                onClick={() => window.print()}
+                className={secondaryButton}
+                onClick={downloadCard}
+                disabled={cardBusy}
               >
-                Print card
+                {cardBusy ? "Preparing PDF..." : "Download PDF"}
               </button>
             </div>
-            <div className="mt-4">
+            <div className="mt-4 sm:mt-5">
               <LibraryCard profile={data} validation={validation.data} />
             </div>
             <p className="mt-3 text-[10px] leading-relaxed text-slate-500">
-              Print at 100% / actual size, then cut along the edge and laminate.
+              Print the PDF on long bond paper at 100% and cut along the corner
+              marks.
             </p>
           </section>
 
