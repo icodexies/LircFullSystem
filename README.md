@@ -46,6 +46,19 @@ Deploy from the project folder with `npx vercel --prod`, or connect the GitHub
 repository `icodexies/LircFullSystem` to the Vercel project and let pushes to
 `main` deploy automatically.
 
+### One-time GitHub authorization for automatic deploys
+
+The code is already in GitHub, but Vercel's Git connection is separate from
+GitHub access. A Vercel account administrator must connect the two once:
+
+1. In Vercel, open **Account Settings → Authentication/Connections** and connect
+   the GitHub account that owns `icodexies/LircFullSystem`.
+2. Install the **Vercel GitHub App** for that repository.
+3. In the `ccc-lirc` project, open **Settings → Git → Connect Repository** and
+   choose `icodexies/LircFullSystem` with production branch `main`.
+4. After that, every push to `main` deploys automatically. Until then, use
+   `npx vercel --prod` for manual deployments.
+
 Do **not** commit or upload:
 
 - `.env`, `.env.local`, or `.env.production`
