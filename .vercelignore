@@ -1,0 +1,13 @@
+# Local environment files and generated build output are never uploaded.
+.env
+.env.*
+!.env.example
+.env.local
+.env.production
+
+# Never deploy local uploads or machine-only project links.
+data/
+uploads/
+.vercel
+node_modules/
+dist/

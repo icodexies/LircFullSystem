@@ -1,5 +1,9 @@
 # Finding files in LIRC_SYSTEM
 
+> The canonical feature-to-file router is [`PROJECT_MAP.md`](PROJECT_MAP.md). This file is the directory-layout reference. If the two disagree, the source code wins; fix both in the same change.
+>
+> The tree below is abbreviated. Current feature folders also include `announcements`, `attendance`, `barcodes`, `borrow`, `inventory`, `pathfinder`, `periods`, `personnel`, `profile`, `statistics`, `users`, `system` and `validation`.
+
 Keep the existing page folders. The folders supporting those pages now use the same feature names, so you can follow a feature from its screen to its components, hooks and services.
 
 ## Folder map
@@ -65,6 +69,8 @@ supabase/
 ```
 
 ## Where should I edit?
+
+> This is a quick orientation table from an earlier subset of the app. For the complete current router, use [`PROJECT_MAP.md`](PROJECT_MAP.md).
 
 | What you want to change                   | Start here                                                     |
 | ----------------------------------------- | -------------------------------------------------------------- |

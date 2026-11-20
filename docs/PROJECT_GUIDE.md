@@ -1,8 +1,10 @@
 # How this project fits together
 
+> **Current navigation:** use [`PROJECT_MAP.md`](PROJECT_MAP.md) for the feature-to-file router and [`AGENT_WORKFLOW.md`](AGENT_WORKFLOW.md) for the change workflow. This guide records architecture and conventions; some historical sections describe an earlier state of the app. The source code is authoritative.
+
 The project uses React and Vite for the interface and Supabase for authentication and server-side registration. The public library collections are sample data. The OPAC reads your catalog with server-side pagination and restricted editing. See [the OPAC guide](OPAC.md) for its database migration, and [the member layout guide](MEMBER_LAYOUT.md) for page folders and role permissions. Bounded catalog reads were verified against the configured Supabase project; hosted write policies and production capacity were not verified.
 
-See [the folder guide](FOLDER_STRUCTURE.md) for the full feature structure and examples of where to edit.
+See [the project map](PROJECT_MAP.md) for the complete feature-to-file router, and [the folder guide](FOLDER_STRUCTURE.md) for the directory layout.
 
 ## A simple responsibility for each folder
 
@@ -67,7 +69,7 @@ The frontend denies member access if a profile is missing or cannot be loaded an
 
 ## Features still waiting for real data
 
-Borrowing, reservations, online book files, thesis submission, password recovery and newsletter subscriptions are unfinished. Their controls must not claim that a request was saved. Configure digital-resource links and the access-request form in `src/data/home/digitalSources.js`, and real contact links in `src/data/shared/contactLinks.js`. OPAC catalog reads and book editing are implemented; additional page operations need their own backend permissions when added.
+Borrowing, reservations, fines, online validation, password reset, attendance, inventory, barcode generation and Path Finder are implemented; see the project map for their current entry points. Online book files, thesis submission and newsletter subscriptions are still unfinished. Their controls must not claim that a request was saved. Configure digital-resource links and the access-request form in `src/data/home/digitalSources.js`, and real contact links in `src/data/shared/contactLinks.js`. OPAC catalog reads and book editing are implemented; additional page operations need their own backend permissions when added.
 
 ## Deployment and verification
 

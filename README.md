@@ -2,7 +2,9 @@
 
 The LIRC System is a React single-page application for the Learning and Information Resource Center at City College of Calamba. It uses Vite, React Router, Tailwind CSS, and Supabase Authentication and Edge Functions.
 
-Read [the folder guide](docs/FOLDER_STRUCTURE.md) to find files by feature. Read [the project guide](docs/PROJECT_GUIDE.md) for the data format, folder responsibilities, animation behavior and Supabase setup still required before production.
+Read [the folder guide](docs/FOLDER_STRUCTURE.md) for the directory layout and [the project guide](docs/PROJECT_GUIDE.md) for the data format, folder responsibilities, animation behavior and Supabase setup still required before production.
+
+For agent-assisted work, start with [AGENTS.md](AGENTS.md), then use [the project map](docs/PROJECT_MAP.md) and [the agent workflow](docs/AGENT_WORKFLOW.md). The map is the feature-to-file router and the workflow keeps future changes from rescanning the whole project. Every change is recorded in [the change journal](docs/CHANGE_LOG.md).
 
 ## Requirements
 
@@ -13,10 +15,52 @@ Read [the folder guide](docs/FOLDER_STRUCTURE.md) to find files by feature. Read
 ## Local development
 
 1. Install dependencies with `npm install`.
-2. Create a root `.env` file with `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY`. The existing `VITE_SUPABASE_KEY` name is also supported for an anon/public key. Never put a service-role or secret key in a `VITE_` variable.
+2. Copy `.env.example` to `.env.local` and fill in `VITE_SUPABASE_URL` and
+   `VITE_SUPABASE_KEY`. The key must be the public anon/publishable key. Never
+   put a service-role or secret key in a `VITE_` variable.
 3. Start the app with `npm run dev`.
 
-The registration function also needs `GMAIL_USER`, `GMAIL_APP_PASSWORD`, and `SITE_URL` in the Supabase function environment. Use `supabase/functions/.env.example` as a template; never commit real credentials.
+## Vercel deployment
+
+The Vercel project is `ccc-lirc` (team `ren-8eab`) and the production site is
+<https://ccc-lirc.vercel.app>.
+
+Required Vercel environment variables for **Production** and **Preview**:
+
+```text
+VITE_SUPABASE_URL=https://<project-ref>.supabase.co
+VITE_SUPABASE_KEY=<public-anon-or-publishable-key>
+VITE_SUPABASE_PUBLISHABLE_KEY=<optional alias for the same public key>
+```
+
+Build settings:
+
+```text
+Framework preset: Vite
+Build command:    npm run build
+Output directory: dist
+Node.js:          24.x (package engines require a patched 22/24/26 line)
+```
+
+Deploy from the project folder with `npx vercel --prod`, or connect the GitHub
+repository `icodexies/LircFullSystem` to the Vercel project and let pushes to
+`main` deploy automatically.
+
+Do **not** commit or upload:
+
+- `.env`, `.env.local`, or `.env.production`
+- Supabase service-role/secret keys
+- Gmail app passwords
+- Vercel/Netlify tokens
+- user-uploaded files or private database dumps
+
+The root `.env.example` contains placeholders only. Supabase Edge Function
+secrets (`GMAIL_USER`, `GMAIL_APP_PASSWORD`, `SITE_URL`, and the optional Gemini
+keys) are configured with `supabase secrets set`, not in Vercel or Git.
+
+The registration function also needs `GMAIL_USER`, `GMAIL_APP_PASSWORD`, and
+`SITE_URL` in the Supabase function environment. Use
+`supabase/functions/.env.example` as a template; never commit real credentials.
 
 ## Common commands
 
