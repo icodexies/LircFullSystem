@@ -15,65 +15,10 @@ For agent-assisted work, start with [AGENTS.md](AGENTS.md), then use [the projec
 ## Local development
 
 1. Install dependencies with `npm install`.
-2. Copy `.env.example` to `.env.local` and fill in `VITE_SUPABASE_URL` and
-   `VITE_SUPABASE_KEY`. The key must be the public anon/publishable key. Never
-   put a service-role or secret key in a `VITE_` variable.
+2. Create a root `.env` file with `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY`. The existing `VITE_SUPABASE_KEY` name is also supported for an anon/public key. Never put a service-role or secret key in a `VITE_` variable.
 3. Start the app with `npm run dev`.
 
-## Vercel deployment
-
-The Vercel project is `ccc-lirc` (team `ren-8eab`) and the production site is
-<https://ccc-lirc.vercel.app>.
-
-Required Vercel environment variables for **Production** and **Preview**:
-
-```text
-VITE_SUPABASE_URL=https://<project-ref>.supabase.co
-VITE_SUPABASE_KEY=<public-anon-or-publishable-key>
-VITE_SUPABASE_PUBLISHABLE_KEY=<optional alias for the same public key>
-```
-
-Build settings:
-
-```text
-Framework preset: Vite
-Build command:    npm run build
-Output directory: dist
-Node.js:          24.x (package engines require a patched 22/24/26 line)
-```
-
-Deploy from the project folder with `npx vercel --prod`, or connect the GitHub
-repository `icodexies/LircFullSystem` to the Vercel project and let pushes to
-`main` deploy automatically.
-
-### One-time GitHub authorization for automatic deploys
-
-The code is already in GitHub, but Vercel's Git connection is separate from
-GitHub access. A Vercel account administrator must connect the two once:
-
-1. In Vercel, open **Account Settings → Authentication/Connections** and connect
-   the GitHub account that owns `icodexies/LircFullSystem`.
-2. Install the **Vercel GitHub App** for that repository.
-3. In the `ccc-lirc` project, open **Settings → Git → Connect Repository** and
-   choose `icodexies/LircFullSystem` with production branch `main`.
-4. After that, every push to `main` deploys automatically. Until then, use
-   `npx vercel --prod` for manual deployments.
-
-Do **not** commit or upload:
-
-- `.env`, `.env.local`, or `.env.production`
-- Supabase service-role/secret keys
-- Gmail app passwords
-- Vercel/Netlify tokens
-- user-uploaded files or private database dumps
-
-The root `.env.example` contains placeholders only. Supabase Edge Function
-secrets (`GMAIL_USER`, `GMAIL_APP_PASSWORD`, `SITE_URL`, and the optional Gemini
-keys) are configured with `supabase secrets set`, not in Vercel or Git.
-
-The registration function also needs `GMAIL_USER`, `GMAIL_APP_PASSWORD`, and
-`SITE_URL` in the Supabase function environment. Use
-`supabase/functions/.env.example` as a template; never commit real credentials.
+The registration function also needs `GMAIL_USER`, `GMAIL_APP_PASSWORD`, and `SITE_URL` in the Supabase function environment. Use `supabase/functions/.env.example` as a template; never commit real credentials.
 
 ## Common commands
 
