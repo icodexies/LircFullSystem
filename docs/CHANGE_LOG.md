@@ -22,11 +22,11 @@ Use `Map updated: yes` only when a route, file location, data contract, role rul
 ## 2026-11-20 - Vercel deployment configuration and repository hygiene
 
 - Area: deployment, repository setup and environment documentation.
-- Commit/state: pending commit; Vercel project `ccc-lirc` linked under `ren-8eab`.
+- Commit/state: `725d0c3`; Vercel production `dpl_FF5isfz7PdKmNLV9apJrqpmaXfLF` is ready at https://ccc-lirc.vercel.app. Git auto-deploy is still blocked by the Vercel account's missing GitHub connection.
 - Files: `README.md`, `.env.example`, `.vercelignore`, `docs/CHANGE_LOG.md`.
 - Behavior: documents the required public Vite/Supabase build variables, Vercel build settings, GitHub deployment path and the files that must never be committed.
 - Data/security: no secrets or uploads added. `.env`, `.env.local`, `.env.production`, `.vercel`, user uploads and generated `dist/` remain ignored. Vercel Supabase URL/public key variables were added directly to the Vercel project.
-- Verification: `npm run lint`, `npm test` (134 passing), `npm run build`, and Vercel environment pull value checks passed.
+- Verification: `npm run lint`, `npm test` (134 passing), `npm run build`, Vercel environment pull value checks, and a live HTTPS response from the production alias passed.
 - Map updated: no.
 
 ## 2026-11-19 - Add persistent project map and agent workflow

@@ -6,8 +6,8 @@
 .env.production
 
 # Never deploy local uploads or machine-only project links.
-data/
-uploads/
+/data/
+/uploads/
 .vercel
 node_modules/
 dist/
