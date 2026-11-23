@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../../../hooks/auth/useAuth.js";
 import { useCatalog } from "../../../hooks/catalog/useCatalog.js";
@@ -35,6 +35,8 @@ export default function OPAC() {
   const [checking, setChecking] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [pendingExport, setPendingExport] = useState(null);
+  const exportLock = useRef(false);
+  const checkLock = useRef(false);
   const [selection, setSelection] = useState(null);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -66,6 +68,8 @@ export default function OPAC() {
   }
 
   async function exportRows(rows) {
+    if (exportLock.current) return;
+    exportLock.current = true;
     setExporting(true);
     try {
       await downloadBookCardsDocx(rows);
@@ -78,12 +82,14 @@ export default function OPAC() {
         toast.error(error.message, "Download failed");
       }
     } finally {
+      exportLock.current = false;
       setExporting(false);
     }
   }
 
   async function downloadCards() {
-    if (busy || checking || exporting) return;
+    if (busy || checking || exporting || checkLock.current) return;
+    checkLock.current = true;
     setChecking(true);
     try {
       const rows = await getBooksForExport(catalog.query);
@@ -102,6 +108,7 @@ export default function OPAC() {
         toast.error(error.message, "Download failed");
       }
     } finally {
+      checkLock.current = false;
       setChecking(false);
     }
   }
@@ -359,9 +366,9 @@ export default function OPAC() {
         </div>
       </div>
       <div aria-busy={busy}>
-        {catalog.loading ? (
+        {catalog.loading && catalog.books.length === 0 ? (
           <SkeletonCards label="Loading the catalog…" />
-        ) : catalog.error ? (
+        ) : catalog.error && catalog.books.length === 0 ? (
           <div
             className="rounded-2xl border border-red-100 bg-red-50 p-6"
             role="alert"

@@ -1,7 +1,11 @@
 import { getSupabase } from "../auth/authService.js";
+import { createReadCache } from "../shared/readCache.js";
 
-// Path Finder data. Reads are member-visible; writes are role-guarded
-// server-side (librarians/admins curate, faculty suggest).
+// Path Finder reads are shared by the whole app. Cache the list and one
+// curriculum per program briefly so route remounts do not refetch a large
+// curriculum. The page's Refresh action bypasses this cache.
+const pathFinderCache = createReadCache(60_000);
+
 const MISSING_SETUP = ["42883", "PGRST202", "42703", "42P01"];
 
 function pathFinderError(error, fallback) {
@@ -13,35 +17,49 @@ function pathFinderError(error, fallback) {
 }
 
 // The degree programs, each with its subject and coverage counts.
-export async function getPathFinderPrograms(signal) {
-  const client = await getSupabase();
-  const { data, error } = await client
-    .rpc("lirc_path_finder_programs")
-    .abortSignal(signal);
-  if (error) throw pathFinderError(error, "The programs could not be loaded.");
-  return data ?? [];
+export async function getPathFinderPrograms(signal, { fresh = false } = {}) {
+  return pathFinderCache.read(
+    "programs",
+    async () => {
+      const client = await getSupabase();
+      const { data, error } = await client.rpc("lirc_path_finder_programs");
+      if (error) throw pathFinderError(error, "The programs could not be loaded.");
+      return data ?? [];
+    },
+    { fresh },
+  );
 }
 
 // One program's curriculum: year -> semester -> subject -> recommended books.
-export async function getCurriculum(programId, signal) {
-  const client = await getSupabase();
-  const { data, error } = await client
-    .rpc("lirc_path_finder_curriculum", { p_program_id: programId })
-    .abortSignal(signal);
-  if (error) throw pathFinderError(error, "The curriculum could not be loaded.");
-  return data ?? null;
+export async function getCurriculum(programId, signal, { fresh = false } = {}) {
+  return pathFinderCache.read(
+    `curriculum:${programId}`,
+    async () => {
+      const client = await getSupabase();
+      const { data, error } = await client.rpc("lirc_path_finder_curriculum", {
+        p_program_id: programId,
+      });
+      if (error) throw pathFinderError(error, "The curriculum could not be loaded.");
+      return data ?? null;
+    },
+    { fresh },
+  );
 }
 
 // The General Education list: shared subjects with their program count and
 // books (a book added here appears on every program's matching subject).
-export async function getGenEd(signal) {
-  const client = await getSupabase();
-  const { data, error } = await client
-    .rpc("lirc_path_finder_gen_ed")
-    .abortSignal(signal);
-  if (error)
-    throw pathFinderError(error, "The General Education list could not be loaded.");
-  return data ?? { groups: [] };
+export async function getGenEd(signal, { fresh = false } = {}) {
+  return pathFinderCache.read(
+    "gen-ed",
+    async () => {
+      const client = await getSupabase();
+      const { data, error } = await client.rpc("lirc_path_finder_gen_ed");
+      if (error)
+        throw pathFinderError(error, "The General Education list could not be loaded.");
+      return data ?? { groups: [] };
+    },
+    { fresh },
+  );
 }
 
 // The suggestions tab: faculty see their own; librarians/admins see the queue.

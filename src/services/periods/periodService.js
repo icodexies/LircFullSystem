@@ -1,24 +1,37 @@
 import { getSupabase } from "../auth/authService.js";
-export async function getSemesters(signal) {
-  const client = await getSupabase();
-  const rows = [];
-  for (let from = 0; ; from += 100) {
-    const { data, error } = await client
-      .from("semesters")
-      .select(
-        "id,academic_year_id,name,starts_on,ends_on,is_active,academic_year:academic_years(id,name,start_year,starts_on,ends_on)",
-      )
-      .order("starts_on", { ascending: false })
-      .order("id", { ascending: false })
-      .range(from, from + 99)
-      .abortSignal(signal);
-    if (error)
-      throw new Error(
-        "Couldn't load semesters. Check the period schema and your connection.",
-      );
-    rows.push(...data);
-    if (data.length < 100) return rows;
-  }
+import { createReadCache } from "../shared/readCache.js";
+
+const semesterCache = createReadCache(5 * 60_000);
+
+export function clearSemesterCache() {
+  semesterCache.clear();
+}
+
+export async function getSemesters(signal, { fresh = false } = {}) {
+  return semesterCache.read(
+    "semesters:all",
+    async () => {
+      const client = await getSupabase();
+      const rows = [];
+      for (let from = 0; ; from += 100) {
+        const { data, error } = await client
+          .from("semesters")
+          .select(
+            "id,academic_year_id,name,starts_on,ends_on,is_active,academic_year:academic_years(id,name,start_year,starts_on,ends_on)",
+          )
+          .order("starts_on", { ascending: false })
+          .order("id", { ascending: false })
+          .range(from, from + 99);
+        if (error)
+          throw new Error(
+            "Couldn't load semesters. Check the period schema and your connection.",
+          );
+        rows.push(...data);
+        if (data.length < 100) return rows;
+      }
+    },
+    { fresh },
+  );
 }
 export async function savePeriod(kind, form, id) {
   const client = await getSupabase();
@@ -42,6 +55,7 @@ export async function savePeriod(kind, form, id) {
     : client.from(kind).insert(payload);
   const { data, error } = await query.select().single();
   if (error) throw new Error(error.message);
+  clearSemesterCache();
   return data;
 }
 export async function getAcademicYears(signal) {
@@ -65,4 +79,5 @@ export async function activateSemester(id) {
     p_semester_id: id,
   });
   if (error) throw new Error(error.message);
+  clearSemesterCache();
 }

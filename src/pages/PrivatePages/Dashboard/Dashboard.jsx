@@ -1,11 +1,9 @@
 import { useEffect, useId, useState } from "react";
 import { Link } from "react-router-dom";
-import { getMyFines } from "../../../services/fines/finesService.js";
 import { peso } from "../../../services/fines/fineRules.js";
 import { useAuth } from "../../../hooks/auth/useAuth.js";
 import { useSemester } from "../../../hooks/periods/useSemester.js";
-import { getMyLoans } from "../../../services/borrow/borrowService.js";
-import { getMyStatistics } from "../../../services/statistics/statisticsService.js";
+import { getMyDashboard } from "../../../services/dashboard/dashboardService.js";
 import { shortMonth } from "../../../services/statistics/statFormat.js";
 import { ACCESS, ROLE_LABELS } from "../../../routes/roles.js";
 import {
@@ -271,22 +269,18 @@ function MemberDashboard({ role }) {
   useEffect(() => {
     const controller = new AbortController();
     let active = true;
-    Promise.all([
-      getMyLoans({ status: "open", page: 1, pageSize: 100, signal: controller.signal }),
-      getMyLoans({ status: "all", page: 1, pageSize: 10, signal: controller.signal }),
-      getMyStatistics(semesterId, controller.signal),
-    ])
-      .then(([openLoans, allLoans, stats]) => {
-        if (active) {
-          setState({
-            key,
-            openLoans,
-            allLoans,
-            stats,
-            now: Date.now(),
-            error: "",
-          });
-        }
+    getMyDashboard(semesterId, controller.signal)
+      .then((data) => {
+        if (!active) return;
+        setState({
+          key,
+          openLoans: data?.open_loans ?? null,
+          allLoans: data?.all_loans ?? null,
+          stats: data?.statistics ?? null,
+          now: Date.now(),
+          error: "",
+        });
+        setMyFines(data?.fines ?? null);
       })
       .catch((problem) => {
         if (!active || problem?.name === "AbortError" || /abort/i.test(String(problem?.message ?? ""))) return;
@@ -298,9 +292,6 @@ function MemberDashboard({ role }) {
           error: problem?.message || "Your dashboard could not be loaded.",
         });
       });
-    getMyFines(controller.signal)
-      .then((result) => { if (active) setMyFines(result); })
-      .catch(() => { if (active) setMyFines(null); });
     return () => {
       active = false;
       controller.abort();

@@ -16,15 +16,19 @@ function SemesterSession({ userId, children }) {
   const request = useRef(0);
   const controller = useRef(null);
   const selection = useRef(null);
-  const refreshSemesters = useCallback(async () => {
+  const lastLoadedAt = useRef(0);
+  const focusTimer = useRef(null);
+
+  const loadSemesters = useCallback(async ({ force = false } = {}) => {
     const current = ++request.current;
     controller.current?.abort();
     const abort = new AbortController();
     controller.current = abort;
     setState((previous) => ({ ...previous, loading: true, error: "" }));
     try {
-      const semesters = await getSemesters(abort.signal);
+      const semesters = await getSemesters(abort.signal, { fresh: force });
       if (current !== request.current || abort.signal.aborted) return null;
+      lastLoadedAt.current = Date.now();
       let saved = selection.current;
       if (!saved) {
         try {
@@ -65,17 +69,32 @@ function SemesterSession({ userId, children }) {
       return null;
     }
   }, [userId]);
+
   useEffect(() => {
-    void refreshSemesters();
+    void loadSemesters();
     const focus = () => {
-      void refreshSemesters();
+      // Do not create a request for every focus event. The service cache also
+      // protects this path, but the cooldown prevents a room full of tabs
+      // from causing a synchronized burst.
+      if (Date.now() - lastLoadedAt.current < 60_000) return;
+      window.clearTimeout(focusTimer.current);
+      focusTimer.current = window.setTimeout(
+        () => void loadSemesters({ force: false }),
+        800,
+      );
     };
     window.addEventListener("focus", focus);
     return () => {
       controller.current?.abort();
+      window.clearTimeout(focusTimer.current);
       window.removeEventListener("focus", focus);
     };
-  }, [refreshSemesters]);
+  }, [loadSemesters]);
+
+  const refreshSemesters = useCallback(
+    () => loadSemesters({ force: true }),
+    [loadSemesters],
+  );
   const setSelectedSemesterId = useCallback(
     (id) => {
       setState((previous) => {

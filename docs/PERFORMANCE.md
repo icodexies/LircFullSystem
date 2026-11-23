@@ -1,4 +1,6 @@
-# Performance audit — 22 Oct 2026
+# Performance audit - 22 Oct 2026
+
+> The 23 Nov 2026 6,000-user load test and the follow-up implementation plan are documented in [`LOAD_RESILIENCE_PLAN.md`](LOAD_RESILIENCE_PLAN.md).
 
 Scope: React 19 + Vite 8 + Supabase (3.0k books, 10k members, 4.7k visits, 35 loans).
 Method: production builds of `09f98a5` (before) and `00bc77b` (after), served

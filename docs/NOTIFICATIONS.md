@@ -12,9 +12,9 @@ A server action (approval request, approval result, ...)
         │  lirc_private.notify_profile(...) / notify_admins(...)
         ▼
 public.notifications table  (one row per recipient)
-        │  lirc_notification_feed()
+        │  lirc_notification_feed() / lirc_notification_unread()
         ▼
-NotificationProvider (loads on login, refreshes every 45s)
+NotificationProvider (loads the feed on login, polls only unread count ~105s)
         │
 NotificationBell → badge, dropdown list, click = mark read + navigate(link)
 ```
@@ -23,9 +23,9 @@ NotificationBell → badge, dropdown list, click = mark read + navigate(link)
 
 | Piece | Location |
 | --- | --- |
-| Table + helpers + RPCs | migration `20261012160000_enrollment_approvals_and_notifications.sql` |
-| Feed + mark-read service | `src/services/notifications/notificationService.js` |
-| Provider (state + polling) | `src/context/notifications/NotificationProvider.jsx` |
+| Table + helpers + RPCs | migration `20261012160000_enrollment_approvals_and_notifications.sql`; unread-count RPC in `20261123110000_load_resilience_rpcs.sql` |
+| Feed + unread + mark-read service | `src/services/notifications/notificationService.js` |
+| Provider (state + unread polling) | `src/context/notifications/NotificationProvider.jsx` |
 | Hook | `src/hooks/shared/useNotifications.js` |
 | Bell UI | `src/components/layout/member/NotificationBell.jsx` (used by `MemberHeader`) |
 
@@ -70,5 +70,4 @@ server-side helpers.
 - Newest first, up to 20 items in the dropdown; the badge counts **all** unread.
 - Clicking an alert marks it read and opens its `link`.
 - "Mark all read" clears the badge.
-- The provider refreshes shortly after login, every 45 seconds, and right
-  after actions that create alerts. A read failure keeps the last state.
+- The provider loads the full feed shortly after login, polls only the unread count about every 105 seconds with jitter, pauses while the tab is hidden, and backs off after failures. Opening the bell refreshes the full feed. A read failure keeps the last state.

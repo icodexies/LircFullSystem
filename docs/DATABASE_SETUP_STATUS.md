@@ -224,6 +224,25 @@ reject them - both sides get a bell alert. Students see their program's
 approved lists and open any book in the OPAC. Every table is RPC-only (no
 client policies), matching the member-change-request pattern.
 
+**DCI Path Finder - 10-year catalog expansion** (applied 22 November 2026):
+migration `20261122100000_dci_10_year_recommendations` keeps the existing
+2021-2024 recommendations and adds **303 approved subject/book links from 149
+unique catalog books published 2016-2020**. All **74 course codes** in the
+BSCS and BSIT curricula now have at least one pre-2021 title; the combined DCI
+coverage is **570 approved links across 261 unique books, 2016-2024**. The
+rows are direct course-code recommendations, deliberately not Gen Ed group
+links, so the expansion stays scoped to DCI. The migration is idempotent and
+was recorded in `supabase_migrations.schema_migrations`.
+
+**Client load-resilience RPCs** (applied 23 November 2026): migration
+`20261123110000_load_resilience_rpcs` adds two read-only, authenticated-only
+functions. `lirc_notification_unread()` returns total/unread counts and the
+latest alert timestamp so the header bell does not download the full feed on
+every poll. `lirc_my_dashboard(p_semester_id)` returns the member's open loans,
+recent/all-loan summary, personal statistics and fine summary in one request.
+Both are `SECURITY DEFINER`, use `search_path = ''`, derive the profile from
+the caller, and were recorded in `supabase_migrations.schema_migrations`.
+
 **Fines and charges** (16 October 2026): switched by the `fines` setting in
 **Settings** (gear beside the dark-mode button; only admins change it).
 When ON: a late return is charged ₱5/day (a started day counts) the moment

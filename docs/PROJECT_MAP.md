@@ -4,7 +4,7 @@ This is the canonical navigation map for the LIRC library system. It is an index
 
 | Field | Value |
 | --- | --- |
-| Last full verification | 2026-11-19 |
+| Last full verification | 2026-11-23 |
 | Base code | `4945ae0`; documentation changes from the 2026-11-19 scan are listed in `docs/CHANGE_LOG.md` |
 | Frontend | React 19, Vite 8, React Router 7, Tailwind CSS 4 |
 | Backend | Supabase Auth, Postgres/PostgREST RPCs, Storage, Edge Functions |
@@ -12,7 +12,7 @@ This is the canonical navigation map for the LIRC library system. It is an index
 | Repository | `icodexies/LircFullSystem` |
 | Linked Supabase project | `jrrwhrnqembviaocrdmi` |
 | Node requirement | `22.23.4+`, `24.22.1+` or `26.12.1+` |
-| Baseline scan | 27 page files, 128 migrations, 5 Edge Functions, 25 test files, 134 passing tests |
+| Baseline scan | 27 page files, 130 migrations, 5 Edge Functions, 26 test files, 139 passing tests |
 
 Use this map with `AGENTS.md`, `docs/AGENT_WORKFLOW.md` and `docs/CHANGE_LOG.md`.
 
@@ -110,7 +110,7 @@ Find the request by its keywords, then open the **Read first** files. Add the su
 | Forgot/reset password | `src/pages/PublicPages/ForgotPasswordPage/ForgotPassword.jsx`, `ResetPasswordPage/ResetPassword.jsx` | `authService.js`, `supabase/functions/request-password-reset/index.ts`, `password_reset_requests` | `docs/PASSWORD_RESET.md` |
 | Sidebar, header, navigation, page permissions, unauthorized | `src/routes/memberPages.js`, `src/routes/roles.js` | `src/App.jsx`, `guards.jsx`, `memberScreens.js`, `src/layouts/member/MemberLayout.jsx`, `src/components/layout/member/` | `tests/routes/memberAccess.test.js`, `docs/MEMBER_LAYOUT.md` |
 | Landing page, hero, carousel, public books, digital sources, about | `src/pages/PublicPages/HomePage/Home.jsx` | `src/components/home/`, `src/data/home/`, `src/hooks/home/`, `src/services/home/homeCollectionService.js` (`lirc_home_collection`), `src/layouts/public/` | `docs/PROJECT_GUIDE.md` |
-| Dashboard, greeting, member cards, staff dashboard | `src/pages/PrivatePages/Dashboard/Dashboard.jsx` | `src/components/personnel/PersonnelDashboard.jsx`, `statisticsService.js`, `borrowService.js`, `finesService.js`, `useSemester.js`, `useAuth.js` | `tests/dashboard/`, `docs/PERSONNEL_DASHBOARD.md` |
+| Dashboard, greeting, member cards, staff dashboard | `src/pages/PrivatePages/Dashboard/Dashboard.jsx` | `src/services/dashboard/dashboardService.js` (`lirc_my_dashboard`), `src/components/personnel/PersonnelDashboard.jsx`, `statisticsService.js`, `borrowService.js`, `finesService.js`, `useSemester.js`, `useAuth.js` | `tests/dashboard/`, `docs/PERSONNEL_DASHBOARD.md` |
 | OPAC, catalog search, filters, pagination, book details, edit book, cover | `src/pages/PrivatePages/OPAC/OPAC.jsx` | `src/hooks/catalog/useCatalog.js`, `src/components/catalog/BookDetails.jsx`, `EditBook.jsx`, `CatalogDialog.jsx`, `BookCover.jsx`, `src/services/catalog/bookService.js`, `catalogQuery.js`, `bookValidation.js` | `tests/catalog/`, `docs/OPAC.md` |
 | Word catalog cards, missing-field warning, download filtered books, card view | `src/pages/PrivatePages/OPAC/OPAC.jsx` | `src/services/catalog/bookCardDocx.js`, `bookCardValidation.js`, `bookService.getBooksForExport` | `tests/catalog/bookCardValidation.test.js` |
 | Add book, add copies, accession numbers, ISBN lookup | `src/pages/PrivatePages/AddingBooks/AddingBooks.jsx` | `src/components/catalog/AddBookDialog.jsx`, `src/services/catalog/bookService.js`, `newBookRules.js`, migrations `20261012220000_add_book_workflow.sql`, `20261013090000_edit_book_copies.sql` | `tests/catalog/newBookRules.test.js`, `docs/ADDING_BOOKS.md` |
@@ -137,10 +137,10 @@ Find the request by its keywords, then open the **Read first** files. Add the su
 | Request keywords | Read first | Supporting files / contract | Tests / docs |
 | --- | --- | --- | --- |
 | Statistics, counts, charts, borrower card, catalog/validation/attendance stats, drilldown | `src/pages/PrivatePages/Statistics/Statistics.jsx` | `src/components/statistics/`, `src/hooks/statistics/useStatisticsDetail.js`, `src/services/statistics/statisticsService.js`, `borrowTree.js`, `visitTree.js`, RPCs `lirc_statistics_*`, `lirc_my_statistics` | `tests/statistics/` |
-| Path Finder, curriculum, subject recommendations, book suggestions, acquisitions | `src/pages/PrivatePages/PathFinder/PathFinder.jsx` | `src/hooks/pathfinder/usePathFinder.js`, `src/components/pathfinder/`, `src/services/pathfinder/pathFinderService.js`, `curriculumWorkbook.js`, `acquisitionWorkbook.js`, curriculum tables, `subject_recommendations`, `acquisition_suggestions` | No direct Path Finder test folder; verify build and flows |
+| Path Finder, curriculum, subject recommendations, book suggestions, acquisitions | `src/pages/PrivatePages/PathFinder/PathFinder.jsx` | `src/hooks/pathfinder/usePathFinder.js`, `src/components/pathfinder/`, `src/services/pathfinder/pathFinderService.js`, `curriculumWorkbook.js`, `acquisitionWorkbook.js`, curriculum tables, `subject_recommendations`, `acquisition_suggestions`; DCI 10-year data: `supabase/migrations/20261122100000_dci_10_year_recommendations.sql` | No direct Path Finder test folder; verify build and flows |
 | AI recommendations, Gemini, web grounding, AI findings | `src/components/pathfinder/AiRecommendModal.jsx` | `src/services/pathfinder/pathFinderService.js` (`runAiRecommendations`, `getAiFindings`), `supabase/functions/subject-recommendations/index.ts`, `subject_ai_findings` | No direct AI test; deployment is separate from Vercel |
 | Announcements, announcement popup, announcement feed, announcement image | `src/pages/PrivatePages/Announcements/Announcements.jsx` | `src/components/announcements/`, `src/services/announcements/announcementService.js`, `announcements`, storage `announcement-images` | No direct test folder |
-| Notifications, header bell, unread count, mark read | `src/context/notifications/NotificationProvider.jsx`, `src/pages/PrivatePages/Notifications/Notifications.jsx` | `src/components/layout/member/NotificationBell.jsx`, `src/services/notifications/notificationService.js`, `notifications` | `docs/NOTIFICATIONS.md` |
+| Notifications, header bell, unread count, mark read | `src/context/notifications/NotificationProvider.jsx`, `src/pages/PrivatePages/Notifications/Notifications.jsx` | `src/components/layout/member/NotificationBell.jsx`, `src/services/notifications/notificationService.js` (`getNotificationUnread`), `notifications`, RPCs `lirc_notification_feed`, `lirc_notification_unread` | `docs/NOTIFICATIONS.md` |
 | Settings, fines switch, daily rate | `src/pages/PrivatePages/Settings/Settings.jsx` | `src/services/fines/finesService.js`, `app_settings`, RPCs `lirc_settings_get`, `lirc_settings_set_fines` | `docs/BORROW.md`; no direct settings test |
 | User logs, activity, personnel performance, monthly AI summary | `src/pages/PrivatePages/UserLogs/UserLogs.jsx`, `UserPerformance/UserPerformance.jsx` | `src/hooks/personnel/`, `src/components/personnel/`, `src/services/personnel/`, `activity_events`, `performance_reports`, `performance-summary` Edge Function | `tests/personnel/`, `docs/PERSONNEL_DASHBOARD.md` |
 | Excel/Word/PDF export, download, report file | See **Export pipeline** below | Keep the existing generator and job; do not put long work in the page | Feature tests plus `tests/borrow/borrowReportWorkbook.test.js` etc. |
@@ -163,7 +163,8 @@ Find the request by its keywords, then open the **Read first** files. Add the su
 | Shared workspace UI | `src/components/attendance/WorkspaceUi.jsx`, `StaffUi.jsx` | Panels, notices, headers, table/input buttons |
 | Manila/time rules | `src/services/attendance/attendanceRules.js` | `manilaDate`, `displayTime`, names, eligibility helpers |
 | File download | `src/services/shared/fileDownload.js` | Blob download and safe filenames |
-| Supabase client | `src/lib/supabase/client.js`, `src/services/auth/authService.js` (`getSupabase`) | Shared client, auth/session |
+| Read cache | `src/services/shared/readCache.js` | In-memory TTL cache with in-flight deduplication; used for semesters and Path Finder reads |
+| Supabase client | `src/lib/supabase/client.js`, `src/services/auth/authService.js` (`getSupabase`) | Shared client, auth/session and 20-second browser request deadline |
 
 ## 4. Service and data map
 
@@ -279,6 +280,7 @@ Tests are plain Node tests and do not hit the live Supabase project.
 | `tests/inventory/` | inventory rules |
 | `tests/personnel/` | activity descriptions, performance rules, report rules |
 | `tests/routes/` | route access |
+| `tests/shared/` | read cache TTL, in-flight deduplication, invalidation |
 | `tests/statistics/` | borrow and visit drill trees |
 | `tests/users/` | member edit rules, new-user rules, person status |
 
@@ -300,6 +302,7 @@ Run all with `npm test`. The current baseline is 134 passing tests.
 12. **Book edits use optimistic concurrency**: the book `updated_at` is part of the update contract. Do not remove that check.
 13. **VITE variables are public**: never put a service role or secret in a `VITE_` variable.
 14. **Display name/member records**: use the existing RPCs for member display data; do not add direct `usersData` reads/writes for staff flows without checking policies.
+15. **Client request amplification**: notifications poll an unread count (not the full feed); semesters and Path Finder reads are cached. Preserve jitter, visibility pause and bounded polling when changing these paths. See `docs/LOAD_RESILIENCE_PLAN.md`.
 
 ## 10. Adding a new feature
 

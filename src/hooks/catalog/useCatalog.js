@@ -85,6 +85,7 @@ export function useCatalog() {
   }
 
   const loading = result.key !== key;
+  const updating = loading && result.books.length > 0;
   return {
     query,
     searchInput,
@@ -96,8 +97,11 @@ export function useCatalog() {
     refresh: () => setRevision((value) => value + 1),
     setPage: (page) => changeQuery({ page }),
     loading,
+    updating,
     searching: searchInput !== query.search,
-    books: loading ? [] : result.books,
+    // Keep the last successful page visible while the next result loads.
+    // The page uses `updating`/`busy` to show that a refresh is in progress.
+    books: result.books,
     hasNext: !loading && result.hasNext,
     error: loading ? "" : result.error,
   };

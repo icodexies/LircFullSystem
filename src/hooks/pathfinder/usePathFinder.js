@@ -26,7 +26,7 @@ export function usePathFinder({ withSuggestions = false } = {}) {
     const controller = new AbortController();
     let active = true;
     const key = String(revision);
-    getPathFinderPrograms(controller.signal)
+    getPathFinderPrograms(controller.signal, { fresh: revision > 0 })
       .then((items) => {
         if (active) setPrograms({ key, items, error: "" });
       })
@@ -64,8 +64,10 @@ export function usePathFinder({ withSuggestions = false } = {}) {
     const key = `${programId}:${revision}`;
     const request =
       programId === "gen-ed"
-        ? getGenEd(controller.signal)
-        : getCurriculum(programId, controller.signal);
+        ? getGenEd(controller.signal, { fresh: revision > 0 })
+        : getCurriculum(programId, controller.signal, {
+            fresh: revision > 0,
+          });
     request
       .then((data) => {
         if (active) setCurriculum({ key, data, error: "" });
