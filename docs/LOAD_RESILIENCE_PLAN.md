@@ -9,7 +9,8 @@ This plan addresses the client-side request storm found during the 6,000-user lo
 > export lock. New RPC migration `20261123110000_load_resilience_rpcs` is applied and
 > recorded. Still pending: workspace-bootstrap RPC, broader page caches, statistics
 > page cache, server-side export job, Supabase compute upgrade, and distributed staging
-> load test. No deployment has been made yet.
+> load test. The frontend is deployed at https://ccc-lirc.vercel.app (commit `5acdc93`,
+> deployment `dpl_4AzpXfEa748pdAZWxZcnetaTDVwD`); the RPC migration is applied and recorded.
 
 ## 1. Test findings that drive the plan
 

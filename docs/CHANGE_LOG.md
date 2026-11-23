@@ -22,11 +22,11 @@ Use `Map updated: yes` only when a route, file location, data contract, role rul
 ## 2026-11-23 - Implement first load-resilience release
 
 - Area: client request volume, dashboards, notifications, semester loading, Path Finder/OPAC loading and the first read-only RPCs.
-- Commit/state: local code changes; migration `20261123110000_load_resilience_rpcs` applied and recorded in production. No frontend or Edge Function deployment yet.
+- Commit/state: commit `5acdc93`; Vercel production deployment `dpl_4AzpXfEa748pdAZWxZcnetaTDVwD` is live at https://ccc-lirc.vercel.app. No Edge Function was changed or deployed.
 - Files: `src/lib/supabase/client.js`, `src/context/notifications/NotificationProvider.jsx`, `src/services/notifications/notificationService.js`, `src/context/periods/SemesterProvider.jsx`, `src/services/periods/periodService.js`, `src/services/shared/readCache.js`, `src/services/pathfinder/pathFinderService.js`, `src/hooks/pathfinder/usePathFinder.js`, `src/hooks/catalog/useCatalog.js`, `src/pages/PrivatePages/OPAC/OPAC.jsx`, `src/services/dashboard/dashboardService.js`, `src/pages/PrivatePages/Dashboard/Dashboard.jsx`, `supabase/migrations/20261123110000_load_resilience_rpcs.sql`, `tests/shared/readCache.test.js`, `docs/PROJECT_MAP.md`, `docs/DATABASE_SETUP_STATUS.md`, `docs/LOAD_RESILIENCE_PLAN.md`.
 - Behavior: browser requests now have a 20s deadline; notifications poll unread counts every ~105s with jitter/backoff instead of downloading the full feed every 45s; semester reads are cached/debounced; Path Finder programs/curricula are cached per session; OPAC keeps prior rows while refreshing; dashboard loads through one `lirc_my_dashboard` call; exports are guarded against concurrent runs.
 - Data/security: added authenticated-only, read-only `lirc_notification_unread()` and `lirc_my_dashboard(bigint)`; both derive the caller profile and use `security definer` + `search_path=''`.
-- Verification: lint passed, 139 tests passed, production build passed; local smoke tests for Dashboard, OPAC and Path Finder had no console errors; RPCs returned HTTP 200 for the sample student.
+- Verification: lint passed, 139 tests passed, production build passed; local smoke tests for Dashboard, OPAC and Path Finder had no console errors; live Vercel assets contain the new dashboard and notification RPCs.
 - Map updated: yes (baseline counts, dashboard/notification mappings, read-cache/test entries).
 
 ## 2026-11-23 - Plan 6,000-user load resilience
